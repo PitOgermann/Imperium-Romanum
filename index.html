@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <link rel="stylesheet" type="text/css" href="style.css" />
-  <head>
-    <meta charset="utf-8">
-    <title>Imperium Romanum - forge the heroes</title>
-  </head>
-  <body>
+<html lang="en">
+	<head>
+		<title>three.js - pointerlock controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="style.css" />
 
-  </body>
+	</head>
+	<body>
+		<script src="js/lib/three.js"></script>
+		<script src="js/lib/threeLib/controls/PointerLockControls.js"></script>
+		<script src="js/lib/Physijs-master/physi.js"></script>
+
+		<!-- start 3D Game -->
+		<div id="blocker">
+			<div id="instructions">
+				<span style="font-size:40px">Click to play</span>
+				<br />
+				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+			</div>
+		</div>
+
+		<script src="js/Stage.js"></script>
+		<script src="js/runWorld.js"></script>
+
+
+	</body>
 </html>

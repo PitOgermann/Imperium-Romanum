@@ -1,0 +1,2 @@
+Stage.init();
+animate();
