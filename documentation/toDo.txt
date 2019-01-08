@@ -1,0 +1,8 @@
+// the following tasks have to be done:
+
+
+1. create a simple GUI 2D overlay over the game
+  - shows the amount of Wood, stone, ...
+  - link to the settings
+  -
+  
