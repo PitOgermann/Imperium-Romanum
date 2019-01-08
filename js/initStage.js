@@ -1,3 +1,7 @@
+/**
+ * @author Pit Ogermann
+ */
+
 var Stage = {
   scene: null,
   camera: null,
@@ -36,10 +40,6 @@ var Stage = {
     document.body.appendChild(this.container);
     this.container.appendChild(this.renderer.domElement);
 
-    // prepare controls (OrbitControls)
-    //this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-    //this.controls.target = new THREE.Vector3(0, 0, 0);
-    //this.controls.maxDistance = 2000;
     this.controls = new THREE.FirstPersonControls(this.camera, this.renderer.domElement);
 
 
