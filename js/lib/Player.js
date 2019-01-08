@@ -8,14 +8,18 @@ var Player = {
   moveLeft: false,
   moveRight: false,
   canJump: false,
+  run: false,
 
   mass: 100.0,
   acceleration: 400.0,
   accelerationJump: 300.0,
+  runGain: 2.5,
+  staminaMax:50,
 
   prevTime: performance.now(),
   velocity: new THREE.Vector3(),
   direction: new THREE.Vector3(),
+  stamina: 50,
 
   colisionModel: null,
   colisionDetected: false,
@@ -77,6 +81,10 @@ var Player = {
         player.canJump = false;
         break;
 
+      case 16: // run
+        if(player.canJump)player.run=true;
+        break;
+
     }
 
   },
@@ -107,6 +115,10 @@ var Player = {
       case 32: // space
         player.canJump = false;
         break;
+
+      case 16: // run
+        player.run=false;
+      break;
     }
 
   },
@@ -139,8 +151,8 @@ var Player = {
     this.direction.x = Number( this.moveLeft ) - Number( this.moveRight );
     this.direction.normalize(); // this ensures consistent movements in all directions
 
-    if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta;
-    if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta;
+    if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta * 1;
+    if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta * 1;
 
     // jumping:
     this.canJump = false;
@@ -162,11 +174,20 @@ var Player = {
     if(Math.abs(this.velocity.z)>Math.abs(this.acceleration/10*backImpulse))this.velocity.z = Math.sign(this.velocity.z)*this.acceleration/10*backImpulse;
     if(this.velocity.y>this.accelerationJump)this.velocity.y = this.accelerationJump;
 
-
-
-    this.root.controls.getObject().translateX( this.velocity.x * delta );
+    //run:
+    if(this.run){
+      this.stamina--;
+      if(this.stamina<0)this.stamina=0;
+    }else{
+      this.stamina++;
+      if(this.acceleration.x<0.1&&this.acceleration.z<0.1)this.stamina++;
+      if(this.stamina>this.staminaMax)this.stamina=this.staminaMax;
+    }
+    
+    this.root.controls.getObject().translateX( this.velocity.x * delta *((this.run&& this.stamina>0)?this.runGain:1));
     this.root.controls.getObject().translateY( this.velocity.y * delta );
-    this.root.controls.getObject().translateZ( this.velocity.z * delta );
+    this.root.controls.getObject().translateZ( this.velocity.z * delta *((this.run&& this.stamina>0)?this.runGain:1));
+
 
     // is on ground:
     if ( this.root.controls.getObject().position.y < 10 ) {
