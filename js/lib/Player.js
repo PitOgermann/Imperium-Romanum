@@ -155,6 +155,8 @@ var Player = {
       this.velocity.y = Math.abs(prevVelocity.y)*0;
       this.velocity.z = prevVelocity.z*backImpulse;
     }
+    if(Math.abs(this.velocity.x)>this.acceleration/10)Math.sign(this.velocity.x)*this.acceleration/10;
+    if(Math.abs(this.velocity.z)>this.acceleration/10)Math.sign(this.velocity.z)*this.acceleration/10;
 
     this.root.controls.getObject().translateX( this.velocity.x * delta );
     this.root.controls.getObject().translateY( this.velocity.y * delta );
