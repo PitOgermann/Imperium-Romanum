@@ -30,17 +30,17 @@ var Player = {
 
     // define colisionModel:
     var wireMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:true } );
-    var cubeGeometry = new THREE.SphereGeometry( 2, 4, 6);
+    var cubeGeometry = new THREE.SphereGeometry( 2, 4, 3);
     this.colisionModel = new THREE.Mesh( cubeGeometry, wireMaterial );
 	  this.colisionModel.position.set(0, 0, 0);
     root.controls.getObject().add(this.colisionModel);
 
     // add interactionModel:
     var wireMaterial = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe:true } );
-    var cubeGeometry = new THREE.CubeGeometry(5,5,20,4,4,4);
+    var cubeGeometry = new THREE.CubeGeometry(5,5,40,2,1,1);
     this.interactionModel = new THREE.Mesh( cubeGeometry, wireMaterial );
-	  this.interactionModel.position.set(0, 0, -10);
-    //this.controls.getObject().add(this.interactionModel);
+	  this.interactionModel.position.set(0, 0, -20);
+    //root.controls.getObject().children[0].add(this.interactionModel);
 
     // add key-event listener
     document.addEventListener( 'keydown', function(event) {Stage.player.onKeyDown(event, Stage.player);}, false );
@@ -115,9 +115,15 @@ var Player = {
   animate: function(){
 
     // check collision:
-    this.colisionDetected=detectCollision(this.root,this.colisionModel,false).isColliding;
+    this.colisionDetected=detectCollision(this.root,this.root.controls.getObject(),this.colisionModel,false).isColliding;
     // Chek ground:
     var onObject = detectGround(this.root,false,4).isOnGround;
+
+    // get interactionObjects:
+    var interactionObjects=detectCollision(this.root,this.root.controls.getObject().children[0],this.interactionModel,true).collidingObjects;
+    var wireMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:true } );
+    //if(interactionObjects.length>0)interactionObjects[0].object.material = wireMaterial;
+    //console.log(interactionObjects);
 
     //update Position:
     var time = performance.now();

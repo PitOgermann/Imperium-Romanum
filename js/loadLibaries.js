@@ -13,4 +13,4 @@ function loadScript(url){
 // load engine:
 loadScript('js/lib/stats.min.js');
 loadScript('js/lib/FirstPersonControls.js');
-loadScript('js/lib/cumputeCollision.js');
+loadScript('js/lib/computeCollision.js');

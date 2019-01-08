@@ -1,7 +1,7 @@
 /**
  * @author Pit Ogermann
  */
- 
+
 // This script defines the PHYSICAL parameter of the world, the player and the envoronment
 // Changoings apear global
 

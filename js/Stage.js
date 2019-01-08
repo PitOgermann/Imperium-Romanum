@@ -1,7 +1,7 @@
 /**
  * @author Pit Ogermann
  */
- 
+
 var Stage = {
   camera: null,
   scene: null,
@@ -9,9 +9,6 @@ var Stage = {
   controls: null,
 
   objects: [],
-
-
-  //raycaster: null,
   player: null,
 
 
@@ -29,8 +26,7 @@ var Stage = {
 
     this.controls = new THREE.PointerLockControls( this.camera );
 
-    //this.raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
-
+    //Add player:
     this.player = Player;
     this.player.init(this);
 
@@ -90,10 +86,8 @@ function animate(){
     requestAnimationFrame( animate );
 
     if ( Stage.controls.isLocked === true ) {
-
+      // Do while game is active
       Stage.player.animate();
-
-
     }
 
     Stage.renderer.render( Stage.scene, Stage.camera );

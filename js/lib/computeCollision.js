@@ -2,15 +2,16 @@
  * @author Pit Ogermann
  */
 
-function detectCollision(root,collisionModel,reqObject){
+function detectCollision(root,origObject,collisionModel,reqObject){
   var isColl = false;
   var collObj = [];
   collisionModel.updateMatrixWorld();
-  var originPoint = root.controls.getObject().position.clone();
+  var originPoint = origObject.position.clone();
   for (var vertexIndex = 0; vertexIndex < collisionModel.geometry.vertices.length; vertexIndex++){
     var localVertex = collisionModel.geometry.vertices[vertexIndex].clone();
-    var globalVertex = localVertex.applyMatrix4( root.controls.getObject().matrixWorld );
+    var globalVertex = localVertex.applyMatrix4( origObject.matrixWorld );
     var directionVector = globalVertex.sub( originPoint );
+
     var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
     var collisionResults = ray.intersectObjects( root.objects);
     if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
