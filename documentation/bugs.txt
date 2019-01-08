@@ -1,0 +1,3 @@
+List here all known bugs:
+
+1. sliding along a roof while pressing space.
