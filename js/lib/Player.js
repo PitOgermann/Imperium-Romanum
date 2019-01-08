@@ -117,7 +117,7 @@ var Player = {
     // check collision:
     this.colisionDetected=detectCollision(this.root,this.root.controls.getObject(),this.colisionModel,false).isColliding;
     // Chek ground:
-    var onObject = detectGround(this.root,false,4).isOnGround;
+    var onObject = detectGround(this.root,false,2).isOnGround;
 
     // get interactionObjects:
     var interactionObjects=detectCollision(this.root,this.root.controls.getObject().children[0],this.interactionModel,true).collidingObjects;
@@ -157,9 +157,11 @@ var Player = {
       this.velocity.y = Math.abs(prevVelocity.y)*0;
       this.velocity.z = prevVelocity.z*backImpulse;
     }
+
     //limit acceleration:
     if(Math.abs(this.velocity.x)>Math.abs(this.acceleration/10*backImpulse))this.velocity.x = Math.sign(this.velocity.x)*this.acceleration/10*backImpulse;
     if(Math.abs(this.velocity.z)>Math.abs(this.acceleration/10*backImpulse))this.velocity.z = Math.sign(this.velocity.z)*this.acceleration/10*backImpulse;
+    if(this.velocity.y>this.accelerationJump/10)this.velocity.y = this.accelerationJump/10;
 
     this.root.controls.getObject().translateX( this.velocity.x * delta );
     this.root.controls.getObject().translateY( this.velocity.y * delta );
