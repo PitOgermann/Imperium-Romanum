@@ -142,6 +142,8 @@ var Player = {
     if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta;
     if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta;
 
+    // jumping:
+    this.canJump = false;
     if ( onObject === true ) {
       this.velocity.y = Math.max( 0, this.velocity.y );
       this.canJump = true;
