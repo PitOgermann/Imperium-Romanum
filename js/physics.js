@@ -8,5 +8,6 @@
 var PHYSICS = {
   recoil: -2.5,
   gravitation: 9.8,
-  airResistance: 10,
+  groundResistance: 10,
+  airResistance: 0.8,
 }

@@ -2,7 +2,7 @@
  * @author Pit Ogermann
  */
 
-function detectCollision(root,origObject,collisionModel,reqObject){
+function detectCollision_old(root,origObject,collisionModel,reqObject){
   var isColl = false;
   var collObj = [];
   collisionModel.updateMatrixWorld();
@@ -28,6 +28,38 @@ function detectCollision(root,origObject,collisionModel,reqObject){
     };
 
 }
+
+
+function detectCollision(root,model,reqObject){
+  var isColl = false;
+  var collObj = [];
+
+  model.updateMatrixWorld();
+  var origPosition = new THREE.Vector3();
+  origPosition.setFromMatrixPosition( model.matrixWorld );
+
+  for (var vertexIndex = 0; vertexIndex < model.geometry.vertices.length; vertexIndex++){
+    var localVertex = model.geometry.vertices[vertexIndex].clone();
+    var globalVertex = localVertex.applyMatrix4( model.matrixWorld );
+    var directionVector = globalVertex.sub( origPosition );
+
+    var ray = new THREE.Raycaster( origPosition, directionVector.clone().normalize() );
+    var collisionResults = ray.intersectObjects( root.objects );
+    if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
+      isColl=true;
+      if(reqObject){
+        for(var i = 0;i<collisionResults.length;i++)if(collisionResults[i].distance < directionVector.length())collObj.push(collisionResults[i]);
+      }
+    }
+
+  }
+  return {
+        isColliding: isColl,
+        collidingObjects: collObj
+    };
+
+}
+
 
 function detectGround(root,reqObject,N){
   var onObjectBool = false;

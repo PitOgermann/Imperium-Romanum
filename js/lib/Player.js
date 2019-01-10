@@ -25,14 +25,16 @@ var Player = {
   colisionDetected: false,
 
   interactionModel: null,
-  interactionObjects: [],
+  interaction: null,
 
   root: null,
+
+  weapons: [],
 
   init: function(root) {
     this.root = root;
 
-    // define colisionModel:
+    // define collisionModel:
     var wireMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:true } );
     var cubeGeometry = new THREE.SphereGeometry( 2, 4, 3);
     this.colisionModel = new THREE.Mesh( cubeGeometry, wireMaterial );
@@ -40,11 +42,18 @@ var Player = {
     root.controls.getObject().add(this.colisionModel);
 
     // add interactionModel:
-    var wireMaterial = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe:true } );
-    var cubeGeometry = new THREE.CubeGeometry(5,5,40,2,1,1);
+    var wireMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe:true } );
+    var cubeGeometry = new THREE.CubeGeometry(5,5,30,3,3,3);
     this.interactionModel = new THREE.Mesh( cubeGeometry, wireMaterial );
-	  this.interactionModel.position.set(0, 0, -20);
-    //root.controls.getObject().children[0].add(this.interactionModel);
+	  this.interactionModel.position.set(0, 0, -15);
+    root.controls.getObject().children[0].add(this.interactionModel);
+
+    // add equipment:
+    var wireMaterial = new THREE.MeshBasicMaterial( { color: 0x0000ff, wireframe:true } );
+    var cubeGeometry = new THREE.CubeGeometry(1,1,10,5,5,20);
+    var model = new THREE.Mesh( cubeGeometry, wireMaterial );
+	  model.position.set(5, -2, -5);
+    this.weapons.push( new Weapon(this.root.controls.getObject().children[0],model,true,10,5,1.0));
 
     // add key-event listener
     document.addEventListener( 'keydown', function(event) {Stage.player.onKeyDown(event, Stage.player);}, false );
@@ -126,25 +135,31 @@ var Player = {
   // define animation function:
   animate: function(){
 
+    // animate Weapons:
+    for(var i in this.weapons)this.weapons[i].animate();
+
     // check collision:
-    this.colisionDetected=detectCollision(this.root,this.root.controls.getObject(),this.colisionModel,false).isColliding;
+    this.colisionDetected=detectCollision(this.root,this.colisionModel,false).isColliding;
     // Chek ground:
     var onObject = detectGround(this.root,false,2).isOnGround;
-
     // get interactionObjects:
-    var interactionObjects=detectCollision(this.root,this.root.controls.getObject().children[0],this.interactionModel,true).collidingObjects;
-    var wireMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:true } );
-    //if(interactionObjects.length>0)interactionObjects[0].object.material = wireMaterial;
-    //console.log(interactionObjects);
+    this.interaction = detectCollision(this.root,this.interactionModel,false);
+
+
 
     //update Position:
     var time = performance.now();
     var delta = ( time - this.prevTime ) / 1000;
 
-    this.velocity.x -= this.velocity.x * PHYSICS.airResistance * delta;
-    this.velocity.z -= this.velocity.z * PHYSICS.airResistance * delta;
+    this.velocity.x -= this.velocity.x * PHYSICS.groundResistance * delta;
+    this.velocity.z -= this.velocity.z * PHYSICS.groundResistance * delta;
 
-    this.velocity.y -= PHYSICS.gravitation * this.mass * delta;
+    //Stokes-Reibungsgestez: m*dt(v) = -m*g- beta*v --> -dt(v) = g+ beta*v/m
+    // Newton-Reibung: F_r = k*v^2
+    var f_g = PHYSICS.gravitation * this.mass;
+    var f_r = (this.velocity.y < 0)? PHYSICS.airResistance * (this.velocity.y*delta)**2 :0;
+    this.velocity.y -= (f_g-f_r) * delta;
+
 
 
     this.direction.z = Number( this.moveForward ) - Number( this.moveBackward );
