@@ -1,7 +1,7 @@
 /**
  * @author Pit Ogermann
  */
- 
+
 var vertex = new THREE.Vector3();
 var color =  new THREE.Color();
 

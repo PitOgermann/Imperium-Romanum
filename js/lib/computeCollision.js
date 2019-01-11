@@ -57,7 +57,6 @@ function detectCollision(root,model,reqObject){
         isColliding: isColl,
         collidingObjects: collObj
     };
-
 }
 
 
