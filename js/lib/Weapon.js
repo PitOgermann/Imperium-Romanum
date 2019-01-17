@@ -1,5 +1,5 @@
 class Projectile {
-  constructor(root,model,speed_0,mass,airResistance){
+  constructor(root,model,speed_0,dmg,mass,airResistance){
     this.root = root;
     this.model = model.clone();
     this.pivot = new THREE.Group();
@@ -7,8 +7,9 @@ class Projectile {
 
     this.mass = mass;
     this.airResistance= airResistance;
+    this.damage = dmg;
 
-    this.velocity = new THREE.Vector3(0,0,-speed_0);
+    this.velocity = new THREE.Vector3(0,0,speed_0);
 
     //animation Param:
     this.prevTime = performance.now();
@@ -19,36 +20,57 @@ class Projectile {
     this.pivot.applyMatrix( root.model.matrixWorld.clone() );
     Stage.scene.add( this.pivot );
 
-    console.log("Done!");
-
   }
 
   animate(){
     // calculate collision: --> hit sth.
     this.pivot.updateMatrixWorld();
-    var hit = detectCollision(Stage,this.model,true);
+    var hit = detectFastCollision(Stage,this.model,true,this.velocity.z**2*.0005);
+
     var worldPosition = (new THREE.Vector3()).setFromMatrixPosition( this.pivot.matrixWorld );
 
-    if(hit.isColliding || worldPosition.y<3){
+    // catch collision with ground:
+    if( worldPosition.y<3){
+      this.flying = false;
+      //destroy prjectile after 1 minute
+      window.setTimeout(this.destroy.bind(this), 60000);
+    }
+
+
+    if(hit.isColliding){
       this.flying = false;
 
       // only run hitFunction for hittable objects:
       if(hit.isColliding && hit.collidingObjects){
-        if(typeof hit.collidingObjects[0].object.hit == "function"){
-          hit.collidingObjects[0].object.hit() -= 5;
-          console.log("runnHitFunction");
+        //set to local Bind
+        var v = new THREE.Vector3();
+        v.copy(this.pivot.position);
+        hit.collidingObjects[0].object.worldToLocal(v);
+        this.pivot.position.set(v.x,v.y,v.z);
+        hit.collidingObjects[0].object.add(this.pivot);
+
+        // remove old sceneBind
+        Stage.scene.remove(this.pivot);
+
+        //apply dmg:
+        var obj = hit.collidingObjects[0].object.parent.root;
+        if(!obj) obj = hit.collidingObjects[0].object.root;
+        if(obj && obj.isDamageable){
+          obj.hit(this.damage,this);
         }
+        obj = null;
       }
-      window.setTimeout(this.destroy.bind(this), 10000);
+
+      //destroy prjectile after 5 minute 300000
+      window.setTimeout(this.destroy.bind(this), 300000);
     }
 
     var delta = ( performance.now() - this.prevTime ) / 1000;
     if(this.flying){
 
       // compute resistance:
-      var velocityTotal = this.velocity.distanceTo(new THREE.Vector3(0,0,0));
-      var f_r = this.airResistance * (velocityTotal*delta)**2;
-      this.velocity.z -= this.velocity.z * f_r * delta;
+      var f_r = this.airResistance * (this.velocity.z*delta*0.5)**2;
+      this.velocity.z -= Math.abs(this.velocity.z) * f_r * delta;
 
       // compute gravitation:
       this.velocity.y += PHYSICS.gravitation * this.mass * delta;
@@ -56,7 +78,12 @@ class Projectile {
       var dz = this.velocity.z * delta;
       var dy = this.velocity.y * delta;
 
-      this.pivot.translateZ(dz);
+      this.pivot.translateZ(-dz);
+
+
+      // Set rotation:
+      var angle = Math.atan2(dy,dz);
+      this.model.rotation.x = -angle;
 
 
       // Apply gravitation:
@@ -65,23 +92,21 @@ class Projectile {
       oldWorldPosition.setFromMatrixPosition( this.pivot.matrixWorld );
       this.pivot.position.set(oldWorldPosition.x,oldWorldPosition.y-dy,oldWorldPosition.z);
 
-      // Set rotation:
-      var angle = Math.atan2(dy,dz);
-      this.model.rotation.x = angle;
 
       //update timer:
       this.prevTime = performance.now();
+
     }
   }
 
   destroy(){
     Stage.scene.remove(this.pivot);
+    if(this.pivot.parent)this.pivot.parent.remove(this.pivot);
     this.root.projectiles.splice(this.root.projectiles.indexOf(this), 1);
   }
 }
 
 class Weapon {
-
   constructor(root, model, ranged, damage, range, reloadTime) {
     this.root = root;
     this.model = model;
@@ -93,11 +118,6 @@ class Weapon {
 
     this.prevTime = performance.now();
 
-    this.projectiles = [];
-    var wireMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:false } );
-    var cubeGeometry = new THREE.CubeGeometry( 0.5,0.5, 2, 4, 8 );
-    this.projectileModel = new THREE.Mesh( cubeGeometry, wireMaterial );
-
     this.root.add(this.model);
 
     // bind mouse click-event:
@@ -105,27 +125,52 @@ class Weapon {
     document.addEventListener('click', this, false);
 
   }
+}
 
+class RangedWeapon extends Weapon {
+  constructor(root, model, damage, range, reloadTime){
+    super(root, model, true, damage, range, reloadTime);
+
+    this.projectiles = [];
+    var wireMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:true } );
+    var cubeGeometry = new THREE.CubeGeometry( 0.5,0.5, 2, 1, 2);
+    this.projectileModel = new THREE.Mesh( cubeGeometry, wireMaterial );
+  }
   fire(event){
     if(Stage.controls.isLocked){
-      if(this.ranged){
-
-        //create new projectile:
-        var deltaT = ( performance.now() - this.prevTime ) / 1000;
-        if(deltaT>=this.reloadTime){
-          var newProjectile = new Projectile(this,this.projectileModel,100.0,0.8,0.3);
-          this.projectiles.push(newProjectile);
-          this.prevTime = performance.now();
-        }
-
-
-      }else{
-
+      //create new projectile:
+      var deltaT = ( performance.now() - this.prevTime ) / 1000;
+      if(deltaT>=this.reloadTime){
+        var newProjectile = new Projectile(this,this.projectileModel,100.0,this.damage,1,0.3);
+        this.projectiles.push(newProjectile);
+        this.prevTime = performance.now();
       }
     }
   }
-
   animate(){
     for (var i in this.projectiles) if(this.projectiles[i].flying)this.projectiles[i].animate();
+  }
+}
+
+class HandWeapon extends Weapon {
+  constructor(root, model, damage, range, reloadTime){
+    super(root, model, false, damage, range, reloadTime);
+  }
+  fire(event){
+    if(Stage.controls.isLocked){
+      var deltaT = ( performance.now() - this.prevTime ) / 1000;
+      if(deltaT>=this.reloadTime){
+        console.log("fire!");
+
+        this.prevTime = performance.now();
+      }
+    }
+  }
+  animate(){
+    var deltaT = ( performance.now() - this.prevTime ) / 1000;
+    if(deltaT>=this.reloadTime)this.model.material.color.setHex(0xff0000);
+    else this.model.material.color.setHex(0x0000ff);
+
+    this.prevTime = performance.now();
   }
 }

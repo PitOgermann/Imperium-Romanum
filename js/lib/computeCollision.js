@@ -44,6 +44,36 @@ function detectCollision(root,model,reqObject){
     var directionVector = globalVertex.sub( origPosition );
 
     var ray = new THREE.Raycaster( origPosition, directionVector.clone().normalize() );
+    var collisionResults = ray.intersectObjects( Stage.objects );
+    if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
+      isColl=true;
+      if(reqObject){
+        for(var i = 0;i<collisionResults.length;i++)if(collisionResults[i].distance < directionVector.length())collObj.push(collisionResults[i]);
+      }
+    }
+
+  }
+  return {
+        isColliding: isColl,
+        collidingObjects: collObj
+    };
+}
+
+
+function detectCollision2(root,model,reqObject){
+  var isColl = false;
+  var collObj = [];
+
+  model.updateMatrixWorld();
+  var origPosition = new THREE.Vector3();
+  origPosition.setFromMatrixPosition( model.matrixWorld );
+
+  for (var vertexIndex = 0; vertexIndex < model.geometry.attributes.position.count; vertexIndex++){
+    var localVertex = model.geometry.attributes.position.array[vertexIndex].clone();
+    var globalVertex = localVertex.applyMatrix4( model.matrixWorld );
+    var directionVector = globalVertex.sub( origPosition );
+
+    var ray = new THREE.Raycaster( origPosition, directionVector.clone().normalize() );
     var collisionResults = ray.intersectObjects( root.objects );
     if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
       isColl=true;
@@ -59,6 +89,33 @@ function detectCollision(root,model,reqObject){
     };
 }
 
+
+
+//prevent tunneling with scaling the objects mesh and then do a downsampling
+function detectFastCollision(root1,model1,reqObject1,scale){
+  model1.scale.set(1,1,scale);
+  var res = detectCollision(root1,model1,reqObject1);
+  model1.scale.set(1,1,1);
+
+  //if collision move towards object:
+  if(res.isColliding){
+    var newRes = detectCollision(root1,model1,reqObject1);
+    if(newRes.isColliding){
+      //Object is still in right place:
+      //console.log("Object is still in right place");
+    } else {
+      //object is too far away! DoSth.
+      //console.log("object is too far away! DoSth.");
+      model1.translateZ(+2);
+      for(var i=0;i<10;i++){
+        model1.translateZ(-0.5);
+        var stepCollision = detectCollision(root1,model1,reqObject1);
+        if(stepCollision.isColliding)break;
+      }
+    }
+  }
+  return res;
+}
 
 function detectGround(root,reqObject,N){
   var onObjectBool = false;

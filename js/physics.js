@@ -6,8 +6,8 @@
 // Changoings apear global
 
 var PHYSICS = {
-  recoil: -2.5,
+  recoil: -3.0,
   gravitation: 9.8,
   groundResistance: 10,
-  airResistance: 0.4,
+  airResistance: 0.01,
 }

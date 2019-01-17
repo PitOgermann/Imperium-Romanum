@@ -1,7 +1,6 @@
 /**
  * @author Pit Ogermann
  */
-
 var Stage = {
   camera: null,
   scene: null,
@@ -9,8 +8,11 @@ var Stage = {
   controls: null,
 
   objects: [],
+  physicObjects: [],
   player: null,
+  prevTime: performance.now(),
 
+  physicWorld: new CANNON.World(),
 
   init: function() {
 
@@ -25,6 +27,10 @@ var Stage = {
     this.scene.add( light );
 
     this.controls = new THREE.PointerLockControls( this.camera );
+
+    this.physicWorld.gravity.set(0, -9.82,0);
+    this.physicWorld.broadphase = new CANNON.NaiveBroadphase();
+    this.physicWorld.allowSleep = true;
 
     //Add player:
     this.player = Player;
@@ -50,14 +56,6 @@ var Stage = {
 
     this.scene.add( this.controls.getObject() );
 
-
-    // vertex displacement
-    var mat = new THREE.MeshBasicMaterial( { color: 0x00ffff} );
-    var tesBox = new THREE.Mesh( new THREE.CubeGeometry(5,5,20,10,10,10), mat  );
-    tesBox.position.set(30, 10, 0);
-    this.scene.add(tesBox);
-    this.objects.push( tesBox )
-
     loadWorld();
 
     // define Render
@@ -68,6 +66,8 @@ var Stage = {
 
     //
     window.addEventListener( 'resize', this.onWindowResize, false );
+
+
 
   },
 
@@ -83,13 +83,23 @@ var Stage = {
 
 function animate(){
 
+
     requestAnimationFrame( animate );
 
-    if ( Stage.controls.isLocked === true ) {
-      // Do while game is active
-      Stage.player.animate();
-    }
+    var fixedTimeStep = 1.0 / 60.0; // seconds
+    var maxSubSteps = 3;
 
+    //move player:
+    Stage.player.animate(Stage.controls.isLocked);
+
+
+    var dt = (performance.now() - this.prevTime) / 1000;
+    if(Stage.controls.isLocked)Stage.physicWorld.step(fixedTimeStep, dt, maxSubSteps);
+    this.prevTime = performance.now();
+
+    //aplly Physic simulation
+    for(var i in Stage.physicObjects)Stage.physicObjects[i].simulate(Stage.controls.isLocked);
     Stage.renderer.render( Stage.scene, Stage.camera );
+
 
   }
