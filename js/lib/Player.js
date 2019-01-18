@@ -95,6 +95,10 @@ var Player = {
         if(player.canJump)player.run=true;
         break;
 
+      case 66:  // b open bild pattern:
+        this.openBuildGUI();
+        break;
+
     }
 
   },
@@ -218,6 +222,10 @@ var Player = {
 
     this.prevTime = time;
 
-  }
+  },
+
+  openBuildGUI: function(){
+    console.log("buildSth.");
+  },
 
 }
