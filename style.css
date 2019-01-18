@@ -38,6 +38,21 @@ body {
 
 }
 
+#topbar {
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 2em;
+  background: #F4EAD5;
+}
+
+#ressourceTable {
+  padding: 0.25em;
+  width: 100vw;
+  text-align: right;
+
+}
+
 #instructions {
 
   width: 100%;
