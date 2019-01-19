@@ -1,0 +1,82 @@
+
+#buildingHUD{
+  position: absolute;
+
+  background-color: rgba(0,0,0,0);
+  background-image: url("../html/HUD/images/textureBuildings.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: right top;
+
+  left: 90%;
+  top: 5%;
+
+  width: 10%;
+  height: 90%;
+}
+
+#infrastructure_HUD{
+  position: absolute;
+
+  background-color: rgba(0,0,0,0);
+  background-image: url("../html/HUD/images/build_infrastructure_pattern.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: right top;
+
+  left: 41%;
+  top: 5%;
+
+  width: 52%;
+  height: 90%;
+}
+
+#goods_HUD{
+  position: absolute;
+
+  background-color: rgba(0,0,0,0);
+  background-image: url("../html/HUD/images/build_goods_pattern.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: right top;
+
+  left: 38%;
+  top: 6%;
+
+  width: 55%;
+  height: 90%;
+}
+
+#farming_HUD{
+  position: absolute;
+
+  background-color: rgba(0,0,0,0);
+  background-image: url("../html/HUD/images/build_farming_pattern.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: right top;
+
+  left: 42%;
+  top: 7%;
+
+  width: 50%;
+  height: 90%;
+}
+
+#military_HUD{
+  position: absolute;
+
+
+    left: 43%;
+    top: 6%;
+
+    width: 50%;
+    height: 90%;
+
+  background-color: rgba(0,0,0,0);
+  background-image: url("../html/HUD/images/build_military_pattern.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: right top;
+
+}

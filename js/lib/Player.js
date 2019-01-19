@@ -96,7 +96,7 @@ var Player = {
         break;
 
       case 66:  // b open bild pattern:
-        this.openBuildGUI();
+        buildingHUD.toggle();
         break;
 
     }
@@ -222,10 +222,6 @@ var Player = {
 
     this.prevTime = time;
 
-  },
-
-  openBuildGUI: function(){
-    console.log("buildSth.");
   },
 
 }

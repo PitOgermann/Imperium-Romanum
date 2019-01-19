@@ -38,22 +38,6 @@ body {
 
 }
 
-#buildingHUD{
-  position: absolute;
-
-  background-color: rgba(0,0,0,0);
-  background-image: url("html/HUD/images/textureBuildings.png");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: right top;
-
-  left: 90%;
-  top: 5%;
-
-  width: 10%;
-  height: 90%;
-}
-
 
 #instructions {
 
