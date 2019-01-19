@@ -52,7 +52,6 @@ class HUDSystem{
       Stage.controls.unlock();
     }
   }
-
 }
 
 // create HUDs:
