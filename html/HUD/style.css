@@ -38,23 +38,18 @@ body {
 
 }
 
-<<<<<<< HEAD
-#topbar {
+#buildingHUD{
   position: absolute;
-  top: 0;
-  width: 100vw;
-  height: 2em;
-  background: #F4EAD5;
+
+  left: 80%;
+  top: 5%;
+
+  width: 20%;
+  height: 90%;
+
+  background-color: rgba(0,0,0,0.5);
 }
 
-#ressourceTable {
-  padding: 0.25em;
-  width: 100vw;
-  text-align: right;
-
-}
-=======
->>>>>>> 8f13060c4c2caf79607638a94b089f2ef3c22cec
 
 #instructions {
 

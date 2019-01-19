@@ -95,6 +95,10 @@ var Player = {
         if(player.canJump)player.run=true;
         break;
 
+      case 66:  // b open bild pattern:
+        buildingHUD.toggle();
+        break;
+
     }
 
   },
@@ -218,6 +222,6 @@ var Player = {
 
     this.prevTime = time;
 
-  }
+  },
 
 }

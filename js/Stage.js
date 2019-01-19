@@ -41,6 +41,7 @@ var Stage = {
 
     instructions.addEventListener( 'click', function () {
       Stage.controls.lock();
+      buildingHUD.hide();
     }, false );
 
     this.controls.addEventListener( 'lock', function () {

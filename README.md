@@ -30,5 +30,5 @@ php -S 127.0.0.1:8081
 
 
 ## Bugs:
--[ ] sliding along a roof after jumping.
--[ ] correct impact angle
+- [ ] sliding along a roof after jumping.
+- [ ] correct impact angle
