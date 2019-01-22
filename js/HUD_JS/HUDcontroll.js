@@ -1,4 +1,5 @@
 var Stage = null;
+var globalHUDs = [];
 
 class HUDSystem{
   constructor(id_name,isExlusive){
@@ -17,6 +18,9 @@ class HUDSystem{
     this.parent = null;
 
     this.isExlusive = isExlusive;
+
+    this.hide();
+    globalHUDs.push(this);
   }
 
   addLink(linkId){

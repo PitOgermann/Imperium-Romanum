@@ -24,7 +24,7 @@ class PhysicModel{
     this.isDamageable = true;
     //this.model.add(this.simplifiedModel);
 
-    Stage.objects.push(this.model);
+    if(collidable)Stage.objects.push(this.model);
 
     this.enablePhysics = enablePhysics;
     // add to physics calulation:
@@ -71,13 +71,18 @@ class Actor extends PhysicModel{
     this.model.root = this;
     root.scene.add( this.model );
 
+    this.interactionFunction = null;
+
+    this.isHittable = true;
     this.hitpoints = 0;
   }
 
   hit(dmg,hittedBy){
-    this.hitpoints -= dmg;
-    console.log("newHP :",this.hitpoints);
-    if(this.hitpoints<=0)this.destroy(hittedBy);
+    if(this.isHittable){
+      this.hitpoints -= dmg;
+      console.log("newHP :",this.hitpoints);
+      if(this.hitpoints<=0)this.destroy(hittedBy);
+    }
   }
 
   destroy(amu){

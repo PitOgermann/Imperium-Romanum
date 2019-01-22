@@ -33,6 +33,7 @@ function detectCollision_old(root,origObject,collisionModel,reqObject){
 function detectCollision(root,model,reqObject){
   var isColl = false;
   var collObj = [];
+  var collObject = null;
 
   model.updateMatrixWorld();
   var origPosition = new THREE.Vector3();
@@ -53,9 +54,11 @@ function detectCollision(root,model,reqObject){
     }
 
   }
+  if(isColl && reqObject) collObject = collObj[0].object.root;
   return {
         isColliding: isColl,
-        collidingObjects: collObj
+        collidingObjects: collObj,
+        collidingActor: collObject
     };
 }
 

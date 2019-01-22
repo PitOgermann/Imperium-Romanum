@@ -78,5 +78,20 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: right top;
+}
 
+#buildingProcessHUD{
+  position: absolute;
+
+    left: 43%;
+    top: 6%;
+
+    width: 40%;
+    height: 50%;
+
+  background-color: rgba(0,0,0,0);
+  background-image: url("../html/HUD/objectInteraction/buildingProcess.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: right top;
 }

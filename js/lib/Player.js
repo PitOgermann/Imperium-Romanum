@@ -63,6 +63,15 @@ var Player = {
 
   },
 
+  interact: function() {
+    // get interactionObjects:
+    this.interaction = detectCollision(this.root,this.interactionModel,true);
+    if(this.interaction.isColliding){
+      var actor = this.interaction.collidingActor;
+      if(actor && actor.interactionFunction)actor.interactionFunction();
+    }
+  },
+
   // define key interval
   onKeyDown: function ( event , player) {
     switch ( event.keyCode ) {
@@ -98,6 +107,10 @@ var Player = {
 
       case 66:  // b open bild pattern:
         buildingHUD.toggle();
+        break;
+
+      case 70: // interaction
+        this.interact();
         break;
 
     }
@@ -150,8 +163,7 @@ var Player = {
       this.colisionDetected=detectCollision(this.root,this.colisionModel,false).isColliding;
       // Chek ground:
       var onObject = detectGround(this.root,false,2).isOnGround;
-      // get interactionObjects:
-      this.interaction = detectCollision(this.root,this.interactionModel,false);
+
 
 
 
