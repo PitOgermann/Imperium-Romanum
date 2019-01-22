@@ -30,6 +30,7 @@ var Player = {
   root: null,
 
   weapons: [],
+  setBuilding: null,
 
   init: function(root) {
     this.root = root;

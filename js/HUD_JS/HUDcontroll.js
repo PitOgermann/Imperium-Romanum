@@ -1,3 +1,5 @@
+var Stage = null;
+
 class HUDSystem{
   constructor(id_name,isExlusive){
     //create new or get excess on existing div
@@ -36,6 +38,7 @@ class HUDSystem{
   hide(){
     this.div.style.display = 'none';
     for(var i in this.childs)this.childs[i].hide();
+    if(Stage && this.isParent)Stage.controls.lock();
   }
   show(){
     //close all brothers
@@ -54,6 +57,32 @@ class HUDSystem{
   }
 }
 
+class Button{
+  constructor(root,name,linkFunction,style,imgSrc){
+    this.name = name;
+    this.root = root;
+
+    this.img = document.createElement('img');
+    this.img.src = imgSrc;
+    this.img.style = style;
+
+    this.linkedFunction = linkFunction;
+
+    // add link:
+    this.a = document.createElement('a');
+    this.a.setAttribute("href", "link_"+name);
+    this.a.onclick = function(){
+      this.linkedFunction();
+      return false;
+    }.bind(this);
+    this.a.appendChild(this.img);
+
+    this.root.div.appendChild(this.a);
+  }
+
+}
+
+
 // create HUDs:
 var buildingHUD = new HUDSystem('buildingHUD',false);
 var infrastructure_HUD = new HUDSystem('infrastructure_HUD',true);
@@ -70,5 +99,10 @@ infrastructure_HUD.addLink('button_infrastructure');
 goods_HUD.addLink('button_goods');
 farming_HUD.addLink('button_farming');
 military_HUD.addLink('button_military');
+
+
+//add buttons:
+var newButton = new Button(infrastructure_HUD,"town hall",function(iD){BuildingTemplate.placeBuilding("townhall");buildingHUD.hide()},"height:10%; position: absolute; left:45%; top: 35%;","src/buildings/icons/townhall.png");
+//infrastructure_HUD.addButton();
 
 buildingHUD.hide();
