@@ -1,6 +1,8 @@
 /**
  * @author Pit Ogermann
  */
+
+
 var Stage = {
   camera: null,
   scene: null,
@@ -12,7 +14,7 @@ var Stage = {
   player: null,
   prevTime: null,
 
-  terrain:null,
+  world:null,
 
   init: function() {
 
@@ -28,6 +30,7 @@ var Stage = {
 
     this.controls = new THREE.PointerLockControls( this.camera );
 
+    this.world = new ENGINE("");
 
     //Add player:
     this.player = Player;
@@ -72,7 +75,7 @@ var Stage = {
   setHeightOnPosition: function(pos,newPos) {
     pos.y = 300;
     var groundcaster = new THREE.Raycaster(pos, new THREE.Vector3(0, -1, 0));
-    var intersects = groundcaster.intersectObject(this.terrain, false);
+    var intersects = groundcaster.intersectObject(this.world.terrain, false);
     if(intersects.length)return intersects[0].point.y;
     else return newPos;
   },

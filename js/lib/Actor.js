@@ -1,3 +1,8 @@
+/**
+ * @author Pit Ogermann
+ */
+
+
 class PhysicModel{
   constructor(root){
     this.root = root;

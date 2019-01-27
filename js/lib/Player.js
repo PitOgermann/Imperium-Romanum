@@ -246,7 +246,7 @@ var Player = {
 
 
       //check ground height:
-      if(Stage.terrain&& (Math.abs(this.velocity.x)>0.1 || Math.abs(this.velocity.z)>0.1) ){
+      if(Stage.world.terrain&& (Math.abs(this.velocity.x)>0.1 || Math.abs(this.velocity.z)>0.1) ){
         this.groundHeight = Stage.setHeightOnPosition(this.root.controls.getObject().position.clone(),this.groundHeight);
       }
 

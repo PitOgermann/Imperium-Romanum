@@ -1,3 +1,8 @@
+/**
+ * @author Pit Ogermann
+ */
+
+
 class BuildingTemplate{
   constructor(name,cathegory,model_place,model,hp){
     this.name = name;

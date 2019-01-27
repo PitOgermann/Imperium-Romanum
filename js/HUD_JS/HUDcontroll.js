@@ -1,3 +1,8 @@
+/**
+ * @author Pit Ogermann
+ */
+
+
 var Stage = null;
 var globalHUDs = [];
 
