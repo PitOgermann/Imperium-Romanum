@@ -10,9 +10,9 @@ var Stage = {
   objects: [],
   physicObjects: [],
   player: null,
-  prevTime: performance.now(),
+  prevTime: null,
 
-  physicWorld: new CANNON.World(),
+  terrain:null,
 
   init: function() {
 
@@ -28,9 +28,6 @@ var Stage = {
 
     this.controls = new THREE.PointerLockControls( this.camera );
 
-    this.physicWorld.gravity.set(0, -9.82,0);
-    this.physicWorld.broadphase = new CANNON.NaiveBroadphase();
-    this.physicWorld.allowSleep = true;
 
     //Add player:
     this.player = Player;
@@ -72,6 +69,14 @@ var Stage = {
 
   },
 
+  setHeightOnPosition: function(pos,newPos) {
+    pos.y = 300;
+    var groundcaster = new THREE.Raycaster(pos, new THREE.Vector3(0, -1, 0));
+    var intersects = groundcaster.intersectObject(this.terrain, false);
+    if(intersects.length)return intersects[0].point.y;
+    else return newPos;
+  },
+
   onWindowResize: function() {
     Stage.camera.aspect = window.innerWidth / window.innerHeight;
     Stage.camera.updateProjectionMatrix();
@@ -93,9 +98,8 @@ function animate(){
     //move player:
     Stage.player.animate(Stage.controls.isLocked);
 
-
+    if(!this.prevTime)this.prevTime = performance.now();
     var dt = (performance.now() - this.prevTime) / 1000;
-    if(Stage.controls.isLocked)Stage.physicWorld.step(fixedTimeStep, dt, maxSubSteps);
     this.prevTime = performance.now();
 
     //aplly Physic simulation

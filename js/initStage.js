@@ -57,6 +57,6 @@ var Stage = {
     ground.receiveShadow = true;
     ground.position.set(0, 0, 0);
     ground.rotation.x = -Math.PI / 2;
-    this.scene.add(ground);
+    //this.scene.add(ground);
 
   }};

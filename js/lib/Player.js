@@ -19,9 +19,11 @@ var Player = {
   prevTime: performance.now(),
   velocity: new THREE.Vector3(),
   direction: new THREE.Vector3(),
+  groundHeight: 0,
   stamina: 50,
 
   colisionModel: null,
+  colisionModelPhysic: null,
   colisionDetected: false,
 
   interactionModel: null,
@@ -35,6 +37,9 @@ var Player = {
   init: function(root) {
     this.root = root;
 
+    this.root.controls.getObject().position.set(0,300,0);
+
+
     // define collisionModel:
     var wireMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:true } );
     var cubeGeometry = new THREE.SphereGeometry( 2, 8, 6);
@@ -42,12 +47,16 @@ var Player = {
 	  this.colisionModel.position.set(0, 0.1, 0);
     root.controls.getObject().add(this.colisionModel);
 
+    //this.colisionModelPhysic.position.set(0, 0.1, 0);
+    //root.controls.getObject().add(this.colisionModelPhysic);
+
     // add interactionModel:
     var wireMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe:true } );
     var cubeGeometry = new THREE.CubeGeometry(5,5,30,3,3,3);
     this.interactionModel = new THREE.Mesh( cubeGeometry, wireMaterial );
 	  this.interactionModel.position.set(0, 0, -15);
-    //root.controls.getObject().children[0].add(this.interactionModel);
+    this.interactionModel.visible = false;
+    root.controls.getObject().children[0].add(this.interactionModel);
 
     // add equipment:
     var wireMaterial = new THREE.MeshBasicMaterial( { color: 0x0000ff, wireframe:true } );
@@ -61,6 +70,8 @@ var Player = {
     document.addEventListener( 'keydown', function(event) {Stage.player.onKeyDown(event, Stage.player);}, false );
     document.addEventListener( 'keyup', function(event) {Stage.player.onKeyUp(event, Stage.player);}, false );
 
+    document.addEventListener( 'mousedown', this.mouseClick.bind(this), false );
+
   },
 
   interact: function() {
@@ -70,6 +81,12 @@ var Player = {
       var actor = this.interaction.collidingActor;
       if(actor && actor.interactionFunction)actor.interactionFunction();
     }
+  },
+
+  mouseClick: function(event){
+    if(this.setBuilding && Stage.controls.isLocked){ //place Building:
+      this.setBuilding.place(this);
+    } else for(var i in this.weapons)this.weapons[i].fire(); // else fire weapons!
   },
 
   // define key interval
@@ -112,6 +129,12 @@ var Player = {
       case 70: // interaction
         this.interact();
         break;
+      case 81: //q
+        if(this.setBuilding)this.setBuilding.model.rotateY(0.05);
+        break;
+      case 69: //e
+        if(this.setBuilding)this.setBuilding.model.rotateY(-0.05);
+      break;
 
     }
 
@@ -163,8 +186,6 @@ var Player = {
       this.colisionDetected=detectCollision(this.root,this.colisionModel,false).isColliding;
       // Chek ground:
       var onObject = detectGround(this.root,false,2).isOnGround;
-
-
 
 
       //update Position:
@@ -224,13 +245,20 @@ var Player = {
       this.root.controls.getObject().translateZ( this.velocity.z * delta *((this.run&& this.stamina>0)?this.runGain:1));
 
 
+      //check ground height:
+      if(Stage.terrain&& (Math.abs(this.velocity.x)>0.1 || Math.abs(this.velocity.z)>0.1) ){
+        this.groundHeight = Stage.setHeightOnPosition(this.root.controls.getObject().position.clone(),this.groundHeight);
+      }
+
       // is on ground:
-      if ( this.root.controls.getObject().position.y < 10 ) {
+      if ( this.root.controls.getObject().position.y < this.groundHeight+11 ) {
         this.velocity.y = 0;
-        this.root.controls.getObject().position.y = 10;
+        if(this.root.controls.getObject().position.y < this.groundHeight+9)this.root.controls.getObject().position.y = this.groundHeight+9;
 
         this.canJump = true;
       }
+
+
     }
 
     this.prevTime = time;

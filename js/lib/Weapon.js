@@ -42,15 +42,9 @@ class Projectile {
 
       // only run hitFunction for hittable objects:
       if(hit.isColliding && hit.collidingObjects){
-        //set to local Bind
-        var v = new THREE.Vector3();
-        v.copy(this.pivot.position);
-        hit.collidingObjects[0].object.worldToLocal(v);
-        this.pivot.position.set(v.x,v.y,v.z);
-        hit.collidingObjects[0].object.add(this.pivot);
 
-        // remove old sceneBind
-        Stage.scene.remove(this.pivot);
+        //set to local Bind
+        THREE.SceneUtils.attach( this.pivot, Stage.scene, hit.collidingObjects[0].object );
 
         //apply dmg:
         var obj = hit.collidingObjects[0].object.parent.root;
@@ -119,11 +113,7 @@ class Weapon {
     this.prevTime = performance.now();
 
     this.root.add(this.model);
-
-    // bind mouse click-event:
-    this.handleEvent = function(event) {this.fire(event)};
-    document.addEventListener('click', this, false);
-
+    this.isActive = true;
   }
 }
 
@@ -136,8 +126,9 @@ class RangedWeapon extends Weapon {
     var cubeGeometry = new THREE.CubeGeometry( 0.5,0.5, 2, 1, 2);
     this.projectileModel = new THREE.Mesh( cubeGeometry, wireMaterial );
   }
-  fire(event){
-    if(Stage.controls.isLocked){
+
+  fire(){
+    if(Stage.controls.isLocked && this.isActive){
       //create new projectile:
       var deltaT = ( performance.now() - this.prevTime ) / 1000;
       if(deltaT>=this.reloadTime){
