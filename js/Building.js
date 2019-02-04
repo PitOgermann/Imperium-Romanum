@@ -7,9 +7,11 @@ class BuildingTemplate{
   constructor(name,cathegory,model_place,model,hp){
     this.name = name;
     this.cathegory = cathegory;
-    this.model_place = model_place;
-    this.model = model;
+    this.model_place = model_place.clone();
+    this.model = model.clone();
     this.hp = hp;
+
+    this.fundamentDepth = 2.0;
   }
 
   static placeBuilding(building){
@@ -20,14 +22,20 @@ class BuildingTemplate{
     Player.setBuilding = newBuilding;
     newBuilding.model.position.set(0,0,-50);
     newBuilding.model.onBeforeRender = function() {this.correctPosition(newBuilding.model);}.bind(this);
-    //Player.root.controls.getObject().children[0].add(newBuilding.model);
-    Player.colisionModel.add(newBuilding.model);
+    Player.root.controls.getObject().add(newBuilding.model);
   }
 
   static correctPosition(obj){
     // correct Position:
-    obj.matrixWorld.elements[13] = 10;
+    if(!obj.renderItterations)obj.renderItterations = 0;
 
+    if(obj.renderItterations++ > 2) { // improve render time
+      var vector = new THREE.Vector3().setFromMatrixPosition( obj.matrixWorld );
+      var height = Stage.getGroundPosition(vector,height) + obj.fundamentOffset;
+      obj.matrixWorld.elements[13] = height;
+      obj.prevHeight = height;
+      obj.renderItterations = 0;
+    } else obj.matrixWorld.elements[13] = obj.prevHeight;
   }
 
   static getTemplateFromName(array,name){
@@ -43,6 +51,14 @@ class Building{
     this.model_place = template.model_place.clone();
     this.model = template.model.clone();
     this.hp = template.hp;
+
+    //compute Bounding Box:
+    var boundingBox_model = new THREE.Vector3(0,0,0);
+    var boundingBox_model_place = new THREE.Vector3(0,0,0);
+    new THREE.Box3().setFromObject( this.model ).getSize(boundingBox_model);
+    new THREE.Box3().setFromObject( this.model_place ).getSize(boundingBox_model_place);
+    this.model.fundamentOffset = -template.fundamentDepth + boundingBox_model.y/2;
+    this.model_place.fundamentOffset = -template.fundamentDepth + boundingBox_model_place.y/2;
 
     //HUDS:
     this.constructionHUD = new HUDSystem('buildingProcessHUD',false);
@@ -89,4 +105,9 @@ var placeMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
 
 var tempMesh = new THREE.Mesh( new THREE.CubeGeometry(20,20,30), groundMaterial);
 var tempMeshPlace = new THREE.Mesh( new THREE.CubeGeometry(20,20,30), placeMaterial);
+
+/*
+LoadModel as THREE 3dObject
+*/
+//var tempObj = loaderTim("pathObj","pathTexture");
 buildingTemplates.push(new BuildingTemplate("townhall","infrastructure",tempMeshPlace,tempMesh,1000));

@@ -111,7 +111,7 @@ military_HUD.addLink('button_military');
 
 
 //add buttons:
-var newButton = new Button(infrastructure_HUD,"town hall",function(iD){BuildingTemplate.placeBuilding("townhall");buildingHUD.hide()},"height:10%; position: absolute; left:45%; top: 35%;","src/buildings/icons/townhall.png");
+var newButton = new Button(infrastructure_HUD,"town hall",function(iD){BuildingTemplate.placeBuilding("townhall");buildingHUD.hide();},"height:10%; position: absolute; left:45%; top: 35%;","src/buildings/icons/townhall.png");
 //infrastructure_HUD.addButton();
 
 buildingHUD.hide();

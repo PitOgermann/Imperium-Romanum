@@ -101,8 +101,8 @@ function loadWorld(){
     box.position.y = Math.floor( Math.random() * 20 ) * 20 + 10;
     box.position.z = Math.floor( Math.random() * 20 - 10 ) * 20;
 
-    Stage.scene.add( box );
-    Stage.objects.push( box);
+    var newObject = new Actor(Stage,box);
+    newObject.createPhysics(1.0,true,false,null);
   }
 
   // Add aditional objects:
@@ -138,7 +138,7 @@ function loadWorld(){
   b3.name="b3";
   b3.position.set(30, 110, -30);
   var testObject3 = new Actor(Stage,b3);
-  testObject3.createPhysics(1.0,true,true,b3);
+  testObject3.createPhysics(1.0,true,true,null);
   testObject3.hitpoints = 30;
 
 

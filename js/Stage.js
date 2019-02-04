@@ -72,7 +72,7 @@ var Stage = {
 
   },
 
-  setHeightOnPosition: function(pos,newPos) {
+  getGroundPosition: function(pos,newPos) {
     pos.y = 300;
     var groundcaster = new THREE.Raycaster(pos, new THREE.Vector3(0, -1, 0));
     var intersects = groundcaster.intersectObject(this.world.terrain, false);

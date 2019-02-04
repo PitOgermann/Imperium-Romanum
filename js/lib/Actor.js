@@ -19,13 +19,23 @@ class PhysicModel{
 
   }
 
+
   createPhysics(mass,collidable,enablePhysics,simplifiedModel){
     this.mass = mass;
     this.collidable = collidable;
-    this.simplifiedModel = simplifiedModel.clone();
+
+    var boundingBox = new THREE.Vector3(0,0,0);
+    new THREE.Box3().setFromObject( this.model ).getSize(boundingBox);
+    var boundingObject = new THREE.Mesh( new THREE.CubeGeometry(boundingBox.x,boundingBox.y,boundingBox.z,5,5,5), new THREE.MeshStandardMaterial( { color: 0xff0000, wireframe:true}));
+
+    this.simplifiedModel = (simplifiedModel)?simplifiedModel.clone(): boundingObject;
     this.simplifiedModel.position.set(0,0,0);
+    this.simplifiedModel.traverse ( function (child) {if (child instanceof THREE.Mesh) {child.visible = false;}});
+
     this.isDamageable = true;
-    //this.model.add(this.simplifiedModel);
+
+    this.model.add(this.simplifiedModel);
+
 
     if(collidable)Stage.objects.push(this.model);
 
