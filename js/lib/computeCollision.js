@@ -120,31 +120,38 @@ function detectFastCollision(root1,model1,reqObject1,scale){
   return res;
 }
 
-function detectGround(root,reqObject,N){
+var arrowHelp;
+var prevHeight = 0;
+function detectGround(root,reqObject,N,velocityY){
   var onObjectBool = false;
   var onObjects = null;
-  var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+  var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 30 );
 
-  for(var ux=-N;ux<N;ux++){
-    for(var uz=-N;uz<N;uz++){
-      raycaster.ray.origin.copy( root.controls.getObject().position );
-      raycaster.ray.origin.y -= 30;
-      raycaster.ray.origin.x += ux;
-      raycaster.ray.origin.z += uz;
-      var intersections = raycaster.intersectObjects( root.objects );
-      if(intersections.length > 0){
-        onObjectBool = true;
-        if(reqObject){
-          for(var i = 0;i<intersections.length;i++)if(intersections[i].distance < 10)onObjects=intersections[i];
-        }
-      }
+  raycaster.ray.origin.copy( root.controls.getObject().position );
+  raycaster.ray.origin.y += 2;
+  var intersections = raycaster.intersectObjects( root.objects );
+  if(intersections.length > 0){
+    //check closest Length:
+    //console.log(intersections);
+
+    //console.log(prevHeight-root.controls.getObject().position.y);
+    if(prevHeight-root.controls.getObject().position.y>1){
+      console.log("Jump");
+      root.controls.getObject().position.y = intersections[0].point.y+10-2;
+    }
+
+    onObjectBool = true;
+    if(reqObject){
+      for(var i = 0;i<intersections.length;i++)if(intersections[i].distance < 30)onObjects=intersections[i];
     }
   }
+
+  prevHeight = root.controls.getObject().position.y;
+
   return {
         isOnGround: onObjectBool,
         objects: onObjects
     };
-
 }
 
 

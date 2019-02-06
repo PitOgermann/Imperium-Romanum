@@ -214,8 +214,8 @@ var Player = {
       if(Math.abs(this.velocity.x)+Math.abs(this.velocity.z)>0.01)this.colisionDetected = detectHyperCollision(this.root,false);
 
       // Chek ground:
-      var onObject = detectGround(this.root,false,2).isOnGround;
-      console.log(onObject);
+      var onObject = detectGround(this.root,false,1).isOnGround;
+      //console.log(onObject);
 
 
 

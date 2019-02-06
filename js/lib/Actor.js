@@ -70,6 +70,8 @@ class Actor extends PhysicModel{
     super(root);
     this.root = root;
     this.model = model.clone();
+    this.model.castShadow = true;
+    this.model.receiveShadow = true;
     this.model.root = this;
     root.scene.add( this.model );
 

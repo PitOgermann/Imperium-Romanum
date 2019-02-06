@@ -142,4 +142,5 @@ function loadWorld(){
   testObject3.hitpoints = 30;
 
 
+  initSky();
 }

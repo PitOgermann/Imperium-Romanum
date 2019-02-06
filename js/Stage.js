@@ -15,6 +15,7 @@ var Stage = {
   prevTime: null,
 
   world:null,
+  ambientLight:null,
 
   init: function() {
 
@@ -22,11 +23,11 @@ var Stage = {
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color( 0xffffff );
-    this.scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
+    this.scene.fog = new THREE.Fog( 0x888888, 50, 400 );
 
-    var light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
-    light.position.set( 0.5, 1, 0.75 );
-    this.scene.add( light );
+    this.ambientLight = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.7 );
+    this.ambientLight.position.set( 0.5, 400, 0.75 );
+    this.scene.add( this.ambientLight );
 
     this.controls = new THREE.PointerLockControls( this.camera );
 
@@ -35,6 +36,8 @@ var Stage = {
     //Add player:
     this.player = Player;
     this.player.init(this);
+
+    initFlora();
 
     var blocker = document.getElementById( 'blocker' );
     var instructions = document.getElementById( 'instructions' );
@@ -58,11 +61,17 @@ var Stage = {
     this.scene.add( this.controls.getObject() );
 
     loadWorld();
+    setSunPosition(0);
 
     // define Render
     this.renderer = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.setPixelRatio( window.devicePixelRatio );
     this.renderer.setSize( window.innerWidth, window.innerHeight );
+
+    // apply shadow:
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
     document.body.appendChild( this.renderer.domElement );
 
     //
