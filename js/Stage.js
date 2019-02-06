@@ -116,6 +116,12 @@ function animate(){
 
     //aplly Physic simulation
     for(var i in Stage.physicObjects)Stage.physicObjects[i].simulate(Stage.controls.isLocked);
+
+    //update LOD
+    Stage.scene.traverse( function ( object ) {
+      if ( object instanceof THREE.LOD ) object.update( Stage.camera );
+        } );
+
     Stage.renderer.render( Stage.scene, Stage.camera );
 
 

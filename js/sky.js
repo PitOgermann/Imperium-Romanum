@@ -73,6 +73,6 @@ function setSunPosition(pos){
 // update sky every 10 second:
 window.setInterval(function(){
   // the power of 6 increases daytime and applys less night
-  var daytime = (0.8*Math.pow(Math.sin(performance.now()/500000),6));
+  var daytime = (0.8*Math.pow(Math.sin(performance.now()/50000),6));
   setSunPosition(daytime);
 }, 1000);
