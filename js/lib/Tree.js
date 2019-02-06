@@ -12,7 +12,6 @@ branchMaterial.flatShading = THREE.SmoothShading;
 //tree leaf texture
 var loader = new THREE.TextureLoader();
 var leafTexture = loader.load("src/textures/vegetation/twig_0.png");
-var leafGeometry = new THREE.PlaneGeometry( 20, 20,1, 1 );
 var leafMaterial = new THREE.MeshBasicMaterial( { opacity:0.95, map:leafTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
 
 class ProcTree{
