@@ -27,31 +27,31 @@ var treeId = {
 
 var trees= [];
 // InitFlora after world load: --> PhysicEngine:
+
+var maxTrees = 64;
+var bushesPerTree = 2;
+var maxGrass = 512;
 function initFlora(){
 
-  /*
-  ∑:  350  Trees
-      3500 Bushes
-      4000 Grass
-  */
+  /*  ∑:  350  Trees
+          3500 Bushes
+          4000 Grass */
 
-  for(var i =0 ;i<350;i++){
+  for(var i =0 ;i<maxTrees*Stage.detailGain;i++){
     var seed = Math.random()* 500;
     var tree = new ProcTree(ProcTree.getSeedParameters(seed,5));
     var randPos = new THREE.Vector3(Math.random() * 1000 - 500,0,Math.random() * 1000 - 500);
     tree.setToWorld(randPos.x,randPos.y,randPos.z);
     trees.push(tree);
 
-    for(var u=0;u<Math.random()* 10;u++){
+    for(var u=0;u<Math.random()*bushesPerTree*Stage.detailGain;u++){
       randPos.x+=(Math.random() * 80 - 40);
       randPos.z+=(Math.random() * 80 - 40);
       var newBush = new Bush(randPos.x,randPos.y,randPos.z);
     }
   }
-  for(var i =0 ;i<4000;i++){
+  for(var i =0 ;i<maxGrass*Stage.detailGain;i++){
     var randPos = new THREE.Vector3(Math.random() * 1000 - 500,0,Math.random() * 1000 - 500);
     var newBush = new Grass(randPos.x,randPos.y,randPos.z);
   }
-  //var tree = new ProcTree(treeId);
-  //tree.setToWorld(0,0,0);
 }

@@ -19,6 +19,10 @@ class ProcTree{
   constructor(param){
 
     this.lod = new THREE.LOD();
+    this.collisionMesh = new THREE.Mesh( new THREE.BoxBufferGeometry( 4, 80, 4 ),new THREE.MeshBasicMaterial( {color: 0x00ff00} ));
+    this.collisionMesh.material.visible = false;
+    this.lod.add(this.collisionMesh);
+    Stage.objects.push(this.collisionMesh);
 
     //load 3 models:
     for(var i=0;i<3;i++){

@@ -4,6 +4,7 @@
 
 
 var Stage = {
+  detailGain : 4,
   camera: null,
   scene: null,
   renderer: null,

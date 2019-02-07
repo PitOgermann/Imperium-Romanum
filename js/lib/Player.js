@@ -191,6 +191,12 @@ var Player = {
       //update Position:
       var delta = ( time - this.prevTime ) / 1000;
 
+      //Attention! To long render-time!
+      if(delta>0.2){
+        console.warn("Runn out of render time! Physic simulation is paused for one frame. "+delta+" ms");
+        delta=0.2;
+      }
+
       //Compute velocity:
       this.velocity.x -= this.velocity.x * PHYSICS.groundResistance * delta;
       this.velocity.z -= this.velocity.z * PHYSICS.groundResistance * delta;

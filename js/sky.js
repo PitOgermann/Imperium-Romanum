@@ -1,5 +1,23 @@
 var sky, sunSphere, skyMesh;
 
+//load cloud texture
+var loader = new THREE.TextureLoader();
+var cloudMaterials = [];
+for(var i = 0;i<3;i++){
+  var cloudText = loader.load("src/textures/sky/clear/cloud_"+i+".png");
+  var cloudMat = new THREE.MeshBasicMaterial( {
+    opacity:0.95,
+    map:cloudText,
+    blending: THREE.NormalBlending,
+    depthTest: true,
+    transparent : true
+  } );
+  cloudMat.side = THREE.DoubleSide;
+  cloudMaterials.push(cloudMat);
+}
+
+
+
 /// GUI
 var effectController  = {
   turbidity: 10,
@@ -33,7 +51,7 @@ function guiChanged() {
 function initSky() {
 				// Add Sky
 				sky = new THREE.Sky();
-        //sky.castShadow = true;
+        sky.castShadow = true;
 				sky.scale.setScalar( 450000 );
 				Stage.scene.add( sky );
 				// Add Sun Helper
@@ -45,13 +63,11 @@ function initSky() {
 				sunSphere.visible = false;
 				Stage.scene.add( sunSphere );
 
-        //sky
-        var skyTexture = loader.load('src/skymap/sky2.jpg');
-				skyMesh = new THREE.Mesh( new THREE.SphereGeometry( 3000 ), new THREE.MeshBasicMaterial( { map: skyTexture} ) );
-        skyMesh.material.side = THREE.BackSide;
-        skyMesh.scale.x = -1;
-				skyMesh.position.set(0,0,0);
-				Stage.scene.add( skyMesh );
+        //draw clouds:
+        var newCloud = new THREE.Mesh(new THREE.PlaneBufferGeometry( 200, 200, 1) , cloudMaterials[0] );
+        newCloud.position.set(0,600,0);
+        newCloud.rotation.x = Math.PI / 2;
+        //Stage.scene.add(newCloud);
 
 				guiChanged();
 }
@@ -63,9 +79,15 @@ function setSunPosition(pos){
   effectController.inclination = pos;
   Stage.ambientLight.intensity = 1-pos;
 
-  Stage.ambientLight.groundColor.r = 0.5+0.7*Math.sin(pos*Math.PI);
-  if(pos>0.5)Stage.ambientLight.groundColor.b = 0.5+1-0.7*Math.sin(pos*Math.PI);
-  //console.log(Stage.ambientLight.groundColor.r,Stage.ambientLight.groundColor.b);
+  // 0(day) - 1(night)
+  var dayGain = Math.sin(pos*Math.PI);
+  Stage.ambientLight.groundColor.r = 0.5+0.7*dayGain;
+  if(pos>0.5)Stage.ambientLight.groundColor.b = 0.5+1-0.7*dayGain;
+
+  //change Fog color
+  Stage.scene.fog.color.r=0.5-dayGain*0.5;
+  Stage.scene.fog.color.g=0.5-dayGain*0.5;
+  Stage.scene.fog.color.b=0.5-dayGain*0.5;
 
   guiChanged();
 }
