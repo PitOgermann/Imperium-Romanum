@@ -8,8 +8,18 @@
  ALPHA; null
  */
 
+var mapWidth = 2048, mapHeight = 2048;
+var imgData, imgWidth,imgWidth, imgHeight,ratioX,ratioY;
+
+function getFastHeight(x,y){
+  var x_ = Math.round(x/ratioX);
+  var y_ = Math.round(y/ratioY);
+  var idMap = (x_+imgWidth/2+(y_+imgHeight/2)*imgWidth)*4;
+  return imgData[Math.round(idMap)];
+}
+
 function createTerrainFromImage(src,textrueUrl,callback){
-  var mapWidth = 2048, mapHeight = 2048;
+
 
   // load terrain:
   var image = new Image();
@@ -23,21 +33,27 @@ function createTerrainFromImage(src,textrueUrl,callback){
     context.drawImage(image, 0, 0);
 
     //var mapWidth = image.width, mapHeight = image.width;
-    var imgData = context.getImageData(0, 0, image.width, image.height).data;
+    imgData = context.getImageData(0, 0, image.width, image.height).data;
 
     //create Terrain:
     var geometry = new THREE.PlaneBufferGeometry( mapWidth,mapHeight,image.width, image.height);
 
+    // createDepthLookup:
+    depthLookup = new Array(image.width);
+    for (var i = 0; i < depthLookup.length; i++) depthLookup[i] = new Array(image.height);
 
-    var ratioX = mapWidth/image.width;
-    var ratioY = mapHeight/image.height;
+
+   ratioX = mapWidth/image.width;
+   ratioY = mapHeight/image.height;
+
+   imgWidth = image.width;
+   imgHeight = image.height;
 
     geometry.rotateX( - Math.PI / 2 );
 
     var vertices = geometry.attributes.position.array;
 
     //define HeightMap:
-    console.log(geometry);
     var heightMap = new Array(image.width+1);
     for (var i = 0; i < heightMap.length; i++) heightMap[i] = new Array(image.height+1);
 
@@ -78,17 +94,8 @@ function createTerrainFromImage(src,textrueUrl,callback){
       var vegetation = imgData[idMap+1];
       //var buildingArea = imgData[idImg+2];
       //var unknown = imgData[idImg+3];
-
       vertices[ j +1 ] = depth;
     }
-
-      //create Floor:
-      //var normGeometry = new THREE.Geometry();
-      //normGeometry.fromBufferGeometry(geometry);
-      //for(var i in normGeometry.faces){
-      //  var localheight = vertices[normGeometry.faces[i].b];
-      //  normGeometry.faces[i].materialIndex = (localheight>0)? 1:0;
-      //}
 
       var floor = new THREE.Mesh(geometry, materials[2] );
 
@@ -101,7 +108,6 @@ function createTerrainFromImage(src,textrueUrl,callback){
       var matrix = [];
       var sizeX = image.width;
       var sizeY = image.height;
-
 
       callback(floor);
 

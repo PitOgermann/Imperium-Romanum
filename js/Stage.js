@@ -37,8 +37,6 @@ var Stage = {
     this.player = Player;
     this.player.init(this);
 
-    initFlora();
-
     var blocker = document.getElementById( 'blocker' );
     var instructions = document.getElementById( 'instructions' );
 
@@ -87,6 +85,14 @@ var Stage = {
     var intersects = groundcaster.intersectObject(this.world.terrain, false);
     if(intersects.length)return intersects[0].point.y;
     else return newPos;
+  },
+
+  groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,350),
+  getGroundHeight: function(pos){
+    this.groundcaster.ray.origin.set(pos.x,300,pos.z);
+    var intersects = this.groundcaster.intersectObject(this.world.terrain, false);
+    if(intersects.length)return intersects[0].point.y;
+    else return pos.y;
   },
 
   onWindowResize: function() {

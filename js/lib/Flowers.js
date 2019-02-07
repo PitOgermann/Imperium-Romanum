@@ -1,8 +1,8 @@
 //tree leaf texture
 var loader = new THREE.TextureLoader();
 var bushMaterials = [];
-for(var i = 0;i<3;i++){
-  var bushTexture = loader.load("src/textures/vegetation/bush_"+i+".png");
+for(var i = 0;i<6;i++){
+  var bushTexture = loader.load("src/textures/vegetation/bush/bush_"+i+".png");
   var leafMaterial = new THREE.MeshBasicMaterial( {
     opacity:0.95,
     map:bushTexture,
@@ -18,7 +18,7 @@ for(var i = 0;i<3;i++){
 class Bush{
   constructor(x,y,z){
     var scale = 1+Math.random()*0.8;
-    var mat = bushMaterials[Math.round(Math.random()*2)];
+    var mat = bushMaterials[Math.round(Math.random()*5)];
     this.lod = new THREE.LOD();
 
     var tempModel = new THREE.Group();
@@ -32,8 +32,8 @@ class Bush{
       //add Model to LOD
       this.lod.addLevel( tempModel.clone(), (n_models-i) * 50 );
     }
-
-    this.lod.position.set(x,y+3*scale,z);
+    var posY = getFastHeight(x,z);
+    this.lod.position.set(x,posY+3*scale,z);
     this.lod.rotation.y = Math.random() * Math.PI;
     this.lod.scale.set(scale,scale,scale);
 
@@ -45,7 +45,7 @@ class Bush{
 //tree grass texture
 var grassMaterials = [];
 for(var i = 0;i<11;i++){
-  var grassTexture = loader.load("src/textures/vegetation/grass_"+i+".png");
+  var grassTexture = loader.load("src/textures/vegetation/grass/grass_"+i+".png");
   var grassMaterial = new THREE.MeshBasicMaterial( {
     opacity:0.95,
     map:grassTexture,
@@ -76,7 +76,8 @@ class Grass{
       this.lod.addLevel( tempModel.clone(), (n_models-i) * 40 );
     }
 
-    this.lod.position.set(x,y+2.5*scale,z);
+    var posY = getFastHeight(x,z);
+    this.lod.position.set(x,posY+2.5*scale,z);
     this.lod.rotation.y = Math.random() * Math.PI;
     this.lod.scale.set(scale,scale,scale);
 

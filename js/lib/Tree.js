@@ -43,7 +43,8 @@ class ProcTree{
   }
 
   setToWorld(x,y,z){
-    this.lod.position.set(x,y,z);
+    var posY = getFastHeight(x,z);
+    this.lod.position.set(x,posY-0.5,z);
     Stage.scene.add(this.lod);
   }
 
