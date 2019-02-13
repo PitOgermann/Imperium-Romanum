@@ -4,7 +4,6 @@ class Projectile {
     this.model = model.clone();
     this.pivot = new THREE.Group();
 
-
     this.mass = mass;
     this.airResistance= airResistance;
     this.damage = dmg;
@@ -12,7 +11,7 @@ class Projectile {
     this.velocity = new THREE.Vector3(0,0,speed_0);
 
     //animation Param:
-    this.prevTime = performance.now();
+    this.clock = new THREE.Clock();
     this.flying = true;
 
     //Add model:
@@ -59,7 +58,7 @@ class Projectile {
       window.setTimeout(this.destroy.bind(this), 300000);
     }
 
-    var delta = ( performance.now() - this.prevTime ) / 1000;
+    var delta = this.clock.getDelta()
     if(this.flying){
 
       // compute resistance:
@@ -85,10 +84,6 @@ class Projectile {
       var oldWorldPosition = new THREE.Vector3();
       oldWorldPosition.setFromMatrixPosition( this.pivot.matrixWorld );
       this.pivot.position.set(oldWorldPosition.x,oldWorldPosition.y-dy,oldWorldPosition.z);
-
-
-      //update timer:
-      this.prevTime = performance.now();
 
     }
   }

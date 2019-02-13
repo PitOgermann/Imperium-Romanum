@@ -3,6 +3,8 @@
  */
 
 var Player = {
+  name: "Pit",
+
   moveForward: false,
   moveBackward: false,
   moveLeft: false,
@@ -16,7 +18,7 @@ var Player = {
   runGain: 1.5,
   staminaMax:50,
 
-  prevTime: performance.now(),
+  clock: new THREE.Clock(),
   prevPosition: new THREE.Vector3(),
   velocity: new THREE.Vector3(),
   direction: new THREE.Vector3(),
@@ -39,7 +41,7 @@ var Player = {
   init: function(root) {
     this.root = root;
 
-    this.root.controls.getObject().position.set(0,300,0);
+    this.root.controls.getObject().position.set(0,50,20);
 
 
     // define collisionModel:
@@ -121,6 +123,8 @@ var Player = {
       case 32: // space
         if ( player.canJump === true ) player.velocity.y += player.accelerationJump;
         player.canJump = false;
+        robot.fadeToAction("Walking",1);
+        robot.goTo(this.root.controls.getObject().position);
         break;
 
       case 16: // run
@@ -182,14 +186,13 @@ var Player = {
   // define animation function:
   animate: function(doSimulation){
 
-    var time = performance.now();
     if(doSimulation) {
       // animate Weapons:
       for(var i in this.weapons)this.weapons[i].animate();
 
 
       //update Position:
-      var delta = ( time - this.prevTime ) / 1000;
+      var delta = this.clock.getDelta();
 
       //Attention! To long render-time!
       if(delta>0.2){
@@ -221,8 +224,6 @@ var Player = {
 
       // Chek ground:
       var onObject = detectGround(this.root,false,1).isOnGround;
-      //console.log(onObject);
-
 
 
       // jumping:
@@ -266,8 +267,6 @@ var Player = {
         this.root.controls.getObject().position.set(teleportVec.x,teleportVec.y,teleportVec.z);
       }
 
-
-
       //check ground height:
       if(Stage.world.terrain&& (Math.abs(this.velocity.x)>0.1 || Math.abs(this.velocity.z)>0.1 || Math.abs(this.velocity.y)>0.1) ){
         this.groundHeight = Stage.getGroundPosition(this.root.controls.getObject().position.clone(),this.groundHeight);
@@ -280,13 +279,7 @@ var Player = {
 
         this.canJump = true;
       }
-
-
-
-
     }
-    this.prevTime = time;
-
   },
 
 }

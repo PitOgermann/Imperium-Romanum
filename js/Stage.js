@@ -4,7 +4,7 @@
 
 
 var Stage = {
-  detailGain : 4,
+  detailGain : 6,
   camera: null,
   scene: null,
   renderer: null,
@@ -14,9 +14,14 @@ var Stage = {
   physicObjects: [],
   player: null,
   prevTime: null,
+  clock: new THREE.Clock(),
+
+  groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0)),
 
   world:null,
   ambientLight:null,
+
+  renderFunction: [],
 
   init: function() {
 
@@ -60,6 +65,7 @@ var Stage = {
     this.scene.add( this.controls.getObject() );
 
     loadWorld();
+    initAI();
     setSunPosition(0);
 
     // define Render
@@ -82,13 +88,13 @@ var Stage = {
 
   getGroundPosition: function(pos,newPos) {
     pos.y = 300;
-    var groundcaster = new THREE.Raycaster(pos, new THREE.Vector3(0, -1, 0));
-    var intersects = groundcaster.intersectObject(this.world.terrain, false);
+    this.groundcaster.ray.origin.set(pos.x,300,pos.z);//= new THREE.Raycaster(pos, new THREE.Vector3(0, -1, 0));
+    var intersects = this.groundcaster.intersectObject(this.world.terrain, false);
     if(intersects.length)return intersects[0].point.y;
     else return newPos;
   },
 
-  groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,350),
+  //groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,350),
   getGroundHeight: function(pos){
     this.groundcaster.ray.origin.set(pos.x,300,pos.z);
     var intersects = this.groundcaster.intersectObject(this.world.terrain, false);
@@ -111,6 +117,8 @@ function animate(){
 
     requestAnimationFrame( animate );
 
+    animateAI();
+
     var fixedTimeStep = 1.0 / 60.0; // seconds
     var maxSubSteps = 3;
 
@@ -131,5 +139,5 @@ function animate(){
 
     Stage.renderer.render( Stage.scene, Stage.camera );
 
-
+    for(var i in Stage.renderFunction)Stage.renderFunction[i]();
   }
