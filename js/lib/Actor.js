@@ -79,6 +79,7 @@ class Actor extends PhysicModel{
 
     this.isHittable = true;
     this.hitpoints = 0;
+
   }
 
   hit(dmg,hittedBy){

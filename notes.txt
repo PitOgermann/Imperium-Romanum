@@ -1,0 +1,94 @@
+<script id="vertexShader" type="x-shader/x-vertex">
+uniform sampler2D bumpTexture;
+uniform float bumpScale;
+
+varying float vAmount;
+varying vec2 vUV;
+
+void main()
+{
+vUV = uv;
+vec4 bumpData = texture2D( bumpTexture, uv );
+vAmount = bumpData.r; // assuming map is grayscale it doesn't matter if you use r, g, or b.
+
+// move the position along the normal
+vec3 newPosition = position + normal * bumpScale * vAmount;
+
+gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+}
+</script>
+
+<!-- fragment shader a.k.a. pixel shader -->
+<script id="fragmentShader" type="x-shader/x-vertex">
+uniform sampler2D grassTexture;
+uniform sampler2D rockTexture;
+
+
+varying vec2 vUV;
+
+varying float vAmount;
+
+void main()
+{
+//vec4 grass = (smoothstep(0.01, 0.25, vAmount) - smoothstep(0.24, 0.26, vAmount)) * texture2D( grassTexture, vUV * 10.0 );
+vec4 grass = 0.5 * texture2D( grassTexture, vUV * 10.0 );
+vec4 rock  = 0.5  * texture2D( rockTexture, vUV * 10.0 );
+
+//vec4 rock = (smoothstep(0.24, 0.27, vAmount) - smoothstep(0.28, 0.31, vAmount))  * texture2D( rockTexture, vUV * 10.0 );
+gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0) + grass + rock; //, 1.0);
+}
+</script>
+
+
+
+
+
+
+
+    // FLOOR
+	var floorTexture = new THREE.ImageUtils.loadTexture( "src/textures/terrain/stone_1_2048x2048.jpg" );
+	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+	floorTexture.repeat.set( 10, 10 );
+	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+
+
+	////////////
+	// CUSTOM //
+	////////////
+
+	// texture used to generate "bumpiness"
+	//var bumpTexture = new THREE.ImageUtils.loadTexture( 'images/heightmap.png' );
+	//bumpTexture.wrapS = bumpTexture.wrapT = THREE.RepeatWrapping;
+	// magnitude of normal displacement
+
+  // texture used to generate "bumpiness"
+  var bumpTexture = new THREE.ImageUtils.loadTexture( "../src/map/map4.png" );
+  bumpTexture.wrapS = bumpTexture.wrapT = THREE.RepeatWrapping;
+  // magnitude of normal displacement
+  var bumpScale   = 1.0;
+
+
+	var grassTexture = new THREE.ImageUtils.loadTexture( "src/textures/terrain/stone_1_2048x2048.jpg" );
+	grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
+
+	var rockTexture = new THREE.ImageUtils.loadTexture( "src/textures/terrain/ground.jpg" );
+	rockTexture.wrapS = rockTexture.wrapT = THREE.RepeatWrapping;
+
+
+	// use "this." to create global object
+	this.customUniforms = {
+    bumpTexture:	{ type: "t", value: bumpTexture },
+		bumpScale:	  { type: "f", value: bumpScale },
+		grassTexture:	{ type: "t", value: grassTexture },
+		rockTexture:	{ type: "t", value: rockTexture },
+	};
+
+	// create custom material from the shader code above
+	//   that is within specially labelled script tags
+	var customMaterial = new THREE.ShaderMaterial(
+	{
+	  uniforms: this.customUniforms,
+		vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
+		fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+		// side: THREE.DoubleSide
+	}   );

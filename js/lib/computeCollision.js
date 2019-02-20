@@ -2,6 +2,47 @@
  * @author Pit Ogermann
  */
 
+function objectBetween2Points(a,b,selfObject){
+  // Check if intersection is between:
+  let dir = new THREE.Vector3();
+  dir.subVectors( b,a ).normalize();
+  var length = a.distanceTo( b );
+  var raycaster = new THREE.Raycaster( a, dir, 0, length );
+  var intersects = raycaster.intersectObjects( Stage.objects );
+
+  let firstIntersection = null;
+  for (var u in intersects) if(intersects[u].object!=selfObject){
+    firstIntersection=intersects[u];
+    break;
+  }
+  return firstIntersection;
+}
+
+
+function collisionApproximation(root,reqObject){
+  var onObjectBool = false;
+  var onObjects = null;
+  var distToObj = 0;
+
+  var position = root.controls.getObject().position.clone();
+
+  for(var i in Stage.objectsBBox){
+    let bbox = Stage.objectsBBox[i];
+    if(bbox.containsPoint( position ))onObjectBool = true;
+    //Stage.objectsBBox[i].geometry.computeBoundingBox();
+    //if(Stage.objectsBBox[i].geometry.boundingBox.containsPoint( position ))onObjectBool = true;
+  }
+
+  return {
+        distance: distToObj,
+        recoilVector: dirMovement,
+        isColliding: onObjectBool,
+        objects: onObjects
+    };
+}
+
+
+
 function detectCollision_old(root,origObject,collisionModel,reqObject){
   var isColl = false;
   var collObj = [];
@@ -136,7 +177,7 @@ function detectGround(root,reqObject,N,velocityY){
 
     //console.log(prevHeight-root.controls.getObject().position.y);
     if(prevHeight-root.controls.getObject().position.y>1){
-      console.log("Jump");
+      if(DebuggerMode)console.log("Jump");
       root.controls.getObject().position.y = intersections[0].point.y+10-2;
     }
 

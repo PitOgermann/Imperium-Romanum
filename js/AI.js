@@ -3,6 +3,9 @@ var loader = new THREE.GLTFLoader();
 class AI {
   constructor(folder,name,pos) {
     //load Model:
+    this.home = null;
+
+    this.isVisible = true;
     this.model;
     this.bobject;
     this.face;
@@ -13,11 +16,16 @@ class AI {
     this.clock = new THREE.Clock();
 
     this.maxSpeed = 20;
+    this.maxIdleSpeed = 10;
     this.walkingPath = [];
     this.followPlayer;
     this.followUpdateFunction;
     this.followUpdateFunctionTimer=0;
     this.heightUpdateTimer=0;
+
+    this.idlePoint = null;
+    this.idleTimer = 0;
+    this.goingHome = false;
 
     this.speachBouble;
 
@@ -31,9 +39,11 @@ class AI {
 
       // add collisionModel:
       var bbox = new THREE.BoxBufferGeometry(2,5,2);
+
+
       this.bobject = new THREE.Mesh( bbox , new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe:true } ) );
       this.bobject.position.y = 2.5;
-      this.bobject.material.visible = false;
+      this.bobject.material.visible = DebuggerMode;
       this.bobject.root = this;
       Stage.objects.push(this.bobject);
       this.model.add(this.bobject);
@@ -41,7 +51,10 @@ class AI {
       // add speachBouble:
       this.speachBouble = new GameHUD(this, this.model);
       this.speachBouble.setAction(1,"Follow me!",function(){this.setFollowPlayer(Player)}.bind(this));
-      this.speachBouble.setAction(2,"Wait!",function(){this.stopFollowing()}.bind(this));
+      this.speachBouble.setAction(2,"Wait!",function(){this.stopAction()}.bind(this));
+      this.speachBouble.setAction(3,"Patrol this place!",function(){this.idleAroundPoint(Player.root.controls.getObject().position,100)}.bind(this));
+      this.speachBouble.setAction(4,"Go home!",function(){this.goIntoBuilding(this.home)}.bind(this));
+
 
     }.bind(this), undefined, function( e ) {
       console.error( e );
@@ -50,7 +63,7 @@ class AI {
   }
 
   fadeToAction( name, duration ) {
-    console.log("Do Action: "+name);
+    if(DebuggerMode)console.log("Do Action: "+name);
     this.previousAction = this.activeAction;
     this.activeAction = this.actions[ name ];
     if ( this.previousAction !== this.activeAction ) {
@@ -64,13 +77,163 @@ class AI {
   					.play();
     }
 
-    goTo(pos){
+    computeWaypointsTo(dest){
+      let startPath = this.model.position.clone();
+      let endPath = dest.clone();
+      startPath.y = 10;
+      endPath.y = 10;
+
+      let totalLength = 0;
+      let points = [startPath];
+
+      for(var i=0;i<5;i++){
+        let start = points[i];
+
+        // Check Collision:
+        let intersects = objectBetween2Points(start,endPath,this.model);
+        if(intersects){
+          let obj = intersects.object;
+
+          let bbox =  new THREE.Box3().setFromObject(obj);
+          bbox.expandByScalar(25);
+
+          // compute BoundingBox corners:
+          var cornerPoints = [
+            new THREE.Vector3(bbox.min.x,10,bbox.min.z),
+            new THREE.Vector3(bbox.max.x,10,bbox.min.z),
+            new THREE.Vector3(bbox.min.x,10,bbox.max.z),
+            new THREE.Vector3(bbox.max.x,10,bbox.max.z)
+          ];
+
+          let distances = [
+            start.manhattanDistanceTo(cornerPoints[0]),
+            start.manhattanDistanceTo(cornerPoints[1]),
+            start.manhattanDistanceTo(cornerPoints[2]),
+            start.manhattanDistanceTo(cornerPoints[3])
+          ];
+
+          var minIndex = distances.reduce((iMax, x, i, arr) => x < arr[iMax] ? i : iMax, 0);
+          var minValue = start.manhattanDistanceTo(cornerPoints[minIndex]);
+
+          // is same Point:
+          if(minValue<0.5) {
+            distances.splice(minIndex, 1);
+            minIndex = distances.reduce((iMax, x, i, arr) => x < arr[iMax] ? i : iMax, 0);
+          }
+
+          if(DebuggerMode){
+            var helper = new THREE.Box3Helper( bbox, 0xffff00 );
+            Stage.scene.add(helper);
+          }
+
+          totalLength+=minValue;
+          points.push(cornerPoints[minIndex]);
+
+        } else break;
+
+
+      }
+      // Add end-Point:
+      points.push(endPath);
+
+      //Genarate splines:
+      let splinePath = null;
+      if(points.length>2) splinePath = AI.generateSplines(points,Math.round(totalLength/2));
+      else splinePath = points;
+
+      // display Result:
+      if(totalLength>0 && DebuggerMode){
+        var material = new THREE.LineBasicMaterial( { color: 0xff00ff } );
+        for(var u = 0;u<points.length-1;u++) {
+          var geometry = new THREE.Geometry();
+          geometry.vertices.push(points[u]);
+          geometry.vertices.push(points[u+1]);
+          var line = new THREE.Line( geometry, material );
+          Stage.scene.add(line);
+
+          var dotGeometry = new THREE.Geometry();
+          var dot = new THREE.Points( geometry, new THREE.PointsMaterial( { size: 8, sizeAttenuation: false ,color: 0x0000ff} ) );
+          Stage.scene.add( dot );
+
+          for(var t=0;t<4;t++){
+            var dotGeometry = new THREE.Geometry();
+            dotGeometry.vertices.push(cornerPoints[t]);
+            Stage.scene.add(  new THREE.Points( dotGeometry, new THREE.PointsMaterial( { size: 8, sizeAttenuation: false } ) ) );
+          }
+
+        }
+
+        var material = new THREE.LineBasicMaterial( { color: 0x00ffff } );
+        for(var u = 0;u<splinePath.length-1;u++) {
+          var geometry = new THREE.Geometry();
+          geometry.vertices.push(splinePath[u]);
+          geometry.vertices.push(splinePath[u+1]);
+          var line = new THREE.Line( geometry, material );
+          Stage.scene.add(line);
+        }
+      }
+
+      return splinePath;
+    }
+
+    /*
+    this.bbox =  new THREE.Box3().setFromObject(this.model);
+*/
+
+    static generateSplines(points,resolution){
+      let points2D = [];
+      for(var i in points) points2D.push(new THREE.Vector2( points[i].x, points[i].z ));
+
+      let curve = new THREE.SplineCurve(points2D);
+      let points2DNew = curve.getPoints( resolution );
+
+      let new3DPoints = [];
+      for(var i in points2DNew) new3DPoints.push(new THREE.Vector3( points2DNew[i].x,10,points2DNew[i].y));
+
+      return new3DPoints;
+
+    }
+
+
+    goTo(pos,ignoreObjects){
       // clear old path:
       this.walkingPath = [];
+      if(!ignoreObjects){
+        var path = this.computeWaypointsTo(pos.clone());
+        for(var i = 1; i< path.length;i++) this.addNewWaypoint(path[i],path[i-1]);
 
-      // TODO: compute no collision Path!
+      } else this.addNewWaypoint(pos.clone());
 
-      this.addNewWaypoint(pos);
+
+
+    }
+
+    idleAroundPoint(point,maxDist){
+      this.stopAction();
+      this.maxDist = maxDist;
+      this.idlePoint = point.clone();
+      if(DebuggerMode)console.log("Idle around ", this.idlePoint);
+    }
+
+    idleWalkingFunction(){
+      if(this.walkingPath.length<=0 && this.idleTimer <= 0){
+        var goToVec = this.idlePoint.clone();
+        goToVec.add(new THREE.Vector3(Math.random()*this.maxDist-this.maxDist/2,0,Math.random()*this.maxDist-this.maxDist/2));
+        if(DebuggerMode)console.log(goToVec);
+        this.goTo(goToVec);
+        this.idleTimer = Math.random()*100+50;
+      }
+    }
+
+    goIntoBuilding(building){
+      if(DebuggerMode)console.log("Go in building:");
+      if(!building){
+        if(DebuggerMode)console.info("I do not have a Home. I go to the first Building.");
+        this.home = debugBuilding[0];
+      }
+
+      this.goTo(this.home.model.position);
+      this.goingHome = true;
     }
 
     setFollowPlayer(player){
@@ -89,34 +252,49 @@ class AI {
         if(dist2Player>30)this.addNewWaypoint(this.followPlayer.root.controls.getObject().position.clone());
 
       }.bind(this);
-      console.log("iWill fillow "+player.name);
+      if(DebuggerMode)console.log("iWill fillow "+player.name);
     }
 
-    stopFollowing(){
+    stopAction(){
       this.followPlayer = null;
       this.walkingPath = [];
       this.followUpdateFunction = null;
-      console.log("remove");
+      this.idlePoint = null;
+      this.goingHome = false;
+      this.fadeToAction("Idle",1);
+    }
+
+    hide(){
+      this.model.traverse( function ( object ) { object.visible = false; } );
+      this.isVisible = false;
+    }
+
+    show(){
+      this.model.traverse( function ( object ) { object.visible = true; } );
+      this.isVisible = true;
     }
 
 
-  addNewWaypoint(pos){
-    var from = this.model.position.clone();
+  addNewWaypoint(to,from){
+    if(!from) from = this.model.position.clone();
     if(this.walkingPath.length>0) from = this.walkingPath[this.walkingPath.length-1][1].clone();
 
-    pos.y=10;
+    to.y=10;
     from.y=10;
 
     var dir = new THREE.Vector3();
-    dir.subVectors( pos,from ).normalize();
+    dir.subVectors( to,from ).normalize();
 
     //create path (ToDo)
-    this.walkingPath.push([dir.clone(),pos.clone()]);
+    this.walkingPath.push([dir.clone(),to.clone()]);
 
     // draw Path:
-    //var length = from.distanceTo( pos );
-    //var arrowHelper = new THREE.ArrowHelper( dir, from, length, 0xffff00 );
-    //Stage.scene.add( arrowHelper );
+    if(DebuggerMode){
+      var length = from.distanceTo( to );
+      var arrowHelper = new THREE.ArrowHelper( dir, from, length, 0xffff00 );
+      Stage.scene.add( arrowHelper );
+    }
+
   }
 
   createAIAnimation(model, animations ){
@@ -147,58 +325,74 @@ class AI {
 
 
   animate(){
-    let dt = this.clock.getDelta();
-    if ( this.mixer ) this.mixer.update(dt);
+    if(this.isVisible){
 
-    // update folowing Path:
-    if(this.followUpdateFunction){
-      if(this.followUpdateFunctionTimer>1)this.followUpdateFunction();
-      this.followUpdateFunctionTimer+=dt;
+      let dt = this.clock.getDelta();
+      if ( this.mixer ) this.mixer.update(dt);
+
+      // update folowing Path:
+      if(this.followUpdateFunction){
+        if(this.followUpdateFunctionTimer>1)this.followUpdateFunction();
+        this.followUpdateFunctionTimer+=dt;
+      }
+
+      //if(this.speachBouble)this.speachBouble.orientation2Player(Player);
+
+      // if idleWalk is active:
+      if(this.idlePoint){
+        this.idleWalkingFunction();
+        this.idleTimer--;
+      }
+
+      //walk Path:
+      if(this.walkingPath.length>0){
+
+        if(this.activeAction && this.activeAction._clip.name != "Walking") this.fadeToAction("Walking",1);
+
+        let curPath = this.walkingPath[0];
+        let curPosition = this.model.position.clone();
+        curPosition.y = 10;
+
+        // Rotate AI
+        let axis = new THREE.Vector3(0, 0, 1);
+        this.model.quaternion.setFromUnitVectors(axis, curPath[0].clone().normalize());
+
+        //distance to nextTargetPoint:
+        let dist = curPosition.manhattanDistanceTo ( curPath[1] );
+
+
+        //UpdatePosition:
+        let tempSpeed = (this.idlePoint)?this.maxIdleSpeed:this.maxSpeed;
+        this.model.translateZ(dt*tempSpeed);
+
+        if(dist<3) {
+          let lastPoint = this.walkingPath.shift(); // is finish with this Path.
+          this.model.position.x = lastPoint[1].x;
+          this.model.position.z = lastPoint[1].z;
+        }
+
+        //set ground height:
+        if(this.heightUpdateTimer>0.5+Math.random()*0.2){
+          this.model.position.y = Stage.getGroundHeight(this.model.position.clone());
+          this.heightUpdateTimer = 0;
+        }
+        this.heightUpdateTimer+=dt;
+
+
+
+        //clear path if close to player:
+        let dist2Player = this.model.position.manhattanDistanceTo(Player.root.controls.getObject().position);
+        if(dist2Player < 30 && this.followPlayer) this.walkingPath = [];
+
+
+        if(this.walkingPath.length==0)this.fadeToAction("Idle",1);
+    } else if (this.goingHome) {
+      // is arrived at home:
+      this.stopAction();
+      this.hide();
+      this.home.inmates.push(this); // wrong Building!
     }
 
-    //if(this.speachBouble)this.speachBouble.orientation2Player(Player);
-
-    //walk Path:
-    if(this.walkingPath.length>0){
-
-      if(this.activeAction && this.activeAction._clip.name != "Walking") this.fadeToAction("Walking",1);
-
-      let curPath = this.walkingPath[0];
-      let curPosition = this.model.position.clone();
-      curPosition.y = 10;
-
-      // Rotate AI
-      let axis = new THREE.Vector3(0, 0, 1);
-      this.model.quaternion.setFromUnitVectors(axis, curPath[0].clone().normalize());
-
-      //distance to nextTargetPoint:
-      let dist = curPosition.manhattanDistanceTo ( curPath[1] );
-
-
-      //UpdatePosition:
-      this.model.translateZ(dt*this.maxSpeed);
-
-      if(dist<3) {
-        let lastPoint = this.walkingPath.shift(); // is finish with this Path.
-        this.model.position.x = lastPoint[1].x;
-        this.model.position.z = lastPoint[1].z;
-      }
-
-      //set ground height:
-      if(this.heightUpdateTimer>0.5+Math.random()*0.2){
-        this.model.position.y = Stage.getGroundHeight(this.model.position.clone());
-        this.heightUpdateTimer = 0;
-      }
-      this.heightUpdateTimer+=dt;
-
-
-
-      //clear path if close to player:
-      let dist2Player = this.model.position.manhattanDistanceTo(Player.root.controls.getObject().position);
-      if(dist2Player < 30 && this.followPlayer) this.walkingPath = [];
-
-
-      if(this.walkingPath.length==0)this.fadeToAction("Idle",1);
   }
 }
 
@@ -209,10 +403,18 @@ class AI {
 var robot;
 function initAI() {
   robot = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(0,0,0));
+  robot1 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(10,0,0));
+  robot2 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(20,0,0));
+  robot3 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(0,0,10));
+  robot4 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(0,0,20));
 
 }
 
 
 function animateAI() {
   robot.animate();
+  robot1.animate();
+  robot2.animate();
+  robot3.animate();
+  robot4.animate();
 }

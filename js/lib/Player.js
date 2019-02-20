@@ -25,6 +25,7 @@ var Player = {
   dazed: 0,
   groundHeight: 0,
   stamina: 50,
+  gradient: 0,
 
   colisionModel: null,
   colisionModelPhysic: null,
@@ -123,8 +124,8 @@ var Player = {
       case 32: // space
         if ( player.canJump === true ) player.velocity.y += player.accelerationJump;
         player.canJump = false;
-        robot.fadeToAction("Walking",1);
-        robot.goTo(this.root.controls.getObject().position);
+        //robot.goTo(this.root.controls.getObject().position,true);
+        robot.goTo(this.root.controls.getObject().position,false);
         break;
 
       case 16: // run
@@ -214,8 +215,12 @@ var Player = {
       this.direction.x = Number( this.moveLeft ) - Number( this.moveRight );
       this.direction.normalize(); // this ensures consistent movements in all directions
 
-      if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta * 1;
-      if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta * 1;
+      let gradiantGain = (1-this.gradient)**2;
+      if(!this.canJump) gradiantGain = 1;
+      console.log(gradiantGain);
+
+      if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta * gradiantGain;
+      if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta * gradiantGain;
 
       // compute Collision:
 
@@ -269,7 +274,9 @@ var Player = {
 
       //check ground height:
       if(Stage.world.terrain&& (Math.abs(this.velocity.x)>0.1 || Math.abs(this.velocity.z)>0.1 || Math.abs(this.velocity.y)>0.1) ){
-        this.groundHeight = Stage.getGroundPosition(this.root.controls.getObject().position.clone(),this.groundHeight);
+        let groundTracker = Stage.getGroundPosition(this.root.controls.getObject().position.clone(),this.groundHeight);
+        this.groundHeight = groundTracker.height;
+        this.gradient = groundTracker.gradient;
       }
 
       // is on ground:

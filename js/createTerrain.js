@@ -18,6 +18,17 @@ function getFastHeight(x,y){
   return imgData[Math.round(idMap)];
 }
 
+var materials = [];
+var loader = new THREE.TextureLoader();
+for(var i =0;i<4;i++){
+  let groundTexture = loader.load("src/textures/terrain/ground_"+i+".jpg");
+  groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+  groundTexture.repeat.set( 8, 8 );
+  groundTexture.anisotropy = 4;
+  let groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
+  materials.push(groundMaterial);
+}
+
 function createTerrainFromImage(src,textrueUrl,callback){
 
 
@@ -57,31 +68,6 @@ function createTerrainFromImage(src,textrueUrl,callback){
     var heightMap = new Array(image.width+1);
     for (var i = 0; i < heightMap.length; i++) heightMap[i] = new Array(image.height+1);
 
-    //load texture:
-    var loader = new THREE.TextureLoader();
-    var groundTexture = loader.load(textrueUrl);
-          groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-          groundTexture.repeat.set( 32, 32 );
-          groundTexture.anisotropy = 4;
-    var groundMaterial = new THREE.MeshLambertMaterial( {map: groundTexture } );
-
-    var groundTexture1 = loader.load("src/textures/terrain/stone_1_2048x2048.jpg");
-          groundTexture1.wrapS = groundTexture1.wrapT = THREE.RepeatWrapping;
-          groundTexture1.repeat.set( 8, 8 );
-          groundTexture1.anisotropy = 4;
-    var groundMaterial1 = new THREE.MeshLambertMaterial( { map: groundTexture1 } );
-
-    var groundTexture2 = loader.load("src/textures/terrain/ground.jpg");
-          groundTexture2.wrapS = groundTexture2.wrapT = THREE.RepeatWrapping;
-          groundTexture2.repeat.set( 64, 64 );
-          groundTexture2.anisotropy = 4;
-    var groundMaterial2 = new THREE.MeshLambertMaterial( { map: groundTexture2 } );
-
-    var materials = [];
-    materials.push(groundMaterial);
-    materials.push(groundMaterial1);
-    materials.push(groundMaterial2);
-
     //modify Vertex:
     for ( var i = 0, j = 0, l = vertices.length; i < l; i +=4, j += 3 ) {
       var x = vertices[j]/ratioX;
@@ -97,7 +83,11 @@ function createTerrainFromImage(src,textrueUrl,callback){
       vertices[ j +1 ] = depth;
     }
 
-      var floor = new THREE.Mesh(geometry, materials[2] );
+      var geometry2 = new THREE.Geometry().fromBufferGeometry( geometry );
+      var floor = new THREE.Mesh(geometry2, materials );
+
+      //var helper = new THREE.FaceNormalsHelper( floor, 2, 0x00ff00, 1 );
+      //Stage.scene.add( helper );
 
       floor.position.set(0,0,0);
 

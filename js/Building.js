@@ -2,6 +2,7 @@
  * @author Pit Ogermann
  */
 
+var debugBuilding = [];
 
 class BuildingTemplate{
   constructor(name,cathegory,model_place,model,hp){
@@ -12,6 +13,7 @@ class BuildingTemplate{
     this.hp = hp;
 
     this.fundamentDepth = 2.0;
+    this.workingPoint = null;
   }
 
   static placeBuilding(building){
@@ -52,6 +54,8 @@ class Building{
     this.model = template.model.clone();
     this.hp = template.hp;
 
+    this.inmates = [];
+
     //compute Bounding Box:
     var boundingBox_model = new THREE.Vector3(0,0,0);
     var boundingBox_model_place = new THREE.Vector3(0,0,0);
@@ -62,6 +66,8 @@ class Building{
 
     //HUDS:
     this.constructionHUD = new HUDSystem('buildingProcessHUD',false);
+
+    debugBuilding.push(this);
 
   }
   place(player){  //Model
@@ -111,3 +117,4 @@ LoadModel as THREE 3dObject
 */
 //var tempObj = loaderTim("pathObj","pathTexture");
 buildingTemplates.push(new BuildingTemplate("townhall","infrastructure",tempMeshPlace,tempMesh,1000));
+buildingTemplates.workingPoint = new THREE.Vector3(0,0,30);

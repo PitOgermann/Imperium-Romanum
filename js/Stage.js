@@ -2,21 +2,23 @@
  * @author Pit Ogermann
  */
 
+var DebuggerMode = false;
 
 var Stage = {
-  detailGain : 6,
+  detailGain : 1,
   camera: null,
   scene: null,
   renderer: null,
   controls: null,
 
   objects: [],
+
   physicObjects: [],
   player: null,
   prevTime: null,
   clock: new THREE.Clock(),
 
-  groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0)),
+  groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,100),
 
   world:null,
   ambientLight:null,
@@ -86,12 +88,26 @@ var Stage = {
 
   },
 
-  getGroundPosition: function(pos,newPos) {
-    pos.y = 300;
-    this.groundcaster.ray.origin.set(pos.x,300,pos.z);//= new THREE.Raycaster(pos, new THREE.Vector3(0, -1, 0));
+  lotHorizont : new THREE.Vector3( 0, 1, 0 ),
+  getGroundPosition: function(pos,newPos,normal) {
+    //groundcaster for Player:
+    pos.y += 10;
+    this.groundcaster.ray.origin.set(pos.x,pos.y,pos.z);
     var intersects = this.groundcaster.intersectObject(this.world.terrain, false);
-    if(intersects.length)return intersects[0].point.y;
-    else return newPos;
+    if(intersects.length){
+      //change materialIndex == Debugger
+      intersects[0].face.materialIndex = 2;
+      intersects[0].object.geometry.groupsNeedUpdate = true;
+
+      return {
+        height:intersects[0].point.y,
+        gradient: this.lotHorizont.angleTo( intersects[0].face.normal )/1.57
+      }
+    }
+    else return {
+      height: newPos,
+      gradient: 0
+    }
   },
 
   //groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,350),
