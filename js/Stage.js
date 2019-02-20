@@ -2,7 +2,7 @@
  * @author Pit Ogermann
  */
 
-var DebuggerMode = false;
+var DebuggerMode = true;
 
 var Stage = {
   detailGain : 1,
