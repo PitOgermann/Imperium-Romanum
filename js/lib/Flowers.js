@@ -8,6 +8,7 @@ for(var i = 0;i<6;i++){
     map:bushTexture,
     blending: THREE.NormalBlending,
     depthTest: true,
+    depthWrite: true,
     transparent : true
   } );
   leafMaterial.side = THREE.DoubleSide;
@@ -51,6 +52,7 @@ for(var i = 0;i<11;i++){
     map:grassTexture,
     blending: THREE.NormalBlending,
     depthTest: true,
+    depthWrite: true,
     transparent : true
   } );
   grassMaterial.side = THREE.DoubleSide;

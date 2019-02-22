@@ -3,6 +3,8 @@
 //tree branch texture
 var loader = new THREE.TextureLoader();
 var branchTexture = loader.load("src/textures/vegetation/treebark.jpg");
+branchTexture.depthTest = true;
+branchTexture.depthWrite = true;
 branchTexture.minFilter = THREE.LinearFilter;
 branchTexture.magFilter = THREE.LinearFilter;
 branchTexture.wrapS = branchTexture.wrapT = THREE.RepeatWrapping

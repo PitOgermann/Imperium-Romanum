@@ -9,11 +9,12 @@
  */
 
 var mapWidth = 2048, mapHeight = 2048;
+var mapScale = 4;
 var imgData, imgWidth,imgWidth, imgHeight,ratioX,ratioY;
 
 function getFastHeight(x,y){
-  var x_ = Math.round(x/ratioX);
-  var y_ = Math.round(y/ratioY);
+  var x_ = Math.round(x/(ratioX*mapScale));
+  var y_ = Math.round(y/(ratioY*mapScale));
   var idMap = (x_+imgWidth/2+(y_+imgHeight/2)*imgWidth)*4;
   return imgData[Math.round(idMap)];
 }
@@ -25,7 +26,7 @@ for(var i =0;i<4;i++){
   groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
   groundTexture.repeat.set( 8, 8 );
   groundTexture.anisotropy = 4;
-  let groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
+  let groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture ,wireframe: true} );
   materials.push(groundMaterial);
 }
 
@@ -83,13 +84,14 @@ function createTerrainFromImage(src,textrueUrl,callback){
       vertices[ j +1 ] = depth;
     }
 
-      var geometry2 = new THREE.Geometry().fromBufferGeometry( geometry );
-      var floor = new THREE.Mesh(geometry2, materials );
+      //var geometry2 = new THREE.Geometry().fromBufferGeometry( geometry );
+      var floor = new THREE.Mesh(geometry, materials[0]);
 
       //var helper = new THREE.FaceNormalsHelper( floor, 2, 0x00ff00, 1 );
       //Stage.scene.add( helper );
 
       floor.position.set(0,0,0);
+      floor.scale.set(mapScale,mapScale,mapScale);
 
       floor.castShadow = true;
       floor.receiveShadow = true;

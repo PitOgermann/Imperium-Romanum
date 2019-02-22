@@ -18,7 +18,7 @@ var Stage = {
   prevTime: null,
   clock: new THREE.Clock(),
 
-  groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,100),
+  groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,200),
 
   world:null,
   ambientLight:null,
@@ -91,7 +91,7 @@ var Stage = {
   lotHorizont : new THREE.Vector3( 0, 1, 0 ),
   getGroundPosition: function(pos,newPos,normal) {
     //groundcaster for Player:
-    pos.y += 10;
+    pos.y += 50;
     this.groundcaster.ray.origin.set(pos.x,pos.y,pos.z);
     var intersects = this.groundcaster.intersectObject(this.world.terrain, false);
     if(intersects.length){
@@ -101,7 +101,8 @@ var Stage = {
 
       return {
         height:intersects[0].point.y,
-        gradient: this.lotHorizont.angleTo( intersects[0].face.normal )/1.57
+        //gradient: this.lotHorizont.angleTo( intersects[0].face.normal )/1.57
+        gradient: intersects[0].face.normal 
       }
     }
     else return {
@@ -129,8 +130,6 @@ var Stage = {
 
 
 function animate(){
-
-
     requestAnimationFrame( animate );
 
     animateAI();
