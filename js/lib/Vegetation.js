@@ -28,7 +28,7 @@ var treeId = {
 var trees= [];
 // InitFlora after world load: --> PhysicEngine:
 
-var maxTrees = 64;
+var maxTrees = 256;
 var bushesPerTree = 2;
 var maxGrass = 512;
 function initFlora(){
@@ -39,9 +39,10 @@ function initFlora(){
 
   for(var i =0 ;i<maxTrees*Stage.detailGain;i++){
     var seed = Math.random()* 500;
-    var tree = new ProcTree(ProcTree.getSeedParameters(seed,5));
+    //var tree = new ProcTree(ProcTree.getSeedParameters(seed,5));
     var randPos = new THREE.Vector3(Math.random() * 1000 - 500,0,Math.random() * 1000 - 500);
-    tree.setToWorld(randPos.x,randPos.y,randPos.z);
+		var tree = new PalmTree(randPos,Math.random()*20+60,Math.random()*1000);
+    //tree.setToWorld(randPos.x,randPos.y,randPos.z);
     trees.push(tree);
 
     for(var u=0;u<Math.random()*bushesPerTree*Stage.detailGain;u++){

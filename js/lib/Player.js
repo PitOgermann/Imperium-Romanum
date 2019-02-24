@@ -224,7 +224,7 @@ var Player = {
       var axis = new THREE.Vector3( 0, -1, 0 );
       //vector.applyAxisAngle( axis, this.root.controls.getObject().rotation.y +90*Math.PI/180);
       vector.applyAxisAngle( axis, 90*Math.PI/180);
-      console.log(vector);
+      //console.log(vector);
 
       if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta + this.direction.z *this.gradient.z*50;
       if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta + this.direction.x *this.gradient.x*50;

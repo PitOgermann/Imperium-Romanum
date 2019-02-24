@@ -24,9 +24,9 @@ var loader = new THREE.TextureLoader();
 for(var i =0;i<4;i++){
   let groundTexture = loader.load("src/textures/terrain/ground_"+i+".jpg");
   groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-  groundTexture.repeat.set( 8, 8 );
+  groundTexture.repeat.set( 128,128 );
   groundTexture.anisotropy = 4;
-  let groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture ,wireframe: true} );
+  let groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture ,wireframe: false} );
   materials.push(groundMaterial);
 }
 

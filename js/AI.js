@@ -405,8 +405,6 @@ function initAI() {
   robot = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(0,0,0));
   robot1 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(10,0,0));
   robot2 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(20,0,0));
-  robot3 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(0,0,10));
-  robot4 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(0,0,20));
 
 }
 
@@ -415,6 +413,4 @@ function animateAI() {
   robot.animate();
   robot1.animate();
   robot2.animate();
-  robot3.animate();
-  robot4.animate();
 }
