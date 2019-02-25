@@ -10,6 +10,7 @@ var Stage = {
   scene: null,
   renderer: null,
   controls: null,
+  stats: null,
 
   objects: [],
 
@@ -81,6 +82,13 @@ var Stage = {
 
     document.body.appendChild( this.renderer.domElement );
 
+    this.stats = new Stats();
+    if(DebuggerMode){
+      var container = document.getElementById( 'topbar' );
+      container.appendChild(this.stats.domElement);
+      this.stats.begin();
+    }
+
     //
     window.addEventListener( 'resize', this.onWindowResize, false );
 
@@ -102,7 +110,7 @@ var Stage = {
       return {
         height:intersects[0].point.y,
         //gradient: this.lotHorizont.angleTo( intersects[0].face.normal )/1.57
-        gradient: intersects[0].face.normal 
+        gradient: intersects[0].face.normal
       }
     }
     else return {
@@ -130,6 +138,7 @@ var Stage = {
 
 
 function animate(){
+    Stage.stats.update();
     requestAnimationFrame( animate );
 
     animateAI();

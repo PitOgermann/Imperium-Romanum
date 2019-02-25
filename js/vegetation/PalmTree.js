@@ -4,15 +4,29 @@ function random(seed) {
 }
 
 var loader = new THREE.TextureLoader();
-var leafTexture = loader.load("src/textures/vegetation/twig_0.png");
-var leafMaterial = new THREE.MeshBasicMaterial( { opacity:0.95, map:leafTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
-leafMaterial.side = THREE.DoubleSide;
+var palmleafTexture = loader.load("src/textures/vegetation/PalmTree/leafs_0.png");
+palmleafTexture.anisotropy = 4;
+var palmleafMaterial = new THREE.MeshBasicMaterial( { opacity:0.95, map:palmleafTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+palmleafMaterial.side = THREE.DoubleSide;
 
-var loader = new THREE.TextureLoader();
-var branchTexture = loader.load("src/textures/vegetation/palmTreeBark.png");
+var palmleafTopTexture = loader.load("src/textures/vegetation/PalmTree/leafs_top.png");
+palmleafTopTexture.anisotropy = 4;
+var palmleafTopMaterial = new THREE.MeshBasicMaterial( { opacity:0.95, map:palmleafTopTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+palmleafTopMaterial.side = THREE.DoubleSide;
+
+var palmleafEndTexture = loader.load("src/textures/vegetation/PalmTree/leafs_end.png");
+var palmleafEndMaterial = new THREE.MeshBasicMaterial( { opacity:0.95, map:palmleafEndTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+palmleafEndMaterial.side = THREE.DoubleSide;
+
+var branchTexture = loader.load("src/textures/vegetation/PalmTree/palmTreeBark.jpg");
 var branchMaterial = new THREE.MeshBasicMaterial( {map:branchTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
+branchMaterial.wrapS = branchMaterial.wrapT = THREE.RepeatWrapping;
+branchMaterial.anisotropy = 4;
 branchMaterial.side = THREE.DoubleSide;
 
+var coconutTexture = loader.load("src/textures/vegetation/PalmTree/coconut.jpg");
+var coconutMaterial = new THREE.MeshBasicMaterial( {map:coconutTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
+coconutMaterial.side = THREE.DoubleSide;
 
 class PalmTree {
   constructor(pos,height,seed) {
@@ -20,6 +34,7 @@ class PalmTree {
     this.lod = new THREE.LOD();
 
     let nLevels = 4;
+    var nCoconuts = random(seed)*5;
     for(var level=0;level<nLevels;level++){
 
       var newPalmObject = new THREE.Group();
@@ -96,13 +111,13 @@ class PalmTree {
       geometryBuffer.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
       geometryBuffer.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
       //geometryBuffer.setIndex( new THREE.BufferAttribute( indices, 1 ) );
-      var material = new THREE.MeshBasicMaterial( { color: 0x6b2f07 , wireframe:false} );
+      var material = new THREE.MeshBasicMaterial( { color: 0x7E6D61 , wireframe:false} );
       var mesh = new THREE.Mesh( geometryBuffer, (level<2)?branchMaterial:material);
       newPalmObject.add(mesh);
 
 
       //Compute: Leafs:
-      var nLeafs = 8;
+      var nLeafs = 8+random(seed*4)*8;
       for(var n=0;n<nLeafs;n++){
         var rows = 5-level;
         var dr = 0, dr_ = 0;
@@ -112,8 +127,10 @@ class PalmTree {
         var sideLength = (rows>2)?5:10;
         var leafGeometry = new THREE.BufferGeometry();
         var vertices =  new Float32Array(rows*coloums*3*6);
+        var uvs = new Float32Array( rows*coloums*2*6);
 
         var i=0;
+        var ii=0;
         for(var r=0;r<rows;r++){
           dr += Math.cos(r)*deltaR;
           for(var col=0;col<coloums;col++){
@@ -126,31 +143,70 @@ class PalmTree {
             var c = [r*length+curveL,         dr_,  sideLength+col*sideLength-sideLength];
             var d = [r*length+curveR,         dr_,  0+col*sideLength-sideLength];
 
-            vertices[i++] = a[0]; vertices[i++] = a[1]; vertices[i++] = a[2];
             vertices[i++] = c[0]; vertices[i++] = c[1]; vertices[i++] = c[2];
-            vertices[i++] = d[0]; vertices[i++] = d[1]; vertices[i++] = d[2];
-            vertices[i++] = a[0]; vertices[i++] = a[1]; vertices[i++] = a[2];
             vertices[i++] = b[0]; vertices[i++] = b[1]; vertices[i++] = b[2];
-            vertices[i++] = c[0]; vertices[i++] = c[1]; vertices[i++] = c[2];
+            vertices[i++] = d[0]; vertices[i++] = d[1]; vertices[i++] = d[2];
+
+            vertices[i++] = d[0]; vertices[i++] = d[1]; vertices[i++] = d[2];
+            vertices[i++] = b[0]; vertices[i++] = b[1]; vertices[i++] = b[2];
+            vertices[i++] = a[0]; vertices[i++] = a[1]; vertices[i++] = a[2];
+
+            if(col==1){
+              uvs[ii++] = 1.0; uvs[ii++] = 0.0;
+              uvs[ii++] = 1.0; uvs[ii++] = 1.0;
+              uvs[ii++] = 0.0; uvs[ii++] = 0.0;
+              uvs[ii++] = 0.0; uvs[ii++] = 0.0;
+              uvs[ii++] = 1.0; uvs[ii++] = 1.0;
+              uvs[ii++] = 0.0; uvs[ii++] = 1.0;
+            } else {
+              uvs[ii++] = 0.0; uvs[ii++] = 0.0;
+              uvs[ii++] = 0.0; uvs[ii++] = 1.0;
+              uvs[ii++] = 1.0; uvs[ii++] = 0.0;
+              uvs[ii++] = 1.0; uvs[ii++] = 0.0;
+              uvs[ii++] = 0.0; uvs[ii++] = 1.0;
+              uvs[ii++] = 1.0; uvs[ii++] = 1.0;
+            }
+
+
           }
           dr_=dr;
         }
 
 
         leafGeometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-        //leafGeometry.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) ); --ToDo:
-        var material = new THREE.MeshBasicMaterial( { color: 0x066b2e , wireframe:false} );
+        leafGeometry.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
+        var material = new THREE.MeshBasicMaterial( { color: 0xff6b2e , wireframe:false} );
         material.side = THREE.DoubleSide;
 
-        var leafMesh = new THREE.Mesh( leafGeometry, material );
+        // generate Differnt part of leef:
+        let nVert = leafGeometry.attributes.position.count;
+        leafGeometry.clearGroups();
+        leafGeometry.addGroup( 0, 12, 0 );
+        leafGeometry.addGroup( 12, nVert-12*2, 1 );
+        leafGeometry.addGroup( nVert-12, 12, 2 );
+
+        var leafMesh = new THREE.Mesh( leafGeometry, [palmleafEndMaterial,palmleafMaterial,palmleafTopMaterial] ); //palmleafMaterial
+
+
         leafMesh.rotateY(2*Math.PI/nLeafs*n);
 
         leafMesh.rotateX(0.1-(0.2*random(seed*n*0.5)));
-        leafMesh.rotateZ(0.4-random(seed*n*0.5)*0.2);
+        leafMesh.rotateZ(0.6-random(seed*n*0.5)*0.3);
         leafMesh.position.set(points[points.length-1].x,points[points.length-1].y-random(seed*n)*5,points[points.length-1].z);
         newPalmObject.add(leafMesh);
 
+
+
+
       }
+
+      // add cocconuts:
+      for(var k=0;k<nCoconuts;k++){
+        var coconutMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( random(seed*k)*1+1, 8-level, 8-level ), coconutMaterial);
+        coconutMesh.position.set(3*Math.sin(Math.random()*Math.PI*2),points[points.length-1].y-2,3*Math.cos(Math.random()*Math.PI*2));
+        if(level<3)newPalmObject.add(coconutMesh);
+      }
+
 
       // add new LOD model:
       this.lod.addLevel( newPalmObject, level* 150 );
@@ -161,5 +217,12 @@ class PalmTree {
     var posY = getFastHeight(pos.x,pos.z);
     this.lod.position.set(pos.x,posY-0.5,pos.z);
     Stage.scene.add(this.lod);
+
+    // Add collision Model:
+    this.collisionMesh = new THREE.Mesh( new THREE.BoxBufferGeometry( 4, 80, 4 ),new THREE.MeshBasicMaterial( {color: 0x00ff00} ));
+    this.collisionMesh.material.visible = false;
+    this.lod.add(this.collisionMesh);
+    Stage.objects.push(this.collisionMesh);
+
   }
 }

@@ -101,8 +101,8 @@ function loadWorld(){
     box.position.y = Math.floor( Math.random() * 20 ) * 20 + 10;
     box.position.z = Math.floor( Math.random() * 20 - 10 ) * 20;
 
-    var newObject = new Actor(Stage,box);
-    newObject.createPhysics(1.0,true,false,null);
+    //var newObject = new Actor(Stage,box);
+    //newObject.createPhysics(1.0,true,false,null);
   }
 
   // Add aditional objects:
@@ -143,4 +143,5 @@ function loadWorld(){
 
 
   initSky();
+  initRocks();
 }
