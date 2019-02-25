@@ -23,6 +23,8 @@ function randn_bm(seed) {
     return num;
 }
 
+//TestComment:
+
 var loader = new THREE.TextureLoader();
 var rockTexture = loader.load("src/textures/rock/rock_1.jpg");
 rockTexture.repeat.set( 10,10 );
