@@ -31,14 +31,29 @@ rockTexture.anisotropy = 16;
 var rockMaterial = new THREE.MeshBasicMaterial( {map:rockTexture, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
 rockMaterial.side = THREE.FrontSide;
 
+var ironTexture = loader.load("src/textures/rock/iron_0.png");
+var decalMaterial = new THREE.MeshPhongMaterial( {
+      map:ironTexture,
+			specular: 0x444444,
+			normalScale: new THREE.Vector2( 1, 1 ),
+			shininess: 30,
+			transparent: true,
+			depthTest: true,
+			depthWrite: false,
+			polygonOffset: true,
+			polygonOffsetFactor: - 4,
+			wireframe: false
+		} );
 
 class Rock {
   constructor(pos,dim,seed,roughness) {
 
+    this.decals = [];
 
     this.lod = new THREE.LOD();
     let nLevels = 5;
     if(!roughness)roughness=1;
+    var randPoint = null;
 
     var nHills = 8+randn_bm(seed)*8;
     for(var level=0;level<nLevels;level++){
@@ -67,10 +82,22 @@ class Rock {
         vertices[ j+2 ] *= -(Math.pow(x,2)/Math.pow(dim.x/2,2))+1;
         vertices[ j+2 ] *= -(Math.pow(y,2)/Math.pow(dim.z/2,2))+1;
 
+         if(!randPoint && j == 3*30)randPoint = new THREE.Vector3(x,vertices[ j+2 ],y);
+
       }
 
       var mesh = new THREE.Mesh( geometry, rockMaterial );
       mesh.rotateX(-90*Math.PI/180);
+
+      // Add ressources:
+      if(level<3){
+        var decalObject = new THREE.DecalGeometry( mesh, randPoint, new THREE.Euler( 0, 0, 0, 'XYZ' ), new THREE.Vector3(50,50,50));
+        var m = new THREE.Mesh( decalObject, decalMaterial );
+        this.decals.push( m );
+
+        mesh.add(m);
+      }
+
 
 
       // Create n level of details:
@@ -86,5 +113,5 @@ class Rock {
 
 
 function initRocks(){
-  var tempRock = new Rock(null,new THREE.Vector3(200,20,100),5,0.3);
+  var tempRock = new Rock(null,new THREE.Vector3(200,20,100),4,0.3);
 }
