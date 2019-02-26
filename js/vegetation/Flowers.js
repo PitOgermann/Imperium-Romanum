@@ -3,7 +3,7 @@ var loader = new THREE.TextureLoader();
 var bushMaterials = [];
 for(var i = 0;i<6;i++){
   var bushTexture = loader.load("src/textures/vegetation/bush/bush_"+i+".png");
-  var leafMaterial = new THREE.MeshBasicMaterial( {
+  var leafMaterial = new THREE.MeshLambertMaterial( {
     opacity:0.95,
     map:bushTexture,
     blending: THREE.NormalBlending,
@@ -47,7 +47,7 @@ class Bush{
 var grassMaterials = [];
 for(var i = 0;i<11;i++){
   var grassTexture = loader.load("src/textures/vegetation/grass/grass_"+i+".png");
-  var grassMaterial = new THREE.MeshBasicMaterial( {
+  var grassMaterial = new THREE.MeshStandardMaterial( {
     opacity:0.95,
     map:grassTexture,
     blending: THREE.NormalBlending,

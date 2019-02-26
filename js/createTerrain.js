@@ -26,7 +26,7 @@ for(var i =0;i<6;i++){
   groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
   groundTexture.repeat.set( 128,128 );
   groundTexture.anisotropy = 4;
-  let groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture ,wireframe: false} );
+  let groundMaterial = new THREE.MeshStandardMaterial( {roughness:0.65, map: groundTexture ,wireframe: false} );
   materials.push(groundMaterial);
 }
 
@@ -85,6 +85,7 @@ function createTerrainFromImage(src,textrueUrl,callback){
     }
 
       //var geometry2 = new THREE.Geometry().fromBufferGeometry( geometry );
+      var rockMaterial = new THREE.MeshNormalMaterial();
       var floor = new THREE.Mesh(geometry, materials[5]);
 
       //var helper = new THREE.FaceNormalsHelper( floor, 2, 0x00ff00, 1 );
@@ -93,7 +94,7 @@ function createTerrainFromImage(src,textrueUrl,callback){
       floor.position.set(0,0,0);
       floor.scale.set(mapScale,mapScale,mapScale);
 
-      floor.castShadow = true;
+      //floor.castShadow = true;
       floor.receiveShadow = true;
       Stage.scene.add( floor );
 

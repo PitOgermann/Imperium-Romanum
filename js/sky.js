@@ -79,6 +79,12 @@ function setSunPosition(pos){
   effectController.inclination = pos;
   Stage.ambientLight.intensity = 1-pos;
 
+  var sunPosition = sunSphere.position.clone();
+  sunPosition.multiplyScalar( 0.001 );
+  Stage.dirLight.position.set(sunPosition.x,sunPosition.y,sunPosition.z);
+  Stage.dirLight.intensity = 1.0*(1-pos);
+  Stage.directionalLightCounter.intensity = 0.1*(1-pos);
+
   // 0(day) - 1(night)
   var dayGain = Math.sin(pos*Math.PI);
   Stage.ambientLight.groundColor.r = 0.5+0.7*dayGain;

@@ -30,27 +30,32 @@ var rockTexture = loader.load("src/textures/rock/rock_1.jpg");
 rockTexture.repeat.set( 10,10 );
 rockTexture.wrapS = rockTexture.wrapT = THREE.RepeatWrapping;
 rockTexture.anisotropy = 16;
-var rockMaterial = new THREE.MeshBasicMaterial( {map:rockTexture, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
+var rockMaterial = new THREE.MeshStandardMaterial( {map:rockTexture, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
 rockMaterial.side = THREE.FrontSide;
+rockMaterial.flatShading = false;
+rockMaterial.shadowSide = THREE.DoubleSide;
 
 var ironTexture = loader.load("src/textures/rock/iron_0.png");
 var decalMaterial = new THREE.MeshPhongMaterial( {
       map:ironTexture,
-			specular: 0x444444,
 			normalScale: new THREE.Vector2( 1, 1 ),
-			shininess: 30,
+			shininess: 5,
 			transparent: true,
+      emissive: 0x2a0000,
 			depthTest: true,
 			depthWrite: false,
 			polygonOffset: true,
-			polygonOffsetFactor: - 4,
+			polygonOffsetFactor:  -1,
 			wireframe: false
 		} );
 
+
+
 class Rock {
-  constructor(pos,dim,seed,roughness) {
+  constructor(pos,dim,seed,roughness,metalRichness) {
 
     this.decals = [];
+    this.metalRichness = metalRichness;
 
     this.lod = new THREE.LOD();
     let nLevels = 5;
@@ -61,8 +66,6 @@ class Rock {
     for(var level=0;level<nLevels;level++){
       // generate Model:
       let divider = 2+level*level;
-      console.log(divider);
-      var material = new THREE.MeshBasicMaterial( { color: 0xff6b2e , wireframe:true} );
       var geometry = new THREE.PlaneBufferGeometry( dim.x,dim.z,dim.x/divider,dim.z/divider);
 
       // generate Hills:
@@ -89,15 +92,29 @@ class Rock {
       }
 
       var mesh = new THREE.Mesh( geometry, rockMaterial );
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       mesh.rotateX(-90*Math.PI/180);
+      mesh.updateMatrix();
 
       // Add ressources:
-      if(level<3){
-        var decalObject = new THREE.DecalGeometry( mesh, randPoint, new THREE.Euler( 0, 0, 0, 'XYZ' ), new THREE.Vector3(50,50,50));
-        var m = new THREE.Mesh( decalObject, decalMaterial );
-        this.decals.push( m );
+      if(level<2){
+        for(var i =0 ;i<20;i++){
+          mesh.updateMatrix();
+          let startPoint = new THREE.Vector3(dim.x/4-random(seed+i+i)*dim.x/2,dim.z/4-random(seed+i)*dim.z/2,dim.y+100);
+          console.log(startPoint);
+          var raycaster = new THREE.Raycaster( startPoint, new THREE.Vector3(0,0,-1), 0, dim.y+200 );
+          var intersects = raycaster.intersectObjects( [mesh,mesh] );
+          console.log(intersects);
+          randPoint = intersects[0].point;
+          var normal = intersects[0].face.normal.clone();
 
-        mesh.add(m);
+          var decalObject = new THREE.DecalGeometry( mesh, randPoint, new THREE.Euler( normal.x, normal.y, random(seed) * 2 * Math.PI, 'XYZ' ), new THREE.Vector3(5+random(seed)*5,5+random(seed+1)*5,5+random(seed+2)*5));
+          var m = new THREE.Mesh( decalObject, decalMaterial );
+          this.decals.push( m );
+
+          mesh.add(m);
+        }
       }
 
 
@@ -107,7 +124,7 @@ class Rock {
     }
 
     // set Model:
-    this.lod.position.set(100,-0.5,100);
+    this.lod.position.set(50,-0.5,50);
     Stage.scene.add(this.lod);
 
   }
@@ -115,5 +132,10 @@ class Rock {
 
 
 function initRocks(){
-  var tempRock = new Rock(null,new THREE.Vector3(200,20,100),4,0.3);
+  var tempRock = new Rock(null,new THREE.Vector3(200,20,100),1,0.4,{
+    gold:20.0,
+    silver:10.0,
+    cooper:5000.0,
+    tin:0.0
+  });
 }

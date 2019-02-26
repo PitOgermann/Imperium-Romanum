@@ -34,6 +34,7 @@ class AI {
       this.model = gltf.scene;
       this.model.scale.set(3,3,3);
       this.model.position.set(pos.x,pos.y,pos.z);
+      this.model.castShadow = true;
       Stage.scene.add( this.model );
       this.createAIAnimation( this.model, gltf.animations );
 

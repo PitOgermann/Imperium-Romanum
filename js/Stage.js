@@ -23,6 +23,9 @@ var Stage = {
 
   world:null,
   ambientLight:null,
+  dirLight:null,
+  directionalLightCounter:null,
+
 
   renderFunction: [],
 
@@ -34,9 +37,38 @@ var Stage = {
     this.scene.background = new THREE.Color( 0xffffff );
     this.scene.fog = new THREE.Fog( 0x888888, 50, 400 );
 
-    this.ambientLight = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.7 );
+    this.ambientLight = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.5 );
     this.ambientLight.position.set( 0.5, 400, 0.75 );
     this.scene.add( this.ambientLight );
+
+  //  var l2 = new THREE.AmbientLight( 0x303030 )
+  //  this.scene.add( l2 );
+
+
+		this.dirLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
+		this.dirLight.color.set( 0x777788 );
+		this.dirLight.position.set( 0, 1200, 0 );
+		this.scene.add( this.dirLight );
+
+		this.dirLight.castShadow = true;
+		this.dirLight.shadow.mapSize.width = 2048;
+		this.dirLight.shadow.mapSize.height = 2048;
+
+		var d = 2000;
+		this.dirLight.shadow.camera.left = - d;
+		this.dirLight.shadow.camera.right = d;
+		this.dirLight.shadow.camera.top = d;
+		this.dirLight.shadow.camera.bottom = - d;
+
+		this.dirLight.shadow.camera.far = 5000;
+		this.dirLight.shadow.bias = - 0.001;
+
+    console.log(this.dirLight);
+
+    this.directionalLightCounter = new THREE.DirectionalLight( 0xbbbbbb, 0.1);
+    this.directionalLightCounter.position.set( 0, -10, 0 );
+    this.scene.add( this.directionalLightCounter );
+
 
     this.controls = new THREE.PointerLockControls( this.camera );
 
@@ -79,6 +111,7 @@ var Stage = {
     // apply shadow:
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMapSoft = true;
 
     document.body.appendChild( this.renderer.domElement );
 
@@ -91,6 +124,25 @@ var Stage = {
 
     //
     window.addEventListener( 'resize', this.onWindowResize, false );
+
+    // Check if a new cache is available on page load.
+    window.addEventListener('load', function(e) {
+
+      window.applicationCache.addEventListener('updateready', function(e) {
+        if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+          // Browser downloaded a new app cache.
+          // Swap it in and reload the page to get the new hotness.
+          window.applicationCache.swapCache();
+          if (confirm('A new version of this site is available. Load it?')) {
+            window.location.reload();
+          }
+        } else {
+          // Manifest didn't changed. Nothing new to server.
+        }
+      }, false);
+
+    }, false);
+
 
 
 

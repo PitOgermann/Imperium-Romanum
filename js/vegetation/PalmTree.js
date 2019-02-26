@@ -6,27 +6,32 @@ function random(seed) {
 var loader = new THREE.TextureLoader();
 var palmleafTexture = loader.load("src/textures/vegetation/PalmTree/leafs_0.png");
 palmleafTexture.anisotropy = 4;
-var palmleafMaterial = new THREE.MeshBasicMaterial( { opacity:0.95, map:palmleafTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+var palmleafMaterial = new THREE.MeshStandardMaterial( { opacity:0.95, map:palmleafTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
 palmleafMaterial.side = THREE.DoubleSide;
+palmleafMaterial.flatShading = true;
 
 var palmleafTopTexture = loader.load("src/textures/vegetation/PalmTree/leafs_top.png");
 palmleafTopTexture.anisotropy = 4;
-var palmleafTopMaterial = new THREE.MeshBasicMaterial( { opacity:0.95, map:palmleafTopTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+var palmleafTopMaterial = new THREE.MeshStandardMaterial( { opacity:0.95, map:palmleafTopTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
 palmleafTopMaterial.side = THREE.DoubleSide;
+palmleafTopMaterial.flatShading = true;
 
 var palmleafEndTexture = loader.load("src/textures/vegetation/PalmTree/leafs_end.png");
-var palmleafEndMaterial = new THREE.MeshBasicMaterial( { opacity:0.95, map:palmleafEndTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+var palmleafEndMaterial = new THREE.MeshStandardMaterial( { opacity:0.95, map:palmleafEndTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
 palmleafEndMaterial.side = THREE.DoubleSide;
-
-var branchTexture = loader.load("src/textures/vegetation/PalmTree/palmTreeBark.jpg");
-var branchMaterial = new THREE.MeshBasicMaterial( {map:branchTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
-branchMaterial.wrapS = branchMaterial.wrapT = THREE.RepeatWrapping;
-branchMaterial.anisotropy = 4;
-branchMaterial.side = THREE.DoubleSide;
+palmleafEndMaterial.flatShading = true;
 
 var coconutTexture = loader.load("src/textures/vegetation/PalmTree/coconut.jpg");
-var coconutMaterial = new THREE.MeshBasicMaterial( {map:coconutTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
+var coconutMaterial = new THREE.MeshStandardMaterial( {map:coconutTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
 coconutMaterial.side = THREE.DoubleSide;
+
+var loader = new THREE.TextureLoader();
+var branchTexture = loader.load("src/textures/vegetation/PalmTree/palmTreeBark.jpg");
+var branchMaterial = new THREE.MeshStandardMaterial( {metalness: 0.0, roughness: 0.5, map:branchTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
+branchMaterial.wrapS = branchMaterial.wrapT = THREE.RepeatWrapping;
+branchMaterial.anisotropy = 4;
+branchMaterial.flatShading = true;
+branchMaterial.side = THREE.DoubleSide;
 
 class PalmTree {
   constructor(pos,height,seed) {
@@ -113,6 +118,7 @@ class PalmTree {
       //geometryBuffer.setIndex( new THREE.BufferAttribute( indices, 1 ) );
       var material = new THREE.MeshBasicMaterial( { color: 0x7E6D61 , wireframe:false} );
       var mesh = new THREE.Mesh( geometryBuffer, (level<2)?branchMaterial:material);
+      mesh.castShadow = true;
       newPalmObject.add(mesh);
 
 
@@ -186,6 +192,7 @@ class PalmTree {
         leafGeometry.addGroup( nVert-12, 12, 2 );
 
         var leafMesh = new THREE.Mesh( leafGeometry, [palmleafEndMaterial,palmleafMaterial,palmleafTopMaterial] ); //palmleafMaterial
+        leafMesh.castShadow = true;
 
 
         leafMesh.rotateY(2*Math.PI/nLeafs*n);
@@ -216,6 +223,7 @@ class PalmTree {
     this.lod.addLevel(  new THREE.Group(), (nLevels+1)* 150 );
     var posY = getFastHeight(pos.x,pos.z);
     this.lod.position.set(pos.x,posY-0.5,pos.z);
+    this.lod.castShadow = true;
     Stage.scene.add(this.lod);
 
     // Add collision Model:
