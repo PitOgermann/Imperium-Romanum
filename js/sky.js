@@ -85,6 +85,10 @@ function setSunPosition(pos){
   Stage.dirLight.intensity = 1.0*(1-pos);
   Stage.directionalLightCounter.intensity = 0.1*(1-pos);
 
+
+  //update water:
+  if(Stage.water)Stage.water.material.uniforms[ "sunDirection" ].value.copy( Stage.dirLight.position ).normalize();
+
   // 0(day) - 1(night)
   var dayGain = Math.sin(pos*Math.PI);
   Stage.ambientLight.groundColor.r = 0.5+0.7*dayGain;

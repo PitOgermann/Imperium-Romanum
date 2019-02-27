@@ -5,6 +5,7 @@ for(var i = 0;i<6;i++){
   var bushTexture = loader.load("src/textures/vegetation/bush/bush_"+i+".png");
   var leafMaterial = new THREE.MeshLambertMaterial( {
     opacity:0.95,
+    alphaTest: 0.4,
     map:bushTexture,
     blending: THREE.NormalBlending,
     depthTest: true,
@@ -34,11 +35,13 @@ class Bush{
       this.lod.addLevel( tempModel.clone(), (n_models-i) * 50 );
     }
     var posY = getFastHeight(x,z);
-    this.lod.position.set(x,posY+3*scale,z);
-    this.lod.rotation.y = Math.random() * Math.PI;
-    this.lod.scale.set(scale,scale,scale);
+    if(posY>=0){
+      this.lod.position.set(x,posY+3*scale,z);
+      this.lod.rotation.y = Math.random() * Math.PI;
+      this.lod.scale.set(scale,scale,scale);
 
-    Stage.scene.add( this.lod );
+      Stage.scene.add( this.lod );
+    }
   }
 }
 
@@ -49,6 +52,7 @@ for(var i = 0;i<11;i++){
   var grassTexture = loader.load("src/textures/vegetation/grass/grass_"+i+".png");
   var grassMaterial = new THREE.MeshStandardMaterial( {
     opacity:0.95,
+    alphaTest: 0.4,
     map:grassTexture,
     blending: THREE.NormalBlending,
     depthTest: true,
@@ -79,10 +83,13 @@ class Grass{
     }
 
     var posY = getFastHeight(x,z);
-    this.lod.position.set(x,posY+2.5*scale,z);
-    this.lod.rotation.y = Math.random() * Math.PI;
-    this.lod.scale.set(scale,scale,scale);
 
-    Stage.scene.add( this.lod );
+    if(posY>=0){
+      this.lod.position.set(x,posY+2.5*scale,z);
+      this.lod.rotation.y = Math.random() * Math.PI;
+      this.lod.scale.set(scale,scale,scale);
+
+      Stage.scene.add( this.lod );
+    }
   }
 }

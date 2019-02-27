@@ -6,28 +6,28 @@ function random(seed) {
 var loader = new THREE.TextureLoader();
 var palmleafTexture = loader.load("src/textures/vegetation/PalmTree/leafs_0.png");
 palmleafTexture.anisotropy = 4;
-var palmleafMaterial = new THREE.MeshStandardMaterial( { opacity:0.95, map:palmleafTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+var palmleafMaterial = new THREE.MeshStandardMaterial( { opacity:0.9,alphaTest: 0.5, map:palmleafTexture, blending: THREE.NormalBlending, depthWrite:true, depthTest: true, transparent : true} );
 palmleafMaterial.side = THREE.DoubleSide;
 palmleafMaterial.flatShading = true;
 
 var palmleafTopTexture = loader.load("src/textures/vegetation/PalmTree/leafs_top.png");
 palmleafTopTexture.anisotropy = 4;
-var palmleafTopMaterial = new THREE.MeshStandardMaterial( { opacity:0.95, map:palmleafTopTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+var palmleafTopMaterial = new THREE.MeshStandardMaterial( { opacity:0.95,alphaTest: 0.5, map:palmleafTopTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
 palmleafTopMaterial.side = THREE.DoubleSide;
 palmleafTopMaterial.flatShading = true;
 
 var palmleafEndTexture = loader.load("src/textures/vegetation/PalmTree/leafs_end.png");
-var palmleafEndMaterial = new THREE.MeshStandardMaterial( { opacity:0.95, map:palmleafEndTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
+var palmleafEndMaterial = new THREE.MeshStandardMaterial( { opacity:0.95,alphaTest: 0.5, map:palmleafEndTexture, blending: THREE.NormalBlending, depthTest: true, transparent : true} );
 palmleafEndMaterial.side = THREE.DoubleSide;
 palmleafEndMaterial.flatShading = true;
 
 var coconutTexture = loader.load("src/textures/vegetation/PalmTree/coconut.jpg");
-var coconutMaterial = new THREE.MeshStandardMaterial( {map:coconutTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
+var coconutMaterial = new THREE.MeshStandardMaterial( {map:coconutTexture, alphaTest: 0.5, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
 coconutMaterial.side = THREE.DoubleSide;
 
 var loader = new THREE.TextureLoader();
-var branchTexture = loader.load("src/textures/vegetation/PalmTree/palmTreeBark.jpg");
-var branchMaterial = new THREE.MeshStandardMaterial( {metalness: 0.0, roughness: 0.5, map:branchTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
+var branchTexture = loader.load("src/textures/vegetation/PalmTree/palmTreeBark.png");
+var branchMaterial = new THREE.MeshStandardMaterial( {metalness: 0.0,alphaTest: 0.5, roughness: 0.5, map:branchTexture, depthWrite:true, blending: THREE.NormalBlending, depthTest: true, transparent : false} );
 branchMaterial.wrapS = branchMaterial.wrapT = THREE.RepeatWrapping;
 branchMaterial.anisotropy = 4;
 branchMaterial.flatShading = true;
@@ -123,7 +123,7 @@ class PalmTree {
 
 
       //Compute: Leafs:
-      var nLeafs = 8+random(seed*4)*8;
+      var nLeafs = 8+random(seed+4)*16;
       for(var n=0;n<nLeafs;n++){
         var rows = 5-level;
         var dr = 0, dr_ = 0;
@@ -197,9 +197,9 @@ class PalmTree {
 
         leafMesh.rotateY(2*Math.PI/nLeafs*n);
 
-        leafMesh.rotateX(0.1-(0.2*random(seed*n*0.5)));
+        leafMesh.rotateX(0.5-(1*random(seed*n*0.5)));
         leafMesh.rotateZ(0.6-random(seed*n*0.5)*0.3);
-        leafMesh.position.set(points[points.length-1].x,points[points.length-1].y-random(seed*n)*5,points[points.length-1].z);
+        leafMesh.position.set(points[points.length-1].x,points[points.length-1].y-random(seed*n)*10,points[points.length-1].z);
         newPalmObject.add(leafMesh);
 
 
@@ -222,15 +222,21 @@ class PalmTree {
 
     this.lod.addLevel(  new THREE.Group(), (nLevels+1)* 150 );
     var posY = getFastHeight(pos.x,pos.z);
-    this.lod.position.set(pos.x,posY-0.5,pos.z);
-    this.lod.castShadow = true;
-    Stage.scene.add(this.lod);
 
     // Add collision Model:
-    this.collisionMesh = new THREE.Mesh( new THREE.BoxBufferGeometry( 4, 80, 4 ),new THREE.MeshBasicMaterial( {color: 0x00ff00} ));
-    this.collisionMesh.material.visible = false;
-    this.lod.add(this.collisionMesh);
-    Stage.objects.push(this.collisionMesh);
+    if(posY>=0){
+      this.lod.position.set(pos.x,posY-0.5,pos.z);
+      this.lod.castShadow = true;
+      Stage.scene.add(this.lod);
+
+      this.collisionMesh = new THREE.Mesh( new THREE.BoxBufferGeometry( 4, 80, 4 ),new THREE.MeshBasicMaterial( {color: 0x00ff00} ));
+      this.collisionMesh.material.visible = false;
+      this.lod.add(this.collisionMesh);
+      Stage.objects.push(this.collisionMesh);
+    }else {
+
+    }
+
 
   }
 }

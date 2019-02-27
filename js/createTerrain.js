@@ -16,7 +16,8 @@ function getFastHeight(x,y){
   var x_ = Math.round(x/(ratioX*mapScale));
   var y_ = Math.round(y/(ratioY*mapScale));
   var idMap = (x_+imgWidth/2+(y_+imgHeight/2)*imgWidth)*4;
-  return imgData[Math.round(idMap)];
+  if(imgData[Math.round(idMap)+2]==0) return imgData[Math.round(idMap)];
+  return -1;
 }
 
 var materials = [];
@@ -79,9 +80,13 @@ function createTerrainFromImage(src,textrueUrl,callback){
 
       var depth = imgData[idMap];
       var vegetation = imgData[idMap+1];
+      var water = imgData[idMap+2];
       //var buildingArea = imgData[idImg+2];
       //var unknown = imgData[idImg+3];
       vertices[ j +1 ] = depth;
+      if(water>0){
+        vertices[ j +1 ] = -10;
+      }
     }
 
       //var geometry2 = new THREE.Geometry().fromBufferGeometry( geometry );

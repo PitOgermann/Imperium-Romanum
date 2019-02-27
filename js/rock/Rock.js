@@ -35,20 +35,21 @@ rockMaterial.side = THREE.FrontSide;
 rockMaterial.flatShading = false;
 rockMaterial.shadowSide = THREE.DoubleSide;
 
-var ironTexture = loader.load("src/textures/rock/iron_0.png");
-var decalMaterial = new THREE.MeshPhongMaterial( {
-      map:ironTexture,
-			normalScale: new THREE.Vector2( 1, 1 ),
-			shininess: 5,
-			transparent: true,
-      emissive: 0x2a0000,
-			depthTest: true,
-			depthWrite: false,
-			polygonOffset: true,
-			polygonOffsetFactor:  -1,
-			wireframe: false
-		} );
-
+// load cooper texture:
+var cooperTextures = [];
+for(var i=0;i<3;i++){
+  var decalMaterial = new THREE.MeshPhongMaterial( {
+        map:loader.load("src/textures/rock/cooper/cooper_"+i+".png"),
+  			shininess: 0.5,
+  			transparent: true,
+        emissive: 0x003333,
+  			depthTest: true,
+  			depthWrite: false,
+  			polygonOffset: true,
+  			polygonOffsetFactor:  -1,
+  		} );
+  cooperTextures.push(decalMaterial);
+}
 
 
 class Rock {
@@ -102,15 +103,13 @@ class Rock {
         for(var i =0 ;i<20;i++){
           mesh.updateMatrix();
           let startPoint = new THREE.Vector3(dim.x/4-random(seed+i+i)*dim.x/2,dim.z/4-random(seed+i)*dim.z/2,dim.y+100);
-          console.log(startPoint);
           var raycaster = new THREE.Raycaster( startPoint, new THREE.Vector3(0,0,-1), 0, dim.y+200 );
           var intersects = raycaster.intersectObjects( [mesh,mesh] );
-          console.log(intersects);
           randPoint = intersects[0].point;
           var normal = intersects[0].face.normal.clone();
 
           var decalObject = new THREE.DecalGeometry( mesh, randPoint, new THREE.Euler( normal.x, normal.y, random(seed) * 2 * Math.PI, 'XYZ' ), new THREE.Vector3(5+random(seed)*5,5+random(seed+1)*5,5+random(seed+2)*5));
-          var m = new THREE.Mesh( decalObject, decalMaterial );
+          var m = new THREE.Mesh( decalObject, cooperTextures[Math.round(random(seed*i)*2)] );
           this.decals.push( m );
 
           mesh.add(m);
@@ -132,7 +131,7 @@ class Rock {
 
 
 function initRocks(){
-  var tempRock = new Rock(null,new THREE.Vector3(200,20,100),1,0.4,{
+  var tempRock = new Rock(null,new THREE.Vector3(200,20,100),1001,0.7,{
     gold:20.0,
     silver:10.0,
     cooper:5000.0,

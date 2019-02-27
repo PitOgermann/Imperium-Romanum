@@ -2,7 +2,7 @@
  * @author Pit Ogermann
  */
 
-var DebuggerMode = true;
+var DebuggerMode = false;
 
 var Stage = {
   detailGain : 1,
@@ -22,6 +22,7 @@ var Stage = {
   groundcaster: new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,200),
 
   world:null,
+  water:null,
   ambientLight:null,
   dirLight:null,
   directionalLightCounter:null,
@@ -197,6 +198,10 @@ function animate(){
 
     var fixedTimeStep = 1.0 / 60.0; // seconds
     var maxSubSteps = 3;
+
+    //update Water:
+    var time = performance.now() * 0.001;
+    Stage.water.material.uniforms[ "time" ].value += 1.0 / 60.0;
 
     //move player:
     Stage.player.animate(Stage.controls.isLocked);
