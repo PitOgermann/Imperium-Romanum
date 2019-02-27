@@ -31,6 +31,9 @@ for(var i =0;i<6;i++){
   materials.push(groundMaterial);
 }
 
+
+
+
 function createTerrainFromImage(src,textrueUrl,callback){
 
 
@@ -85,13 +88,12 @@ function createTerrainFromImage(src,textrueUrl,callback){
       //var unknown = imgData[idImg+3];
       vertices[ j +1 ] = depth;
       if(water>0){
-        vertices[ j +1 ] = -10;
+        //vertices[ j +1 ] = -10;
       }
     }
 
-      //var geometry2 = new THREE.Geometry().fromBufferGeometry( geometry );
-      var rockMaterial = new THREE.MeshNormalMaterial();
       var floor = new THREE.Mesh(geometry, materials[5]);
+
 
       //var helper = new THREE.FaceNormalsHelper( floor, 2, 0x00ff00, 1 );
       //Stage.scene.add( helper );

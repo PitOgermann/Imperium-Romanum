@@ -2,7 +2,7 @@
  * @author Pit Ogermann
  */
 
-var DebuggerMode = false;
+var DebuggerMode = true;
 
 var Stage = {
   detailGain : 1,
@@ -42,10 +42,6 @@ var Stage = {
     this.ambientLight.position.set( 0.5, 400, 0.75 );
     this.scene.add( this.ambientLight );
 
-  //  var l2 = new THREE.AmbientLight( 0x303030 )
-  //  this.scene.add( l2 );
-
-
 		this.dirLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
 		this.dirLight.color.set( 0x777788 );
 		this.dirLight.position.set( 0, 1200, 0 );
@@ -63,8 +59,6 @@ var Stage = {
 
 		this.dirLight.shadow.camera.far = 5000;
 		this.dirLight.shadow.bias = - 0.001;
-
-    console.log(this.dirLight);
 
     this.directionalLightCounter = new THREE.DirectionalLight( 0xbbbbbb, 0.1);
     this.directionalLightCounter.position.set( 0, -10, 0 );
@@ -201,7 +195,7 @@ function animate(){
 
     //update Water:
     var time = performance.now() * 0.001;
-    Stage.water.material.uniforms[ "time" ].value += 1.0 / 60.0;
+    if(Stage.water)Stage.water.material.uniforms[ "time" ].value += 1.0 / 60.0;
 
     //move player:
     Stage.player.animate(Stage.controls.isLocked);

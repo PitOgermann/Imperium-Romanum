@@ -88,8 +88,6 @@ class Rock {
         vertices[ j+2 ] *= -(Math.pow(x,2)/Math.pow(dim.x/2,2))+1;
         vertices[ j+2 ] *= -(Math.pow(y,2)/Math.pow(dim.z/2,2))+1;
 
-         if(!randPoint && j == 3*30)randPoint = new THREE.Vector3(x,vertices[ j+2 ],y);
-
       }
 
       var mesh = new THREE.Mesh( geometry, rockMaterial );
@@ -105,36 +103,38 @@ class Rock {
           let startPoint = new THREE.Vector3(dim.x/4-random(seed+i+i)*dim.x/2,dim.z/4-random(seed+i)*dim.z/2,dim.y+100);
           var raycaster = new THREE.Raycaster( startPoint, new THREE.Vector3(0,0,-1), 0, dim.y+200 );
           var intersects = raycaster.intersectObjects( [mesh,mesh] );
-          randPoint = intersects[0].point;
-          var normal = intersects[0].face.normal.clone();
+          if(intersects.length>0){
+            randPoint = intersects[0].point;
+            var normal = intersects[0].face.normal.clone();
 
-          var decalObject = new THREE.DecalGeometry( mesh, randPoint, new THREE.Euler( normal.x, normal.y, random(seed) * 2 * Math.PI, 'XYZ' ), new THREE.Vector3(5+random(seed)*5,5+random(seed+1)*5,5+random(seed+2)*5));
-          var m = new THREE.Mesh( decalObject, cooperTextures[Math.round(random(seed*i)*2)] );
-          this.decals.push( m );
+            var decalObject = new THREE.DecalGeometry( mesh, randPoint, new THREE.Euler( normal.x, normal.y, random(seed) * 2 * Math.PI, 'XYZ' ), new THREE.Vector3(5+random(seed)*5,5+random(seed+1)*5,5+random(seed+2)*5));
+            var m = new THREE.Mesh( decalObject, cooperTextures[Math.round(random(seed*i)*2)] );
+            this.decals.push( m );
 
-          mesh.add(m);
+            mesh.add(m);
+          }
+
         }
       }
 
 
 
       // Create n level of details:
-      this.lod.addLevel(mesh.clone(), level* 100 );
+      this.lod.addLevel(mesh, level* 100 );
     }
 
     // set Model:
-    this.lod.position.set(50,-0.5,50);
+    this.lod.position.set(pos.x,pos.y-0.5,pos.z);
     Stage.scene.add(this.lod);
 
   }
 }
 
 
+var rocks = [];
 function initRocks(){
-  var tempRock = new Rock(null,new THREE.Vector3(200,20,100),1001,0.7,{
-    gold:20.0,
-    silver:10.0,
-    cooper:5000.0,
-    tin:0.0
-  });
+  for(var i=0;i<5;i++){
+    rocks.push(new Rock(new THREE.Vector3(1000-Math.random()*2000,0,1000-Math.random()*2000),new THREE.Vector3(150,20,200),20,0.7,{ gold:20.0, silver:10.0, cooper:5000.0, tin:0.0 }));
+  }
+
 }
