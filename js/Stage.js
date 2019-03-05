@@ -193,16 +193,16 @@ function animate(){
     var fixedTimeStep = 1.0 / 60.0; // seconds
     var maxSubSteps = 3;
 
-    //update Water:
-    var time = performance.now() * 0.001;
-    if(Stage.water)Stage.water.material.uniforms[ "time" ].value += 1.0 / 60.0;
-
     //move player:
     Stage.player.animate(Stage.controls.isLocked);
 
     if(!this.prevTime)this.prevTime = performance.now();
     var dt = (performance.now() - this.prevTime) / 1000;
     this.prevTime = performance.now();
+
+
+    //update Water:
+    if(Stage.water)Stage.water.material.uniforms[ "time" ].value += dt*.5;
 
     //aplly Physic simulation
     for(var i in Stage.physicObjects)Stage.physicObjects[i].simulate(Stage.controls.isLocked);

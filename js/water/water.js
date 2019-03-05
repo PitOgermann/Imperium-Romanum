@@ -20,7 +20,9 @@ function initWater(){
   // define Shape:
   var dl = 5;
   var ds = 2;
-  var l = 4;
+  var l = 50;
+
+  /*
 
         var shape = new THREE.Shape();
         shape.lineTo( 0,dl );
@@ -32,26 +34,52 @@ function initWater(){
 
 
         var riverGeometry = new THREE.ExtrudeBufferGeometry( shape, extrudeSettings );
-        var bedMaterial = new THREE.MeshStandardMaterial( {side:THREE.BackSide, depthWrite:false, depthTest: true,wireframe:false,color: 0xff00ff });
+        var bedMaterial = new THREE.MeshStandardMaterial( {side:THREE.DoubleSide, depthWrite:true, depthTest: true,wireframe:false,color: 0xff00ff });
 
-  			bedMaterial.polygonOffset= true;
-  			bedMaterial.polygonOffsetFactor= -1;
 
         var riverBed = new THREE.Mesh( riverGeometry, bedMaterial );
         riverBed.rotation.x = - Math.PI / 2;
-        riverBed.position.set(dl+ds+l+ds+dl,0,10);
+        riverBed.position.set(dl+ds+l+ds+dl,10,15);
         //Stage.scene.add(riverBed);
 
-        Stage.world.riverBed = riverBed;
+        //Stage.world.riverBed = riverBed;
 
-
+*/
 
         // copute river:
         var points = curve.getPoints( extrudeSettings.steps );
         var riverShape = new THREE.Shape();
         for(var i=0;i<points.length;i++)riverShape.lineTo( points[i].x,points[i].z );
-        for(var i=points.length-1;i>0;i--)riverShape.lineTo( points[i].x-l,points[i].z );
+        for(var i=points.length-1;i>0;i--)riverShape.lineTo( points[i].x-l,points[i].z+l );
         var waterGeometry = new THREE.ShapeGeometry( riverShape );
+
+        //compute riverBed
+        var bedMaterial = new THREE.MeshStandardMaterial( {
+          map: new THREE.TextureLoader().load( "src/textures/water/riverbed.jpg",function ( texture ) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set( .1,.1 );
+          } ),
+          displacementMap : new THREE.TextureLoader().load( "src/textures/water/displacement.png",function ( texture ) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set( 128,128 );
+          } ),
+          displacementScale: 2,
+          displacementBias : -.5,
+          side:THREE.DoubleSide,
+          depthWrite:false,
+          depthTest: true,
+          wireframe:false,
+          //color: 0x003300,
+          polygonOffset: true,
+          polygonOffsetFactor : -2
+        });
+
+        var riverBedShape = new THREE.Shape();
+        for(var i=0;i<points.length;i++)riverBedShape.lineTo( points[i].x+1*l,points[i].z-1*l );
+        for(var i=points.length-1;i>0;i--)riverBedShape.lineTo( points[i].x-2*l,points[i].z+2*l );
+        var riverBedGeometry = new THREE.ShapeGeometry( riverBedShape );
+        var riverBed = new THREE.Mesh( riverBedGeometry, bedMaterial);
+
 
         Stage.water = new THREE.Water(
   					waterGeometry,
@@ -66,9 +94,13 @@ function initWater(){
   						sunColor: 0xffffff,
   						waterColor: 0x001e0f,
   						distortionScale: 3.7,
+              polygonOffset: true,
+              polygonOffsetFactor: -1,
+              displacementBias : -5,
   						fog: Stage.scene.fog !== undefined
   					}
   				);
+
 
           Stage.water.add(riverBed);
   				Stage.water.rotation.x = - Math.PI / 2;

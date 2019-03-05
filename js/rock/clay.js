@@ -74,5 +74,5 @@ class Clay {
 
 
 function initClay(){
-  var tempClay = new Clay(new THREE.Vector3(-100,0,-100),new THREE.Vector3(200,20,100),1001,400);
+  var tempClay = new Clay(new THREE.Vector3(-100,0,-100),new THREE.Vector3(200,20,100),1001,5000);
 }
