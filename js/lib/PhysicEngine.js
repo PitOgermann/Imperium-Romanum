@@ -11,7 +11,9 @@ class ENGINE{
       //run after loadWorld:
       this.terrain = result;
       loadModels();
-      setTimeout(function() { console.log("startTimeout");initFlora(); }, 4000);
+      window.onload = function () {
+        initFlora();
+      }
     }.bind(this));
 
     this.physicalObjects = [];
