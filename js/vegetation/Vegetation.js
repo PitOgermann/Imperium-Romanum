@@ -50,7 +50,7 @@ function initFlora(){
 		tempTree.position.set(randPos.x,randPos.y,randPos.z);
 		tempTree.rotateY(Math.random()*2*Math.PI);
 		tempTree.scale.set(1,1,1);
-		Stage.objects.push(tempTree.getObjectByName( "Collision" ));
+		Stage.objects.push(tempTree.getObjectByName( "Collision_side" ));
 		Stage.scene.add(tempTree);
 
 

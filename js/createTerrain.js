@@ -28,7 +28,13 @@ for(var i =0;i<6;i++){
   groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
   groundTexture.repeat.set( 128,128 );
   groundTexture.anisotropy = 4;
-  let groundMaterial = new THREE.MeshStandardMaterial( {roughness:0.65, map: groundTexture ,wireframe: false} );
+
+  let bumpTexture = loader.load("src/textures/terrain/ground_5_bump2.png");
+  bumpTexture.wrapS = bumpTexture.wrapT = THREE.RepeatWrapping;
+  bumpTexture.repeat.set( 128,128 );
+  bumpTexture.anisotropy = 4;
+
+  let groundMaterial = new THREE.MeshStandardMaterial( {roughness:0.65, map: groundTexture ,bumpScale:.8,  bumpMap :bumpTexture ,wireframe: false} );
   materials.push(groundMaterial);
 }
 

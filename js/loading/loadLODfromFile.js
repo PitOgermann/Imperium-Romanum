@@ -17,7 +17,7 @@ function loadLODfromFile(name,file,shadowsEnabled){
 
 
       // add collision
-      var collisionModel = gltf.scene.getObjectByName( "Collision" );
+      var collisionModel = gltf.scene.getObjectByName( "Collision_side" );
       var floorModel = gltf.scene.getObjectByName( "Collision_floor" );
 
 
