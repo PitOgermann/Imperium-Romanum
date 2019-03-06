@@ -3,7 +3,6 @@
 function loadLODfromFile(name,file,shadowsEnabled){
     var ModelLoader = new THREE.GLTFLoader();
     ModelLoader.load( file, function ( gltf ) {
-      console.log(name,gltf);
 
       // load LODs:
       var lodModel = new THREE.LOD();
@@ -32,9 +31,6 @@ function loadLODfromFile(name,file,shadowsEnabled){
         floorModel.material.visible = false;
         group.add(floorModel);
       }
-
-
-console.log(name,group);
 
       ModelLibary[name] = group;
     }, undefined, function ( error ) {
