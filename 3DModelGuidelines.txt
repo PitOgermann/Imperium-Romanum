@@ -1,0 +1,7 @@
+A 3D Model consists of up to 5 different models inside of one GLTF File.
+
+1. A high resolution Model named "HighRes"
+2. A low poly Model named "LowRes"
+3. A Model consisting of 2 2D Planes displaying a rendered version of the HighRes Model named "2D"
+4. A Collision Model for all horizontal Collision named "Collision_side"
+5. A Collision Model for all vertical Collision e.g. walking named "Collision_floor"
