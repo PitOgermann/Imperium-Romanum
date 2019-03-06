@@ -22,7 +22,12 @@ clayMaterial.shadowSide = THREE.FrontSide;
 
 
 class Clay {
-  constructor(pos,dim,seed,clayRichness) {
+  constructor(json) {
+
+    var pos = new THREE.Vector3(json.position[0],json.position[1],json.position[2]);
+    var dim = new THREE.Vector3(json.dimension[0],json.dimension[1],json.dimension[2]);
+    var seed = json.seed;
+    var clayRichness = json.clayRichness;
 
     this.lod = new THREE.LOD();
     let nLevels = 2;
@@ -72,7 +77,12 @@ class Clay {
   }
 }
 
-
+var clays=[];
 function initClay(){
-  var tempClay = new Clay(new THREE.Vector3(-100,0,-100),new THREE.Vector3(200,20,100),1001,1000);
+  $.getJSON("data/"+Stage.villageID+"/map/clay.json", function(json) {
+    for(var i in json.clays){
+      clays.push(new Clay(json.clays[i]));
+    }
+  });
+  //var tempClay = new Clay(new THREE.Vector3(-100,0,-100),new THREE.Vector3(200,20,100),1001,1000);
 }

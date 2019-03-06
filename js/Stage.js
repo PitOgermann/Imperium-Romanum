@@ -5,6 +5,7 @@
 var DebuggerMode = true;
 
 var Stage = {
+  villageID: "001",
   detailGain : 3,
   camera: null,
   scene: null,

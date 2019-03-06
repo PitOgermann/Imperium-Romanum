@@ -53,7 +53,13 @@ for(var i=0;i<3;i++){
 
 
 class Rock {
-  constructor(pos,dim,seed,roughness,metalRichness) {
+  constructor(json) {
+
+    var pos = new THREE.Vector3(json.position[0],json.position[1],json.position[2]);
+    var dim = new THREE.Vector3(json.dimension[0],json.dimension[1],json.dimension[2]);
+    var seed = json.seed;
+    var roughness = json.roughness;
+    var metalRichness = json.metalRichness;
 
     this.decals = [];
     this.metalRichness = metalRichness;
@@ -133,8 +139,10 @@ class Rock {
 
 var rocks = [];
 function initRocks(){
-  for(var i=0;i<10;i++){
-    //rocks.push(new Rock(new THREE.Vector3(1000-Math.random()*2000,0,1000-Math.random()*2000),new THREE.Vector3(150,15,150),Math.random()*20,0.7,{ gold:20.0, silver:10.0, cooper:5000.0, tin:0.0 }));
-  }
+  $.getJSON("data/"+Stage.villageID+"/map/rocks.json", function(json) {
+    for(var i in json.rocks){
+      rocks.push(new Rock(json.rocks[i]));
+    }
+  });
 
 }

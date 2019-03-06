@@ -1,0 +1,12 @@
+{
+  "wood":50,
+  "clay":100,
+  "sandstone":16,
+  "granite":20,
+
+  "gold":0,
+  "silver":50,
+  "copper":20,
+  "tin":13,
+  "bronze":104
+}

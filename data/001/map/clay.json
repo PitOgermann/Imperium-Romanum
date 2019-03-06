@@ -1,0 +1,12 @@
+{
+  "clays":[
+
+    {
+      "position":[-100,0,-100],
+      "dimension":[200,20,100],
+      "seed":1001,
+      "clayRichness":1000
+    }
+
+  ]
+}

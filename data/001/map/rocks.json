@@ -1,0 +1,27 @@
+{
+  "rocks":[
+    {
+      "position":[100,0,100],
+      "dimension":[150,8,150],
+      "seed":22,
+      "roughness":0.8,
+      "metalRichness":{
+        "gold":20.0,
+        "silver":10.0,
+        "copper":5000.0,
+        "tin":0.0 }
+    },
+    {
+      "position":[0,0,0],
+      "dimension":[150,15,150],
+      "seed":20,
+      "roughness":0.4,
+      "metalRichness":{
+        "gold":20.0,
+        "silver":10.0,
+        "copper":5000.0,
+        "tin":0.0 }
+    }
+
+  ]
+}

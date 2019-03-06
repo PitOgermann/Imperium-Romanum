@@ -7,7 +7,7 @@ class ENGINE{
     this.terrain = null;
     this.fastTerrain = null;
     this.riverBed = null;
-    createTerrainFromImage("../src/map/map4.png",'src/textures/terrain/grasslight-big.jpg', function(result){
+    createTerrainFromImage("../data/"+Stage.villageID+"/map/map.png",'src/textures/terrain/grasslight-big.jpg', function(result){
       //run after loadWorld:
       this.terrain = result;
       loadModels();
