@@ -134,7 +134,7 @@ class Rock {
 var rocks = [];
 function initRocks(){
   for(var i=0;i<10;i++){
-    rocks.push(new Rock(new THREE.Vector3(1000-Math.random()*2000,0,1000-Math.random()*2000),new THREE.Vector3(150,15,150),Math.random()*20,0.7,{ gold:20.0, silver:10.0, cooper:5000.0, tin:0.0 }));
+    //rocks.push(new Rock(new THREE.Vector3(1000-Math.random()*2000,0,1000-Math.random()*2000),new THREE.Vector3(150,15,150),Math.random()*20,0.7,{ gold:20.0, silver:10.0, cooper:5000.0, tin:0.0 }));
   }
 
 }

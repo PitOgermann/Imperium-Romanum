@@ -24,7 +24,7 @@ php -S 127.0.0.1:8081
 - [ ] relaunch online server
 
 ### graphic:
-- [ ] create a simple GUI 2D overlay over the game
+- [x] create a simple GUI 2D overlay over the game
     - shows the amount of Wood, stone, ...
     - link to the settings
 
