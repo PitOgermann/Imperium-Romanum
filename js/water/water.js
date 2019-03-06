@@ -59,17 +59,10 @@ function initWater(){
             texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
             texture.repeat.set( .1,.1 );
           } ),
-          displacementMap : new THREE.TextureLoader().load( "src/textures/water/displacement.png",function ( texture ) {
-            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set( 128,128 );
-          } ),
-          displacementScale: 2,
-          displacementBias : -.5,
           side:THREE.DoubleSide,
           depthWrite:false,
           depthTest: true,
-          wireframe:false,
-          //color: 0x003300,
+          wireframe:true,
           polygonOffset: true,
           polygonOffsetFactor : -2
         });

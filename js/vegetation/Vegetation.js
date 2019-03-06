@@ -29,8 +29,9 @@ var trees= [];
 // InitFlora after world load: --> PhysicEngine:
 
 var maxTrees = 64;
-var bushesPerTree = 2;
-var maxGrass = 512;
+var bushesPerTree = 4;
+var maxGrass = 128;
+
 function initFlora(){
 
   /*  ∑:  350  Trees
@@ -41,18 +42,26 @@ function initFlora(){
     var seed = Math.random()* 500;
     //var tree = new ProcTree(ProcTree.getSeedParameters(seed,5));
     var randPos = new THREE.Vector3(Math.random() * 1000 - 500,0,Math.random() * 1000 - 500);
-		var tree = new PalmTree(randPos,Math.random()*30+60,Math.random()*1000);
+		//var tree = new PalmTree(randPos,Math.random()*30+60,Math.random()*1000);
     //tree.setToWorld(randPos.x,randPos.y,randPos.z);
-    trees.push(tree);
+    //trees.push(tree);
+
+		let tempTree = ModelLibary["palmModel1"].clone();
+		tempTree.position.set(randPos.x,randPos.y,randPos.z);
+		tempTree.rotateY(Math.random()*2*Math.PI);
+		tempTree.scale.set(1,1,1);
+		Stage.objects.push(tempTree.getObjectByName( "Collision" ));
+		Stage.scene.add(tempTree);
+
 
     for(var u=0;u<Math.random()*bushesPerTree*Stage.detailGain;u++){
       randPos.x+=(Math.random() * 80 - 40);
       randPos.z+=(Math.random() * 80 - 40);
-      var newBush = new Bush(randPos.x,randPos.y,randPos.z);
+      //var newBush = new Bush(randPos.x,randPos.y,randPos.z);
     }
   }
   for(var i =0 ;i<maxGrass*Stage.detailGain;i++){
     var randPos = new THREE.Vector3(Math.random() * 1000 - 500,0,Math.random() * 1000 - 500);
-    var newBush = new Grass(randPos.x,randPos.y,randPos.z);
+    //var newBush = new Grass(randPos.x,randPos.y,randPos.z);
   }
 }

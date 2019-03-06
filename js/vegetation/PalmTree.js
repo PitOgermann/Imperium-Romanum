@@ -6,7 +6,7 @@ function random(seed) {
 var loader = new THREE.TextureLoader();
 var palmleafTexture = loader.load("src/textures/vegetation/PalmTree/leafs_0.png");
 palmleafTexture.anisotropy = 4;
-var palmleafMaterial = new THREE.MeshStandardMaterial( { opacity:0.9,alphaTest: 0.5, map:palmleafTexture, blending: THREE.NormalBlending, depthWrite:true, depthTest: true, transparent : true} );
+var palmleafMaterial = new THREE.MeshStandardMaterial( { opacity:0.9,alphaTest: 0.5, map:palmleafTexture, blending: THREE.NormalBlending, depthWrite:false, depthTest: true, transparent : true} );
 palmleafMaterial.side = THREE.DoubleSide;
 palmleafMaterial.flatShading = true;
 

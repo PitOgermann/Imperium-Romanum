@@ -10,7 +10,8 @@ class ENGINE{
     createTerrainFromImage("../src/map/map4.png",'src/textures/terrain/grasslight-big.jpg', function(result){
       //run after loadWorld:
       this.terrain = result;
-      initFlora();
+      loadModels();
+      setTimeout(function() { console.log("startTimeout");initFlora(); }, 4000);
     }.bind(this));
 
     this.physicalObjects = [];

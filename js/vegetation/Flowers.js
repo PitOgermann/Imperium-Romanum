@@ -5,11 +5,11 @@ for(var i = 0;i<6;i++){
   var bushTexture = loader.load("src/textures/vegetation/bush/bush_"+i+".png");
   var leafMaterial = new THREE.MeshLambertMaterial( {
     opacity:0.95,
-    alphaTest: 0.4,
+    alphaTest: 0,
     map:bushTexture,
     blending: THREE.NormalBlending,
     depthTest: true,
-    depthWrite: true,
+    depthWrite: false,
     transparent : true
   } );
   leafMaterial.side = THREE.DoubleSide;

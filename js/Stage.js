@@ -5,7 +5,7 @@
 var DebuggerMode = true;
 
 var Stage = {
-  detailGain : 1,
+  detailGain : 3,
   camera: null,
   scene: null,
   renderer: null,
