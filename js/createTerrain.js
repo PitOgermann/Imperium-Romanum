@@ -23,7 +23,8 @@ function getFastHeight(x,y){
 var materials = [];
 var loader = new THREE.TextureLoader();
 for(var i =0;i<6;i++){
-  let groundTexture = loader.load("src/textures/terrain/ground_"+i+".jpg");
+  let groundTexture = loader.load("src/textures/terrain/ground_"+5+".png");
+//    let groundTexture = loader.load("src/textures/terrain/ground_"+i+".jpg");
   groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
   groundTexture.repeat.set( 128,128 );
   groundTexture.anisotropy = 4;
