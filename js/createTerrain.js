@@ -29,7 +29,7 @@ for(var i =0;i<6;i++){
   groundTexture.repeat.set( 128,128 );
   groundTexture.anisotropy = 4;
 
-  let bumpTexture = loader.load("src/textures/terrain/ground_5_bump2.png");
+  let bumpTexture = loader.load("src/textures/terrain/ground_5_bump.png");
   bumpTexture.wrapS = bumpTexture.wrapT = THREE.RepeatWrapping;
   bumpTexture.repeat.set( 128,128 );
   bumpTexture.anisotropy = 4;
