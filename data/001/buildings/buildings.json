@@ -1,0 +1,10 @@
+{
+  "buildings":[
+
+    {
+      "name":"townhall",
+      "position":[50,0,50]
+    }
+
+  ]
+}

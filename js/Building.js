@@ -16,8 +16,8 @@ class BuildingTemplate{
     this.workingPoint = null;
   }
 
-  static placeBuilding(building){
-    var template = BuildingTemplate.getTemplateFromName(buildingTemplates,building);
+  static placeBuilding(buildingName){
+    var template = BuildingTemplate.getTemplateFromName(buildingTemplates,buildingName);
     var newBuilding = new Building(template,new THREE.Vector3(0,10,0));
 
     //attach new building to player:
@@ -112,9 +112,5 @@ var placeMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
 var tempMesh = new THREE.Mesh( new THREE.CubeGeometry(20,20,30), groundMaterial);
 var tempMeshPlace = new THREE.Mesh( new THREE.CubeGeometry(20,20,30), placeMaterial);
 
-/*
-LoadModel as THREE 3dObject
-*/
-//var tempObj = loaderTim("pathObj","pathTexture");
 buildingTemplates.push(new BuildingTemplate("townhall","infrastructure",tempMeshPlace,tempMesh,1000));
 buildingTemplates.workingPoint = new THREE.Vector3(0,0,30);

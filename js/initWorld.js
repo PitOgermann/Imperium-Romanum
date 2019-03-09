@@ -141,9 +141,9 @@ function loadWorld(){
   testObject3.createPhysics(1.0,true,true,null);
   testObject3.hitpoints = 30;
 
-
   initSky();
   initRocks();
   initClay();
   initWater();
+  loadBuildings();
 }
