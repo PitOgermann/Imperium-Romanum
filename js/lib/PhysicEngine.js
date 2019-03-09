@@ -10,6 +10,8 @@ class ENGINE{
     createTerrainFromImage("../data/"+Stage.villageID+"/map/map.png",'src/textures/terrain/grasslight-big.jpg', function(result){
       //run after loadWorld:
       this.terrain = result;
+      Stage.objects_ground.push(this.terrain);
+
       loadModels();
       window.onload = function () {
         initFlora();

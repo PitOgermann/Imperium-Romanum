@@ -27,8 +27,6 @@ var Player = {
   stamina: 50,
   gradient: 0,
 
-  groundIntersection: null,
-
   colisionModel: null,
   colisionModelPhysic: null,
   colisionDetected: false,
@@ -203,7 +201,6 @@ var Player = {
         delta=0.2;
       }
 
-
       //Compute velocity:
       this.velocity.x -= this.velocity.x * PHYSICS.groundResistance * delta;
       this.velocity.z -= this.velocity.z * PHYSICS.groundResistance * delta;
@@ -211,7 +208,7 @@ var Player = {
       //Stokes-Reibungsgestez: m*dt(v) = -m*g- beta*v --> -dt(v) = g+ beta*v/m
       // Newton-Reibung: F_r = k*v^2
       var f_g = PHYSICS.gravitation * this.mass;
-      var f_r = 0; //(this.velocity.y < 0)? PHYSICS.airResistance * (this.velocity.y*delta)**2 :0;
+      var f_r = (this.velocity.y < 0)? PHYSICS.airResistance * (this.velocity.y*delta)**2 :0;
       this.velocity.y -= (f_g-f_r) * delta;
 
       this.direction.z = Number( this.moveForward ) - Number( this.moveBackward );
@@ -222,40 +219,40 @@ var Player = {
       //if(!this.canJump) gradiantGain = 1;
       //console.log(gradiantGain);
 
-      // compute gradient speed:
-      let gradientGainX = 1;
-      let gradientGainZ = 1;
+      // apply gradient of terrain:
+      var vector = new THREE.Vector3(this.gradient.x,this.gradient.y,this.gradient.z);
+      var axis = new THREE.Vector3( 0, -1, 0 );
+      //vector.applyAxisAngle( axis, this.root.controls.getObject().rotation.y +90*Math.PI/180);
+      vector.applyAxisAngle( axis, 90*Math.PI/180);
+      //console.log(vector);
 
-      let angleToNormalX = 0;
-      if(this.groundIntersection){
-        let gradientGain = this.groundIntersection.face.normal.clone();
-        let axis = new THREE.Vector3( 0, -1, 0 );
-        gradientGain.applyAxisAngle( axis, this.root.controls.getObject().rotation.y);
-        gradientGainX = 2-(1+gradientGain.z);
-
-
-
-        //gradientGainZ = 2-(1+gradientGain.x); //  wrong direction!
-        angleToNormalX = gradientGain.angleTo(new THREE.Vector3( 0, 0, 1 ))-Math.PI/2;
-
-      }
-
-      if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta * gradientGainX;
-      if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta * gradientGainZ;
+      if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta + this.direction.z *this.gradient.z*50;
+      if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta + this.direction.x *this.gradient.x*50;
 
       // compute Collision:
-      if(Math.abs(this.velocity.x)+Math.abs(this.velocity.z)>0.01){
-        this.colisionDetected = detectHyperCollision(this.root,false);
 
-        var backImpulse = PHYSICS.recoil;
-        if(this.colisionDetected.isColliding){
-          var prevVelocity = this.velocity.clone();
-          this.velocity.negate();
-          this.velocity.y = 0;
-          this.run = false;
-        }
+      // check moving collision:
+      if(Math.abs(this.velocity.x)+Math.abs(this.velocity.z)>0.01)this.colisionDetected = detectHyperCollision(this.root,false);
+
+      // Chek ground:
+      var onObject = detectGround(this.root,false,3).isOnGround;
+
+
+      // jumping:
+      this.canJump = false;
+      if ( onObject === true ) {
+        this.velocity.y = Math.max( 0, this.velocity.y );
+        this.canJump = true;
       }
 
+      //if collidng!
+      var backImpulse = PHYSICS.recoil;
+      if(this.colisionDetected.isColliding){
+        var prevVelocity = this.velocity.clone();
+        this.velocity.negate();
+        this.velocity.y = 0;
+        this.run = false;
+      }
 
       //run:
       if(this.run){
@@ -269,9 +266,7 @@ var Player = {
 
       //change Position:
       if(!(this.colisionDetected.isColliding && this.colisionDetected.distance<5)){
-        let dx  = this.velocity.x * delta *((this.run&& this.stamina>0)?this.runGain:1);
-        let dx_ = dx*Math.cos(angleToNormalX);
-        this.root.controls.getObject().translateX(dx);
+        this.root.controls.getObject().translateX( this.velocity.x * delta *((this.run&& this.stamina>0)?this.runGain:1));
         this.root.controls.getObject().translateY( this.velocity.y * delta );
         this.root.controls.getObject().translateZ( this.velocity.z * delta *((this.run&& this.stamina>0)?this.runGain:1));
       } else if(this.colisionDetected.distance<5){
@@ -284,15 +279,19 @@ var Player = {
         this.root.controls.getObject().position.set(teleportVec.x,teleportVec.y,teleportVec.z);
       }
 
+      //check ground height:
+      if(Stage.world.terrain&& (Math.abs(this.velocity.x)>0.1 || Math.abs(this.velocity.z)>0.1 || Math.abs(this.velocity.y)>0.1) ){
+        let groundTracker = Stage.getGroundPosition(this.root.controls.getObject().position.clone(),this.groundHeight);
+        this.groundHeight = groundTracker.height;
+        this.gradient = groundTracker.gradient;
+      }
 
       // is on ground:
-      this.groundIntersection = getHeightAt(this.root.controls.getObject().position.clone());
-      let groundPosition = this.groundIntersection.height;
-
-      if ( this.root.controls.getObject().position.y < groundPosition+10 ) {
+      if ( this.root.controls.getObject().position.y < this.groundHeight+11 ) {
         this.velocity.y = 0;
+        if(this.root.controls.getObject().position.y < this.groundHeight+9)this.root.controls.getObject().position.y = this.groundHeight+9;
+
         this.canJump = true;
-        this.root.controls.getObject().position.y = groundPosition+11;
       }
 
     }

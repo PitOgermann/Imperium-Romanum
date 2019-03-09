@@ -8,7 +8,7 @@
  ALPHA; null
  */
 
-var mapWidth = 2048, mapHeight = 2048;
+var mapWidth = 1024, mapHeight = 1024;
 var mapScale;
 var imgData, imgWidth,imgWidth, imgHeight,ratioX,ratioY;
 
@@ -101,7 +101,7 @@ function createTerrainFromImage(src,textrueUrl,callback){
     }
 
     geometryBuffer.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    geometryBuffer.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
+    //geometryBuffer.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
     //geometryBuffer.setIndex( new THREE.BufferAttribute( indices, 1 ) );
 
     //  geometryBuffer.rotateX( - Math.PI / 2 );

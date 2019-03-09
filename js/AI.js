@@ -46,7 +46,7 @@ class AI {
       this.bobject.position.y = 2.5;
       this.bobject.material.visible = DebuggerMode;
       this.bobject.root = this;
-      Stage.objects.push(this.bobject);
+      Stage.objects_side.push(this.bobject);
       this.model.add(this.bobject);
 
       // add speachBouble:

@@ -6,14 +6,16 @@ var DebuggerMode = true;
 
 var Stage = {
   villageID: "001",
-  detailGain : 3,
+  detailGain : 4,
   camera: null,
   scene: null,
   renderer: null,
   controls: null,
   stats: null,
 
-  objects: [],
+  //objects: [],
+  objects_ground: [],
+  objects_side: [],
 
   physicObjects: [],
   player: null,
@@ -208,10 +210,11 @@ function animate(){
     //aplly Physic simulation
     for(var i in Stage.physicObjects)Stage.physicObjects[i].simulate(Stage.controls.isLocked);
 
-    //update LOD
+    //update LOD && 2d Planes
     Stage.scene.traverse( function ( object ) {
       if ( object instanceof THREE.LOD ) object.update( Stage.camera );
-        } );
+      if ( object.name == "2dRotation") object.lookAt(Player.root.controls.getObject().position);
+    } );
 
     Stage.renderer.render( Stage.scene, Stage.camera );
 

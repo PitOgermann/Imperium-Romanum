@@ -24,22 +24,27 @@ class Bush{
     this.lod = new THREE.LOD();
 
     var tempModel = new THREE.Group();
-    var n_models = 4;
-    for(var i=1;i<n_models;i++){
+    this.lod.addLevel( tempModel.clone(), 200 );
+    var n_models = 3;
+    for(var i=0;i<n_models;i++){
       var newLayer = new THREE.Mesh(new THREE.PlaneBufferGeometry( 6, 6, 1) , mat );
       newLayer.position.set(0,0,0);
-      newLayer.rotation.y = i*Math.PI / n_models;
+      newLayer.rotation.y = i*2*Math.PI / (n_models);
       tempModel.add(newLayer);
 
       //add Model to LOD
       this.lod.addLevel( tempModel.clone(), (n_models-i) * 50 );
     }
+
+    // add rotation to user:
+    this.lod.children[1].children[0].name = "2dRotation";
+
     var posY = getFastHeight(x,z);
+    //posY = getHeightAt(new THREE.Vector3(x,0,z)).height;
     if(posY>=0){
       this.lod.position.set(x,posY+3*scale,z);
       this.lod.rotation.y = Math.random() * Math.PI;
       this.lod.scale.set(scale,scale,scale);
-
       Stage.scene.add( this.lod );
     }
   }
@@ -56,7 +61,7 @@ for(var i = 0;i<11;i++){
     map:grassTexture,
     blending: THREE.NormalBlending,
     depthTest: true,
-    depthWrite: true,
+    depthWrite: false,
     transparent : true
   } );
   grassMaterial.side = THREE.DoubleSide;
@@ -70,20 +75,23 @@ class Grass{
     this.lod = new THREE.LOD();
 
     var tempModel = new THREE.Group();
-    var n_models = 1+Math.round(Math.random()*2);
+    var n_models = 3;
     this.lod.addLevel( tempModel.clone(), 200 );
     for(var i=0;i<n_models;i++){
       var newLayer = new THREE.Mesh(new THREE.PlaneBufferGeometry( 5, 5, 1) , mat );
       newLayer.position.set(0,0,0);
-      newLayer.rotation.y = i*Math.PI / n_models;
+      newLayer.rotation.y = i*2*Math.PI / n_models;
       tempModel.add(newLayer);
 
       //add Model to LOD
       this.lod.addLevel( tempModel.clone(), (n_models-i) * 40 );
     }
 
-    var posY = getFastHeight(x,z);
+    // add rotation to user:
+    this.lod.children[1].children[0].name = "2dRotation";
 
+    var posY = getFastHeight(x,z);
+    //posY = getHeightAt(new THREE.Vector3(x,0,z));
     if(posY>=0){
       this.lod.position.set(x,posY+2.5*scale,z);
       this.lod.rotation.y = Math.random() * Math.PI;

@@ -132,7 +132,7 @@ class Rock {
     // set Model:
     this.lod.position.set(pos.x,pos.y-0.5,pos.z);
     Stage.scene.add(this.lod);
-
+    Stage.objects_ground.push(this.lod);
   }
 }
 

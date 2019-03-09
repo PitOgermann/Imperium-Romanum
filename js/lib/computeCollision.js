@@ -1,6 +1,24 @@
 /**
  * @author Pit Ogermann
  */
+var groundRaytracer = new THREE.Raycaster(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -1, 0),0,300);
+function getHeightAt(pos){
+  let height = 0;
+  let face = null;
+
+  groundRaytracer.ray.origin.set(pos.x,300,pos.z);
+  var intersects = groundRaytracer.intersectObjects(Stage.objects_ground );
+  if(intersects.length>0){
+    height = 300-intersects[0].distance;
+    face = intersects[0].face;
+  }
+
+  return {
+    height:height,
+    face:face
+  };
+}
+
 
 function objectBetween2Points(a,b,selfObject){
   // Check if intersection is between:
@@ -8,7 +26,7 @@ function objectBetween2Points(a,b,selfObject){
   dir.subVectors( b,a ).normalize();
   var length = a.distanceTo( b );
   var raycaster = new THREE.Raycaster( a, dir, 0, length );
-  var intersects = raycaster.intersectObjects( Stage.objects );
+  var intersects = raycaster.intersectObjects( Stage.objects_side );
 
   let firstIntersection = null;
   for (var u in intersects) if(intersects[u].object!=selfObject){
@@ -54,7 +72,7 @@ function detectCollision_old(root,origObject,collisionModel,reqObject){
     var directionVector = globalVertex.sub( originPoint );
 
     var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
-    var collisionResults = ray.intersectObjects( root.objects);
+    var collisionResults = ray.intersectObjects( root.objects_side);
     if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
       isColl=true;
       if(reqObject){
@@ -86,7 +104,7 @@ function detectCollision(root,model,reqObject){
     var directionVector = globalVertex.sub( origPosition );
 
     var ray = new THREE.Raycaster( origPosition, directionVector.clone().normalize() );
-    var collisionResults = ray.intersectObjects( Stage.objects );
+    var collisionResults = ray.intersectObjects( Stage.objects_side );
     if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
       isColl=true;
       if(reqObject){
@@ -118,7 +136,7 @@ function detectCollision2(root,model,reqObject){
     var directionVector = globalVertex.sub( origPosition );
 
     var ray = new THREE.Raycaster( origPosition, directionVector.clone().normalize() );
-    var collisionResults = ray.intersectObjects( root.objects );
+    var collisionResults = ray.intersectObjects( root.objects_side );
     if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
       isColl=true;
       if(reqObject){
@@ -170,12 +188,8 @@ function detectGround(root,reqObject,N,velocityY){
 
   raycaster.ray.origin.copy( root.controls.getObject().position );
   raycaster.ray.origin.y += 2;
-  var intersections = raycaster.intersectObjects( root.objects );
+  var intersections = raycaster.intersectObjects( root.objects_ground );
   if(intersections.length > 0){
-    //check closest Length:
-    //console.log(intersections);
-
-    //console.log(prevHeight-root.controls.getObject().position.y);
     if(prevHeight-root.controls.getObject().position.y>1){
       if(DebuggerMode)console.log("Jump");
       root.controls.getObject().position.y = intersections[0].point.y+10-2;
@@ -244,7 +258,7 @@ function detectHyperCollision(root,reqObject){
   //for(var i =0;i<n;i++)root.scene.remove ( arrows[i] );
 
   //Define rays:
-  var intersections = raycaster.intersectObjects( root.objects );
+  var intersections = raycaster.intersectObjects( root.objects_side );
 
   var colliding = false;
   var intersections = null;
@@ -257,7 +271,7 @@ function detectHyperCollision(root,reqObject){
       angle.applyAxisAngle( axis, u);
       //arrows[i++]=new THREE.ArrowHelper( angle, start, 7, 0xff0000 );
       var raycaster = new THREE.Raycaster( start,angle, 0, 7 );
-      var intersections = raycaster.intersectObjects( Stage.objects );
+      var intersections = raycaster.intersectObjects( Stage.objects_side );
       if(intersections.length > 0){
         colliding = true;
         distToObj = intersections[0].distance;

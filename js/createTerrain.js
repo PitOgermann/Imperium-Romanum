@@ -8,7 +8,7 @@
  ALPHA; null
  */
 
-var mapWidth = 2048, mapHeight = 2048;
+var mapWidth = 1024, mapHeight = 1024;
 var mapScale = 4;
 var imgData, imgWidth,imgWidth, imgHeight,ratioX,ratioY;
 

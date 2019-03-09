@@ -37,7 +37,7 @@ class PhysicModel{
     this.model.add(this.simplifiedModel);
 
 
-    if(collidable)Stage.objects.push(this.model);
+    if(collidable)Stage.objects_side.push(this.model);
 
     this.enablePhysics = enablePhysics;
     // add to physics calulation:
