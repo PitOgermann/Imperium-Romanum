@@ -144,6 +144,7 @@ function loadWorld(){
   initSky();
   initRocks();
   initClay();
+  initCliffs();
   initWater();
   loadBuildings();
 }

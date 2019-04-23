@@ -148,6 +148,10 @@ var Player = {
         if(this.setBuilding)this.setBuilding.model.rotateY(-0.05);
       break;
 
+      case 80: //p: print position:
+        if(DebuggerMode)console.log(this.root.controls.getObject().position);
+      break;
+
     }
 
   },

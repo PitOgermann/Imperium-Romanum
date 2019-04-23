@@ -22,29 +22,60 @@ function initWater(){
   var ds = 2;
   var l = 50;
 
-  /*
-
-        var shape = new THREE.Shape();
-        shape.lineTo( 0,dl );
-        shape.lineTo( 10,dl+ds );
-        shape.lineTo( 10,dl+ds+l );
-        shape.lineTo( 0, dl+ds+l+ds );
-        shape.lineTo( 0, dl+ds+l+ds+dl );
-        shape.moveTo( 0, 0 );
 
 
-        var riverGeometry = new THREE.ExtrudeBufferGeometry( shape, extrudeSettings );
-        var bedMaterial = new THREE.MeshStandardMaterial( {side:THREE.DoubleSide, depthWrite:true, depthTest: true,wireframe:false,color: 0xff00ff });
+  let h_ = 3;
+  let l_ = 20;
+  let nPoints = 4;
+
+        var shapeBed = new THREE.Shape();
+        shapeBed.moveTo( 0,l_ );
+        for(var i=0;i<nPoints;i++){
+          shapeBed.lineTo( i*h_/nPoints,(nPoints-i)*l_/nPoints );
+        }
+        shapeBed.lineTo( h_, 0 );
+        shapeBed.lineTo( 0, 0 );
+        shapeBed.moveTo( 0,l_ );
 
 
-        var riverBed = new THREE.Mesh( riverGeometry, bedMaterial );
-        riverBed.rotation.x = - Math.PI / 2;
-        riverBed.position.set(dl+ds+l+ds+dl,10,15);
-        //Stage.scene.add(riverBed);
+        let riverGeometryBed = new THREE.ExtrudeBufferGeometry( shapeBed, extrudeSettings );
+        //let bedMaterialTest = new THREE.MeshStandardMaterial( {side:THREE.DoubleSide, depthWrite:true, depthTest: true,wireframe:true,color: 0xff00ff });
 
+        let bedMaterialTest = new THREE.MeshStandardMaterial( {
+          map: new THREE.TextureLoader().load( "src/textures/water/riverbed.jpg",function ( texture ) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set( 1,1 );
+          } ),
+          side:THREE.DoubleSide,
+          depthWrite:true,
+          depthTest: true,
+          wireframe:false,
+          //polygonOffset: true,
+          //polygonOffsetFactor : -1
+        });
+
+        // add random Profile:
+
+        var verticesRiverBed = riverGeometryBed.attributes.position.array;
+        for ( var j = 0, li = verticesRiverBed.length; j < li; j += 3 ) {
+          var x = verticesRiverBed[j];
+          var y = verticesRiverBed[j + 1];
+          var z = verticesRiverBed[j + 2];
+
+          if(y!=10){ // is not ground:
+            verticesRiverBed[ j+1 ] -= 1-Math.random()*2;
+          }
+        }
+
+
+        var riverBedLeft = new THREE.Mesh( riverGeometryBed, bedMaterialTest );
+        riverBedLeft.geometry.uvsNeedUpdate = true;
+        riverBedLeft.updateMatrix();
+        riverBedLeft.rotation.x = - Math.PI / 2;
+        riverBedLeft.position.set(0,0,10);
         //Stage.world.riverBed = riverBed;
 
-*/
+
 
         // copute river:
         var points = curve.getPoints( extrudeSettings.steps );
@@ -54,17 +85,17 @@ function initWater(){
         var waterGeometry = new THREE.ShapeGeometry( riverShape );
 
         //compute riverBed
-        var bedMaterial = new THREE.MeshStandardMaterial( {
+        let bedMaterial = new THREE.MeshStandardMaterial( {
           map: new THREE.TextureLoader().load( "src/textures/water/riverbed.jpg",function ( texture ) {
             texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
             texture.repeat.set( .1,.1 );
           } ),
           side:THREE.DoubleSide,
-          depthWrite:false,
+          depthWrite:true,
           depthTest: true,
           wireframe:true,
           polygonOffset: true,
-          polygonOffsetFactor : -2
+          polygonOffsetFactor : -1
         });
 
         var riverBedShape = new THREE.Shape();
@@ -96,8 +127,11 @@ function initWater(){
 
 
           Stage.water.add(riverBed);
+          Stage.water.add(riverBedLeft);
   				Stage.water.rotation.x = - Math.PI / 2;
           Stage.water.position.set(0,1,0);
+
+
 
 
   				Stage.scene.add( Stage.water );
