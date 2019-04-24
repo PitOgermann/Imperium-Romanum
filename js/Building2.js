@@ -42,7 +42,7 @@ class Building2 {
     this.constructionHUD = new HUDSystem('buildingProcessHUD',false);
 
     if(!placeFunction){
-      this.model.position.set(position.x,position.y+this.model.fundamentOffset,position.z);
+      this.model.position.set(position.x,position.y,position.z);
       Stage.scene.add(this.model);
     }
 

@@ -193,12 +193,14 @@ function animate(){
   requestAnimationFrame( animate );
 
   if(LoadingProcedure){ // loading Models:
-    if(allModelsAreLoaded()){
+    let modelsReady = allModelsAreLoaded();
+    console.log(modelsReady);
+    if(modelsReady){
+      LoadingProcedure = false;
       loadWorld();
       initAI();
       setSunPosition(0);
-      LoadingProcedure = false;
-    } {
+    } else {
       // loadingScreen:
     }
   } else {

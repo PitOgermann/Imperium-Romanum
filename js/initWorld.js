@@ -8,6 +8,9 @@ var color =  new THREE.Color();
 function loadWorld(){
 
 
+  console.log("loadWorld");
+
+
   // floor
   var floorGeometry = new THREE.PlaneBufferGeometry( 2000, 2000, 100, 100 );
   floorGeometry.rotateX( - Math.PI / 2 );
@@ -140,7 +143,7 @@ function loadWorld(){
   var testObject3 = new Actor(Stage,b3);
   testObject3.createPhysics(1.0,true,true,null);
   testObject3.hitpoints = 30;
-  
+
 
   initSky();
   initRocks();
