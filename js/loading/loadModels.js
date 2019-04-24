@@ -1,18 +1,17 @@
 var ModelLibary = {};
+var totalModels = 0;
 
 function loadModels(readyFunctionArray){
   loadLODfromFile("palmModel1",'src/models/vegetation/palm/palm.gltf',true);
   loadLODfromFile("claypit",'src/models/buildings/claypit/claypit.gltf',true);
+  loadLODfromFile("logger",'src/models/buildings/claypit/claypit.gltf',true);
 }
 
 function allModelsAreLoaded(){
-  let loaded = true;
-  let length = Object.keys(ModelLibary).length;
 
   for(let i in ModelLibary){
-    if(i == undefined) loaded = false;
+    if(DebuggerMode)console.log("load model:" + i);
   }
 
-  if(length == 0) loaded = false;
-  return loaded;
+  return Object.keys(ModelLibary).length >= totalModels;
 }

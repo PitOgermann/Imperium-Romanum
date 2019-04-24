@@ -1,6 +1,7 @@
 
 
 function loadLODfromFile(name,file,shadowsEnabled){
+    totalModels++;
     var ModelLoader = new THREE.GLTFLoader();
     ModelLoader.load( file, function ( gltf ) {
 

@@ -98,10 +98,6 @@ var Stage = {
 
     this.scene.add( this.controls.getObject() );
 
-    //loadWorld();
-    //initAI();
-    //setSunPosition(0);
-
     // define Render
     this.renderer = new THREE.WebGLRenderer( { antialias: true } );
     this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -194,7 +190,6 @@ function animate(){
 
   if(LoadingProcedure){ // loading Models:
     let modelsReady = allModelsAreLoaded();
-    console.log(modelsReady);
     if(modelsReady){
       LoadingProcedure = false;
       loadWorld();
@@ -202,6 +197,7 @@ function animate(){
       setSunPosition(0);
     } else {
       // loadingScreen:
+      if(DebuggerMode)console.log("Loading Screen");
     }
   } else {
 

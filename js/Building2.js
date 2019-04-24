@@ -2,7 +2,7 @@
  * @author Pit Ogermann
  */
 
-class BuildingTemplate2{
+class BuildingTemplate{
   constructor(name,cathegory,model_place,model,hp){
     this.name = name;
     this.cathegory = cathegory;
@@ -20,8 +20,8 @@ class BuildingTemplate2{
 
 }
 
-class Building2 {
-  constructor(template,position,placeFunction) {
+class Building {
+  constructor(template,position,rotation,placeFunction) {
     this.name = template.name;
     this.cathegory = template.cathegory;
     this.model_place = template.model_place.clone();
@@ -35,14 +35,15 @@ class Building2 {
     var boundingBox_model_place = new THREE.Vector3(0,0,0);
     new THREE.Box3().setFromObject( this.model ).getSize(boundingBox_model);
     new THREE.Box3().setFromObject( this.model_place ).getSize(boundingBox_model_place);
-    this.model.fundamentOffset = -template.fundamentDepth + boundingBox_model.y/2;
-    this.model_place.fundamentOffset = -template.fundamentDepth + boundingBox_model_place.y/2;
 
     //HUDS:
     this.constructionHUD = new HUDSystem('buildingProcessHUD',false);
 
     if(!placeFunction){
+      // add collision
+      if(this.model.getObjectByName( "Collision_side" ))Stage.objects_side.push(this.model.getObjectByName( "Collision_side" ));
       this.model.position.set(position.x,position.y,position.z);
+      this.model.rotation.y = rotation;
       Stage.scene.add(this.model);
     }
 
@@ -50,37 +51,19 @@ class Building2 {
 }
 
 
-// load all possiple buildings:
-var loader = new THREE.TextureLoader();
-var groundTexture = loader.load( 'src/textures/wood.jpg' );
-      groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-      groundTexture.repeat.set( 1, 1 );
-      groundTexture.anisotropy = 16;
-var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
-
-var groundTexture = loader.load( 'src/textures/wood_building.jpg' );
-      groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-      groundTexture.repeat.set( 1, 1 );
-      groundTexture.anisotropy = 16;
-var placeMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
-
-var tempMesh = new THREE.Mesh( new THREE.CubeGeometry(20,20,30), groundMaterial);
-var tempMeshPlace = new THREE.Mesh( new THREE.CubeGeometry(20,20,30), placeMaterial);
-
-
 // Define Buildings:
 var Buildings = {}
 
 var buildings = [];
 function loadBuildings(){
+  Buildings.claypit = new BuildingTemplate("townhall","infrastructure", ModelLibary["claypit"].clone(), ModelLibary["claypit"].clone(),1000);
+  Buildings.logger = new BuildingTemplate("townhall","infrastructure", ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
 
-  Buildings.townhall = new BuildingTemplate2("townhall","infrastructure", ModelLibary["claypit"].clone(), ModelLibary["claypit"].clone(),1000);
-
-
+  // load existing data from server
   $.getJSON("data/"+Stage.villageID+"/buildings/buildings.json", function(json) {
     for(var i in json.buildings){
       var position = new THREE.Vector3(json.buildings[i].position[0],json.buildings[i].position[1],json.buildings[i].position[2]);
-      buildings.push(new Building2(Buildings[json.buildings[i].name],position));
+      buildings.push(new Building(Buildings[json.buildings[i].name],position,json.buildings[i].rotation));
     }
   });
 }

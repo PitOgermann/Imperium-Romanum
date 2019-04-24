@@ -2,8 +2,14 @@
   "buildings":[
 
     {
-      "name":"townhall",
-      "position":[50,0,50]
+      "name":"claypit",
+      "position":[50,0,50],
+      "rotation":0
+    },
+    {
+      "name":"logger",
+      "position":[-50,0,0],
+      "rotation":-1.9
     }
 
   ]

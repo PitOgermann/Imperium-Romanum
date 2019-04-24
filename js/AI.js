@@ -402,16 +402,17 @@ class AI {
 
 
 var robot;
+var robot1;
+var robot2;
 function initAI() {
   robot = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(0,0,0));
   robot1 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(10,0,0));
   robot2 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(20,0,0));
-
 }
 
 
 function animateAI() {
-  robot.animate();
-  robot1.animate();
-  robot2.animate();
+  if(robot)robot.animate();
+  if(robot1)robot1.animate();
+  if(robot2)robot2.animate();
 }
