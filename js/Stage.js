@@ -3,6 +3,7 @@
  */
 
 var DebuggerMode = true;
+var LoadingProcedure = true;
 
 var Stage = {
   villageID: "001",
@@ -97,9 +98,9 @@ var Stage = {
 
     this.scene.add( this.controls.getObject() );
 
-    loadWorld();
-    initAI();
-    setSunPosition(0);
+    //loadWorld();
+    //initAI();
+    //setSunPosition(0);
 
     // define Render
     this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -188,8 +189,20 @@ var Stage = {
 
 
 function animate(){
-    Stage.stats.update();
-    requestAnimationFrame( animate );
+  Stage.stats.update();
+  requestAnimationFrame( animate );
+
+  if(LoadingProcedure){ // loading Models:
+    if(allModelsAreLoaded()){
+      loadWorld();
+      initAI();
+      setSunPosition(0);
+      LoadingProcedure = false;
+    } {
+      // loadingScreen:
+    }
+  } else {
+
 
     animateAI();
 
@@ -220,3 +233,4 @@ function animate(){
 
     for(var i in Stage.renderFunction)Stage.renderFunction[i]();
   }
+}

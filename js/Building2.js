@@ -68,12 +68,15 @@ var tempMesh = new THREE.Mesh( new THREE.CubeGeometry(20,20,30), groundMaterial)
 var tempMeshPlace = new THREE.Mesh( new THREE.CubeGeometry(20,20,30), placeMaterial);
 
 
-var Buildings = {
-  townhall: new BuildingTemplate2("townhall","infrastructure",tempMeshPlace,tempMesh,1000)
-}
+// Define Buildings:
+var Buildings = {}
 
 var buildings = [];
 function loadBuildings(){
+
+  Buildings.townhall = new BuildingTemplate2("townhall","infrastructure", ModelLibary["claypit"].clone(), ModelLibary["claypit"].clone(),1000);
+
+
   $.getJSON("data/"+Stage.villageID+"/buildings/buildings.json", function(json) {
     for(var i in json.buildings){
       var position = new THREE.Vector3(json.buildings[i].position[0],json.buildings[i].position[1],json.buildings[i].position[2]);
