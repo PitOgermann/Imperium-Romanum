@@ -69,6 +69,8 @@ class AI {
   resetPrevTask() {
     console.log("Reset");
     if(this.removeFromWork)this.removeFromWork();
+    let id = Player.followingAI.indexOf(this);
+    if(id>-1) Player.followingAI.splice(id, 1); // remove AI from following
   }
 
   fadeToAction( name, duration ) {

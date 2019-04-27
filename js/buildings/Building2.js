@@ -61,7 +61,7 @@ class Building {
           let dist = this.model.position.distanceTo(this.information.source[i].lod.position);
           if (dist<radius){
             for(var u in this.information.source[i].workerslots) {
-              if(this.information.source[i].workerslots[u] == null) workingSlotsInRange.push({
+              if(this.information.source[i].workerslots[u] == "free") workingSlotsInRange.push({
                 slot:this.information.source[i].workerslots[u],
                 resource:this.information.source[i],
                 dist:dist,

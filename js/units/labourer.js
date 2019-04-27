@@ -56,10 +56,11 @@ class Labourer extends AI {
       console.log("remove existing working");
       //remove external binds:
 
-      this.workplace.inmates.splice(this.workplace.inmates.indexOf(this), 1); // remove worker from Production building
-      this.workdest.resource.workerslots[this.workdest.slotPos] = null; // free worker slot
-      //this.workdest.slot = null;
-
+      let workerID = this.workplace.inmates.indexOf(this);
+      if(workerID>-1) { // this worker is still working there (not a phantom worker)
+        this.workplace.inmates.splice(workerID, 1); // remove worker from Production building
+        this.workdest.resource.workerslots[this.workdest.slotPos] = "free"; // free worker slot
+      }
       this.workplace.reorderWorkers();
 
 
