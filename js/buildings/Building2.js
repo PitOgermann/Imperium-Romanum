@@ -111,7 +111,8 @@ class Building {
       // update building stats like productivity ...
       this.reorderWorkers();
     }
-    console.log("Interact with building");
+    console.log("Interact with building:", this);
+
   }
 
   addLabourer(newLabourer){

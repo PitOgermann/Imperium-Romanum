@@ -53,17 +53,22 @@ class AI {
 
       // add speachBouble:
       this.speachBouble = new GameHUD(this, this.model);
-      this.speachBouble.addAction(1,"Follow me!",function(){this.setFollowPlayer(Player)}.bind(this));
-      this.speachBouble.addAction(2,"Wait!",function(){this.stopAction()}.bind(this));
-      this.speachBouble.addAction(3,"Patrol this place!",function(){this.idleAroundPoint(Player.root.controls.getObject().position,100)}.bind(this));
-      this.speachBouble.addAction(4,"Go home!",function(){this.goIntoBuilding(this.home)}.bind(this));
-      this.speachBouble.addAction(5,"I have a job for you.",function(){this.followToNewWork()}.bind(this));
+      this.speachBouble.addAction(1,"Follow me!",function(){this.resetPrevTask();this.setFollowPlayer(Player);}.bind(this));
+      this.speachBouble.addAction(2,"Wait!",function(){this.resetPrevTask();this.stopAction();}.bind(this));
+      this.speachBouble.addAction(3,"Patrol this place!",function(){this.resetPrevTask();this.idleAroundPoint(Player.root.controls.getObject().position,100);}.bind(this));
+      this.speachBouble.addAction(4,"Go home!",function(){this.resetPrevTask();this.goIntoBuilding(this.home);}.bind(this));
+      this.speachBouble.addAction(5,"I have a job for you.",function(){this.resetPrevTask();this.followToNewWork();}.bind(this));
 
 
     }.bind(this), undefined, function( e ) {
       console.error( e );
     } );
 
+  }
+
+  resetPrevTask() {
+    console.log("Reset");
+    if(this.removeFromWork)this.removeFromWork();
   }
 
   fadeToAction( name, duration ) {

@@ -52,21 +52,19 @@ class Labourer extends AI {
   }
 
   removeFromWork() {
-    if(this.workplace) {
+    if(this.workplace && this.workdest) {
       console.log("remove existing working");
       //remove external binds:
-      console.log(this.workplace);
-      console.log(this.workdest);
 
-      console.log(this.workplace.inmates[0]);
-      this.workplace.inmates[this.workplace.inmates.indexOf(this)] = null
-      console.log(this.workplace.inmates[0]);
+      this.workplace.inmates.splice(this.workplace.inmates.indexOf(this), 1); // remove worker from Production building
+      this.workdest.resource.workerslots[this.workdest.slotPos] = null; // free worker slot
+      //this.workdest.slot = null;
+
+      this.workplace.reorderWorkers();
 
 
       // remove localBinds:
-      //this.workplace = null;
-      //this.workdest = null;
-      //this.isAtWork = false;
+      this.isWorking = false;
     }
   }
 

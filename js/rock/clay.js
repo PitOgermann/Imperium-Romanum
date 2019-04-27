@@ -24,7 +24,7 @@ clayMaterial.shadowSide = THREE.FrontSide;
 class Clay extends Resource{
   constructor(json) {
 
-    super(2);
+    super(1);
 
     var pos = new THREE.Vector3(json.position[0],json.position[1],json.position[2]);
     var dim = new THREE.Vector3(json.dimension[0],json.dimension[1],json.dimension[2]);
