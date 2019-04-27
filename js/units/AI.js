@@ -15,7 +15,7 @@ class AI {
     this.mixer;
     this.clock = new THREE.Clock();
 
-    this.maxSpeed = 20;
+    this.maxSpeed = 19+Math.random()*2;
     this.maxIdleSpeed = 10;
     this.walkingPath = [];
     this.followPlayer;
@@ -26,6 +26,7 @@ class AI {
     this.idlePoint = null;
     this.idleTimer = 0;
     this.goingHome = false;
+    this.isWorking = false;
 
     this.speachBouble;
 
@@ -46,15 +47,17 @@ class AI {
       this.bobject.position.y = 2.5;
       this.bobject.material.visible = DebuggerMode;
       this.bobject.root = this;
+      this.bobject.interactionObject = this;
       Stage.objects_side.push(this.bobject);
       this.model.add(this.bobject);
 
       // add speachBouble:
       this.speachBouble = new GameHUD(this, this.model);
-      this.speachBouble.setAction(1,"Follow me!",function(){this.setFollowPlayer(Player)}.bind(this));
-      this.speachBouble.setAction(2,"Wait!",function(){this.stopAction()}.bind(this));
-      this.speachBouble.setAction(3,"Patrol this place!",function(){this.idleAroundPoint(Player.root.controls.getObject().position,100)}.bind(this));
-      this.speachBouble.setAction(4,"Go home!",function(){this.goIntoBuilding(this.home)}.bind(this));
+      this.speachBouble.addAction(1,"Follow me!",function(){this.setFollowPlayer(Player)}.bind(this));
+      this.speachBouble.addAction(2,"Wait!",function(){this.stopAction()}.bind(this));
+      this.speachBouble.addAction(3,"Patrol this place!",function(){this.idleAroundPoint(Player.root.controls.getObject().position,100)}.bind(this));
+      this.speachBouble.addAction(4,"Go home!",function(){this.goIntoBuilding(this.home)}.bind(this));
+      this.speachBouble.addAction(5,"I have a job for you.",function(){this.followToNewWork()}.bind(this));
 
 
     }.bind(this), undefined, function( e ) {
@@ -78,7 +81,7 @@ class AI {
   					.play();
     }
 
-    computeWaypointsTo(dest){
+  computeWaypointsTo(dest){
       let startPath = this.model.position.clone();
       let endPath = dest.clone();
       startPath.y = 10;
@@ -177,11 +180,7 @@ class AI {
       return splinePath;
     }
 
-    /*
-    this.bbox =  new THREE.Box3().setFromObject(this.model);
-*/
-
-    static generateSplines(points,resolution){
+  static generateSplines(points,resolution){
       let points2D = [];
       for(var i in points) points2D.push(new THREE.Vector2( points[i].x, points[i].z ));
 
@@ -195,8 +194,7 @@ class AI {
 
     }
 
-
-    goTo(pos,ignoreObjects){
+  goTo(pos,ignoreObjects){
       // clear old path:
       this.walkingPath = [];
       if(!ignoreObjects){
@@ -209,14 +207,14 @@ class AI {
 
     }
 
-    idleAroundPoint(point,maxDist){
-      this.stopAction();
-      this.maxDist = maxDist;
-      this.idlePoint = point.clone();
-      if(DebuggerMode)console.log("Idle around ", this.idlePoint);
-    }
+  idleAroundPoint(point,maxDist){
+    this.stopAction();
+    this.maxDist = maxDist;
+    this.idlePoint = point.clone();
+    if(DebuggerMode)console.log("Idle around ", this.idlePoint);
+  }
 
-    idleWalkingFunction(){
+  idleWalkingFunction(){
       if(this.walkingPath.length<=0 && this.idleTimer <= 0){
         var goToVec = this.idlePoint.clone();
         goToVec.add(new THREE.Vector3(Math.random()*this.maxDist-this.maxDist/2,0,Math.random()*this.maxDist-this.maxDist/2));
@@ -226,55 +224,59 @@ class AI {
       }
     }
 
-    goIntoBuilding(building){
-      if(DebuggerMode)console.log("Go in building:");
-      if(!building){
-        if(DebuggerMode)console.info("I do not have a Home. I go to the first Building.");
-        this.home = debugBuilding[0];
-      }
-
-      this.goTo(this.home.model.position);
-      this.goingHome = true;
+  goIntoBuilding(building){
+    if(DebuggerMode)console.log("Go in building:");
+    if(!building){
+      if(DebuggerMode)console.info("I do not have a Home. I go to the first Building.");
+      this.home = debugBuilding[0];
     }
 
-    setFollowPlayer(player){
-      this.followPlayer = player;
+    this.goTo(this.home.model.position);
+    this.goingHome = true;
+  }
 
-      // add first waypoint and remove old Waypoints:
-      this.walkingPath = [];
+  followToNewWork() {
+    this.setFollowPlayer(Player);
+    Player.followingAI.push(this);
+  }
 
-      this.followUpdateFunction = function(){
-        this.followUpdateFunctionTimer = 0;
+  setFollowPlayer(player){
+    this.followPlayer = player;
 
-        let lastWaypoint = this.walkingPath[this.walkingPath.length-1];
-        if(!lastWaypoint) lastWaypoint = [0,this.model.position.clone()];
+    // add first waypoint and remove old Waypoints:
+    this.walkingPath = [];
 
-        let dist2Player = lastWaypoint[1].manhattanDistanceTo(Player.root.controls.getObject().position);
-        if(dist2Player>30)this.addNewWaypoint(this.followPlayer.root.controls.getObject().position.clone());
+    this.followUpdateFunction = function(){
+      this.followUpdateFunctionTimer = 0;
 
-      }.bind(this);
-      if(DebuggerMode)console.log("iWill fillow "+player.name);
-    }
+      let lastWaypoint = this.walkingPath[this.walkingPath.length-1];
+      if(!lastWaypoint) lastWaypoint = [0,this.model.position.clone()];
 
-    stopAction(){
-      this.followPlayer = null;
-      this.walkingPath = [];
-      this.followUpdateFunction = null;
-      this.idlePoint = null;
-      this.goingHome = false;
-      this.fadeToAction("Idle",1);
-    }
+      let dist2Player = lastWaypoint[1].manhattanDistanceTo(Player.root.controls.getObject().position);
+      if(dist2Player>30)this.addNewWaypoint(this.followPlayer.root.controls.getObject().position.clone());
 
-    hide(){
+    }.bind(this);
+    if(DebuggerMode)console.log("iWill fillow "+player.name);
+  }
+
+  stopAction(){
+    this.followPlayer = null;
+    this.walkingPath = [];
+    this.followUpdateFunction = null;
+    this.idlePoint = null;
+    this.goingHome = false;
+    this.fadeToAction("Idle",1);
+  }
+
+  hide(){
       this.model.traverse( function ( object ) { object.visible = false; } );
       this.isVisible = false;
     }
 
-    show(){
+  show(){
       this.model.traverse( function ( object ) { object.visible = true; } );
       this.isVisible = true;
     }
-
 
   addNewWaypoint(to,from){
     if(!from) from = this.model.position.clone();
@@ -324,7 +326,6 @@ class AI {
     this.activeAction.play();
   }
 
-
   animate(){
     if(this.isVisible){
 
@@ -345,8 +346,13 @@ class AI {
         this.idleTimer--;
       }
 
+      if(this.isWorking && this.workingAnimation){ // ai is working
+        this.idlePoint = false;
+        this.workingAnimation(dt);
+      }
+
       //walk Path:
-      if(this.walkingPath.length>0){
+      if(this.walkingPath.length>0 && !this.speachBouble.isActive){
 
         if(this.activeAction && this.activeAction._clip.name != "Walking") this.fadeToAction("Walking",1);
 
@@ -398,21 +404,4 @@ class AI {
 }
 
 
-}
-
-
-var robot;
-var robot1;
-var robot2;
-function initAI() {
-  robot = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(0,0,0));
-  robot1 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(10,0,0));
-  robot2 = new AI('src/AI/models/RobotExpressive.glb',"Worker1",new THREE.Vector3(20,0,0));
-}
-
-
-function animateAI() {
-  if(robot)robot.animate();
-  if(robot1)robot1.animate();
-  if(robot2)robot2.animate();
 }

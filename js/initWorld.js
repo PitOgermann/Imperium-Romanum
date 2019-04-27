@@ -148,6 +148,8 @@ function loadWorld(){
   initSky();
   initRocks();
   initClay();
+  initTrees();
+  initBushes();
   initCliffs();
   initWater();
   loadBuildings();

@@ -38,14 +38,9 @@ function initFlora(){
           3500 Bushes
           4000 Grass */
 
-  for(var i =0 ;i<maxTrees*Stage.detailGain;i++){
-    var randPos = new THREE.Vector3(Math.random() * 1000 - 500,0,Math.random() * 1000 - 500);
-		let tempTree = ModelLibary["palmModel1"].clone();
-		tempTree.position.set(randPos.x,getHeightAt(randPos).height-1,randPos.z);
-		tempTree.rotateY(Math.random()*2*Math.PI);
-		tempTree.scale.set(1,1,1);
-		if(tempTree.getObjectByName( "Collision_side" ))Stage.objects_side.push(tempTree.getObjectByName( "Collision_side" ));
-		Stage.scene.add(tempTree);
+//  for(var i =0 ;i<maxTrees*Stage.detailGain;i++){
+
+		/*
 
 
     for(var u=0;u<Math.random()*bushesPerTree*Stage.detailGain;u++){
@@ -58,4 +53,6 @@ function initFlora(){
     var randPos = new THREE.Vector3(Math.random() * 1000 - 500,0,Math.random() * 1000 - 500);
     var newBush = new Grass(randPos.x,randPos.y,randPos.z);
   }
+
+	*/
 }

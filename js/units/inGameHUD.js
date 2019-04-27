@@ -11,6 +11,8 @@ class GameHUD{
     this.plane.position.y = 10;
     this.docId = Math.floor(Math.random() * 100);
 
+    this.isActive = false;
+
     this.actionArray = new Array(10);
     //bindObject.add( this.plane );
 
@@ -58,6 +60,7 @@ class GameHUD{
   hide(){
     //this.plane.visible = false;
     this.interactionMenue.style.visibility = 'hidden';
+    this.isActive = false;
 
     //remove PhotoBooth render to Object:
     window.removeEventListener("keypress", this.clickListenerBind, false);
@@ -65,6 +68,7 @@ class GameHUD{
   }
 
   show(){
+    this.isActive = true;
     this.setHTMLVar("player_name",Player.name);
 
     //this.plane.visible = true;
@@ -88,7 +92,6 @@ class GameHUD{
 
   openInteractionMenue(){
     this.toggle();
-
   }
 
   setHTMLVar(id,variable){
@@ -104,17 +107,19 @@ class GameHUD{
     }
   }
 
-  setAction(num,lable,func){
-    if(this.isLoaded){ // if HTML page is loaded.
-      this.actionArray[num]=func;
-      this.setHTMLVar("answer"+num,"["+num+"] "+lable);
-    } else {
-      this.onLoadFunctions.push(
-        function(){
-          this.actionArray[num]=func;
-          this.setHTMLVar("answer"+num,"["+num+"] "+lable);
-        }.bind(this)
-      );}
+  addAction(num,lable,func){
+    this.onLoadFunctions.push(
+      function(){
+        // create 2d Graphic:
+        let answerBox = document.querySelector("#doc_"+this.docId).contentDocument.getElementById("answerBox"); // load AnswerBox
+        let newElement = document.createElement("p");
+        newElement.className = "answer";
+        newElement.innerHTML = "["+num+"]"+lable;
+        answerBox.appendChild(newElement);
+        // include functions:
+        this.actionArray[num]=func;
+      }.bind(this)
+    )
   }
 
 }

@@ -14,6 +14,8 @@ var Stage = {
   controls: null,
   stats: null,
 
+  console: new AdminConsole(),
+
   //objects: [],
   objects_ground: [],
   objects_side: [],

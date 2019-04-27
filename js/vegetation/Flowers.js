@@ -18,9 +18,23 @@ for(var i = 0;i<6;i++){
 
 
 class Bush{
-  constructor(x,y,z){
-    var scale = 1+Math.random()*0.8;
-    var mat = bushMaterials[Math.round(Math.random()*5)];
+  constructor(json){
+
+    // load Model:
+    //this.lod = ModelLibary[json.modelName].clone();
+    this.modelName = json.modelName;
+    this.seed = json.seed;
+    //this.lod.position.set(json.position[0],json.position[1],json.position[2]);
+    //this.lod.rotateY(Math.sin(this.seed)*2*Math.PI);
+
+    // scale Model:
+    /*
+    let scaleSeed = (2+Math.sin(this.seed))/8+1;
+    this.lod.scale.set(scaleSeed,scaleSeed,scaleSeed);
+    if(this.lod.getObjectByName( "Collision_side" ))Stage.objects_side.push(this.lod.getObjectByName( "Collision_side" ));
+    Stage.scene.add(this.lod);
+    */
+    var mat = bushMaterials[Math.round(this.seed*5)];
     this.lod = new THREE.LOD();
 
     var tempModel = new THREE.Group();
@@ -36,19 +50,46 @@ class Bush{
       this.lod.addLevel( tempModel.clone(), (n_models-i) * 50 );
     }
 
-    // add rotation to user:
-    this.lod.children[1].children[0].name = "2dRotation";
+  // add rotation to user:
+  this.lod.children[1].children[0].name = "2dRotation";
 
-    var posY = getFastHeight(x,z);
-    //posY = getHeightAt(new THREE.Vector3(x,0,z)).height;
-    if(posY>=0){
-      this.lod.position.set(x,posY+3*scale,z);
-      this.lod.rotation.y = Math.random() * Math.PI;
-      this.lod.scale.set(scale,scale,scale);
-      Stage.scene.add( this.lod );
+  this.lod.position.set(json.position[0],json.position[1],json.position[2]);
+  this.lod.scale.set(1.5,1.5,1.5);
+  this.lod.rotation.y = Math.sin(this.seed) * Math.PI;
+  Stage.scene.add( this.lod );
+  }
+
+  getJSON(){
+    return {
+      "position":[this.lod.position.x,this.lod.position.y,this.lod.position.z],
+      "modelName":this.modelName,
+      "seed":this.seed
     }
   }
+
+  static writeNewObject(){
+
+    let newPosition = Player.root.controls.getObject().position;
+
+    let newBush = new Bush({
+      "position":[newPosition.x,newPosition.y-11,newPosition.z],
+      "modelName":"palmModel1",
+      "seed":Math.random()
+    });
+    bushes.push(newBush);
+  }
+
 }
+
+  var bushes=[];
+  function initBushes(){
+    $.getJSON("data/"+Stage.villageID+"/map/bushes.json", function(json) {
+      for(var i in json.bushes){
+        bushes.push(new Bush(json.bushes[i]));
+      }
+    });
+  }
+
 
 
 //tree grass texture

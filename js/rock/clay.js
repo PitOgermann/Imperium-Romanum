@@ -21,19 +21,21 @@ clayMaterial.shadowSide = THREE.FrontSide;
 
 
 
-class Clay {
+class Clay extends Resource{
   constructor(json) {
+
+    super(2);
 
     var pos = new THREE.Vector3(json.position[0],json.position[1],json.position[2]);
     var dim = new THREE.Vector3(json.dimension[0],json.dimension[1],json.dimension[2]);
     var seed = json.seed;
-    var clayRichness = json.clayRichness;
+    this.quantity = json.clayRichness;
 
     this.lod = new THREE.LOD();
     let nLevels = 2;
     var divider = 8;
 
-    var roundness = clayRichness/10000;
+    var roundness = this.quantity/100000;
     var roughness = 1-roundness+0.3;
     for(var level=0;level<nLevels;level++){
       if(level>0)divider=divider*4;

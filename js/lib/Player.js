@@ -14,6 +14,7 @@ var Player = {
 
   mass: 100.0,
   acceleration: 400.0,
+  inertia:1,
   accelerationJump: 300.0,
   runGain: 1.5,
   staminaMax:50,
@@ -40,6 +41,7 @@ var Player = {
 
   weapons: [],
   setBuilding: null,
+  followingAI: [],
 
   init: function(root) {
     this.root = root;
@@ -86,11 +88,12 @@ var Player = {
     // get interactionObjects:
     this.interaction = detectCollision(this.root,this.interactionModel,true);
     console.log(this.interaction);
-    if(this.interaction.isColliding){
-      var actor = this.interaction.collidingActor;
-      console.log(actor);
-      if(actor && actor.interactionFunction)actor.interactionFunction();
-  }
+    if(this.interaction){
+      if(this.interaction.collidingActor){ //interactable
+        console.log(this.interaction.collidingActor.interactionObject);
+        if(this.interaction.collidingActor.interactionObject.interactionFunction)this.interaction.collidingActor.interactionObject.interactionFunction();
+      }
+    }
   },
 
   mouseClick: function(event){
@@ -101,8 +104,10 @@ var Player = {
 
   // define key interval
   onKeyDown: function ( event , player) {
-    switch ( event.keyCode ) {
 
+    //console.log(event.keyCode);
+
+    switch ( event.keyCode ) {
       case 38: // up
       case 87: // w
         player.moveForward = true;
@@ -150,6 +155,10 @@ var Player = {
 
       case 80: //p: print position:
         if(DebuggerMode)console.log(this.root.controls.getObject().position);
+      break;
+
+      case 187: // +: toggle console:
+        Stage.console.toggle();
       break;
 
     }
@@ -244,8 +253,8 @@ var Player = {
 
       }
 
-      if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta * gradientGainX;
-      if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta * gradientGainZ;
+      if ( this.moveForward || this.moveBackward ) this.velocity.z -= this.direction.z * this.acceleration * delta * gradientGainX*this.inertia;
+      if ( this.moveLeft || this.moveRight ) this.velocity.x -= this.direction.x * this.acceleration * delta * gradientGainZ*this.inertia;
 
       // compute Collision:
       if(Math.abs(this.velocity.x)+Math.abs(this.velocity.z)>0.01){
@@ -256,9 +265,12 @@ var Player = {
           var prevVelocity = this.velocity.clone();
           this.velocity.negate();
           this.velocity.y = 0;
+          this.inertia = 0;
           this.run = false;
         }
       }
+
+      (this.inertia>1)?1:this.inertia+=delta*2;
 
 
       //run:
@@ -298,6 +310,11 @@ var Player = {
         this.canJump = true;
         this.root.controls.getObject().position.y = groundPosition+11;
       }
+
+      this.root.controls.getObject().position.y = groundPosition+11; // No Jumping!
+
+
+
 
     }
   },

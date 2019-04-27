@@ -53,6 +53,12 @@ body {
 
 }
 
+#console {
+  position: absolute; bottom: 0px;
+  background: #999999;
+}
+
+
 #instructions {
 
   width: 100%;
