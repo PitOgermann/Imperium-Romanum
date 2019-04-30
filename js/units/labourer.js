@@ -3,10 +3,12 @@ class Labourer extends AI {
 
     super(folder,name,position);
 
+    this.xp = 0;
+
     this.skills = {
       construction: 1.0,
-      lumbering:    1.0,
-      claystabbing: 1.0,
+      lumbering:    Math.random()*100.0,
+      claystabbing: Math.random()*100.0,
       forging:      1.0
     };
 
@@ -14,6 +16,10 @@ class Labourer extends AI {
     this.workdest = null;
     this.isAtWork = false;
 
+  }
+
+  parsObjectFromJSON(obj) {
+    for (var prop in obj) this[prop] = obj[prop];
   }
 
   setNewWorkingPlace(newWorkingPlace) {
@@ -69,17 +75,19 @@ class Labourer extends AI {
     }
   }
 
-
 }
 
 
 var labourers = [];
 function initAI() {
-  labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Hans",new THREE.Vector3(0,0,0)) );
+  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Hans",new THREE.Vector3(0,0,0)) );
   labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Thomas",new THREE.Vector3(0,0,-20)) );
   labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Michael",new THREE.Vector3(0,0,-40)) );
   labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Elise",new THREE.Vector3(0,0,-60)) );
   labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Ariel",new THREE.Vector3(0,0,-80)) );
+
+
+
 }
 
 

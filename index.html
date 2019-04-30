@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="style.css" />
 		<link rel="stylesheet" type="text/css" href="css/HUD_style.css" />
 		<link rel="stylesheet" type="text/css" href="html/inGameHUD/style.css" />
+		<link rel="stylesheet" type="text/css" href="css/styleBuildingGUI.css" />
 
 
 	</head>
@@ -23,8 +24,8 @@
 
 		<script src="js/SQL/loadPlayerData.js"></script>
 
-		<script src="js/loadLibaries.js"></script>
-		<script src="js/physics.js"></script>
+		<script src="js/engine/loadLibaries.js"></script>
+		<script src="js/world/physics.js"></script>
 		<script src="js/lib/threeLib/modifiers/SimplifyModifier.js"></script>
 		<script src="js/lib/threeLib/ImprovedNoise.js"></script>
 
@@ -38,14 +39,15 @@
 		<script src="js/lib/threeLib/geometries/DecalGeometry.js"></script>
 
 		<script src="js/lib/PhysicEngine.js"></script>
+		<script src="js/engine/Camera.js"></script>
 		<script src="js/lib/threeLib/Tween.js"></script>
+		<script src="js/buildings/resource.js"></script>
 
 		<script src="js/vegetation/proctree.js-master/proctree.js"></script>
 		<script src="js/vegetation/Tree.js"></script>
 		<script src="js/vegetation/Flowers.js"></script>
 		<script src="js/lib/threeLib/objects/Sky.js"></script>
 
-		<script src="js/buildings/resource.js"></script>
 		<script src="js/rock/Rock.js"></script>
 		<script src="js/rock/clay.js"></script>
 		<script src="js/rock/cliffs.js"></script>
@@ -88,23 +90,23 @@
 
 		</div>
 
-		<div id="console">Console: <input type="text" name="fname"><br></div>
 		<script src="js/adminScripts/console.js"></script>
 
-
 		<script src="js/HUD_JS/HUDcontroll.js"></script>
+		<script src="js/HUD_JS/BuildingGUI.js"></script>
 
-		<script src="js/createTerrain.js"></script>
+		<script src="js/world/createTerrain.js"></script>
 		<script src="js/vegetation/Vegetation.js"></script>
 		<script src="js/lib/Weapon.js"></script>
-		<script src="js/lib/Player.js"></script>
+		<script src="js/engine/Shortcuts.js"></script>
+		<script src="js/engine/Player.js"></script>
 		<script src="js/lib/Actor.js"></script>
 		<script src="js/buildings/Building2.js"></script>
 
-		<script src="js/Stage.js"></script>
-		<script src="js/sky.js"></script>
-		<script src="js/initWorld.js"></script>
-		<script src="js/runWorld.js"></script>
+		<script src="js/engine/Stage.js"></script>
+		<script src="js/world/sky.js"></script>
+		<script src="js/world/initWorld.js"></script>
+		<script src="js/world/runWorld.js"></script>
 
 
 	</body>

@@ -29,6 +29,7 @@ class AI {
     this.isWorking = false;
 
     this.speachBouble;
+    this.image = null;
 
     let loader = new THREE.GLTFLoader();
     loader.load( folder, function( gltf ) {
@@ -51,6 +52,9 @@ class AI {
       Stage.objects_side.push(this.bobject);
       this.model.add(this.bobject);
 
+      // takeAI image:
+      this.image = Facecam.takePhoto(this.model,[100, 100],Stage.scene,"PORTRAIT");
+
       // add speachBouble:
       this.speachBouble = new GameHUD(this, this.model);
       this.speachBouble.addAction(1,"Follow me!",function(){this.resetPrevTask();this.setFollowPlayer(Player);}.bind(this));
@@ -58,6 +62,8 @@ class AI {
       this.speachBouble.addAction(3,"Patrol this place!",function(){this.resetPrevTask();this.idleAroundPoint(Player.root.controls.getObject().position,100);}.bind(this));
       this.speachBouble.addAction(4,"Go home!",function(){this.resetPrevTask();this.goIntoBuilding(this.home);}.bind(this));
       this.speachBouble.addAction(5,"I have a job for you.",function(){this.resetPrevTask();this.followToNewWork();}.bind(this));
+
+
 
 
     }.bind(this), undefined, function( e ) {
@@ -74,7 +80,6 @@ class AI {
   }
 
   fadeToAction( name, duration ) {
-    if(DebuggerMode)console.log("Do Action: "+name);
     this.previousAction = this.activeAction;
     this.activeAction = this.actions[ name ];
     if ( this.previousAction !== this.activeAction ) {
@@ -88,104 +93,110 @@ class AI {
   					.play();
     }
 
-  computeWaypointsTo(dest){
-      let startPath = this.model.position.clone();
-      let endPath = dest.clone();
-      startPath.y = 10;
-      endPath.y = 10;
+    computeWaypointsTo(dest){
+        let startPath = this.model.position.clone();
+        let endPath = dest.clone();
+        startPath.y = 10;
+        endPath.y = 10;
 
-      let totalLength = 0;
-      let points = [startPath];
+        let totalLength = 0;
+        let points = [startPath];
 
-      for(var i=0;i<5;i++){
-        let start = points[i];
+        for(var i=0;i<30;i++){
+          let start = points[i];
 
-        // Check Collision:
-        let intersects = objectBetween2Points(start,endPath,this.model);
-        if(intersects){
-          let obj = intersects.object;
+          // Check Collision:
+          let intersects = objectBetween2Points(start,endPath,this.model);
+          if(intersects){
+            let obj = intersects.object;
 
-          let bbox =  new THREE.Box3().setFromObject(obj);
-          bbox.expandByScalar(25);
+            let bbox =  new THREE.Box3().setFromObject(obj);
+            bbox.expandByScalar(5);
 
-          // compute BoundingBox corners:
-          var cornerPoints = [
-            new THREE.Vector3(bbox.min.x,10,bbox.min.z),
-            new THREE.Vector3(bbox.max.x,10,bbox.min.z),
-            new THREE.Vector3(bbox.min.x,10,bbox.max.z),
-            new THREE.Vector3(bbox.max.x,10,bbox.max.z)
-          ];
+            // compute BoundingBox corners:
+            var bboxPoints = [
+              new THREE.Vector3(bbox.min.x,10,bbox.min.z),
+              new THREE.Vector3(bbox.max.x,10,bbox.min.z),
+              new THREE.Vector3(bbox.min.x,10,bbox.max.z),
+              new THREE.Vector3(bbox.max.x,10,bbox.max.z)
+            ];
 
-          let distances = [
-            start.manhattanDistanceTo(cornerPoints[0]),
-            start.manhattanDistanceTo(cornerPoints[1]),
-            start.manhattanDistanceTo(cornerPoints[2]),
-            start.manhattanDistanceTo(cornerPoints[3])
-          ];
+            let cornerPoints = [
+              {dist:start.manhattanDistanceTo(bboxPoints[0]), point:bboxPoints[0]},
+              {dist:start.manhattanDistanceTo(bboxPoints[1]), point:bboxPoints[1]},
+              {dist:start.manhattanDistanceTo(bboxPoints[2]), point:bboxPoints[2]},
+              {dist:start.manhattanDistanceTo(bboxPoints[3]), point:bboxPoints[3]}
+            ];
 
-          var minIndex = distances.reduce((iMax, x, i, arr) => x < arr[iMax] ? i : iMax, 0);
-          var minValue = start.manhattanDistanceTo(cornerPoints[minIndex]);
+            // check if point is already part of path: (prevent going forward and backward forever)
+            for(var v1 in cornerPoints) {
+              let pointIsInPath = false;
+              for(var v2 in points) {
+                if(points[v2].manhattanDistanceTo(cornerPoints[v1].point) < 0.5) pointIsInPath = true;
+              }
+              if(pointIsInPath)cornerPoints[v1].dist = Infinity;
+            }
 
-          // is same Point:
-          if(minValue<0.5) {
-            distances.splice(minIndex, 1);
-            minIndex = distances.reduce((iMax, x, i, arr) => x < arr[iMax] ? i : iMax, 0);
-          }
-
-          if(DebuggerMode){
-            var helper = new THREE.Box3Helper( bbox, 0xffff00 );
-            Stage.scene.add(helper);
-          }
-
-          totalLength+=minValue;
-          points.push(cornerPoints[minIndex]);
-
-        } else break;
+            // find closest point:
+            cornerPoints.sort(function(a, b) { return a.dist - b.dist; });
 
 
-      }
-      // Add end-Point:
-      points.push(endPath);
+            if(DebuggerMode){
+              var helper = new THREE.Box3Helper( bbox, 0xffff00 );
+              Stage.scene.add(helper);
+            }
 
-      //Genarate splines:
-      let splinePath = null;
-      if(points.length>2) splinePath = AI.generateSplines(points,Math.round(totalLength/2));
-      else splinePath = points;
+            totalLength+=cornerPoints[0].dist;
+            points.push( cornerPoints[0].point);
 
-      // display Result:
-      if(totalLength>0 && DebuggerMode){
-        var material = new THREE.LineBasicMaterial( { color: 0xff00ff } );
-        for(var u = 0;u<points.length-1;u++) {
-          var geometry = new THREE.Geometry();
-          geometry.vertices.push(points[u]);
-          geometry.vertices.push(points[u+1]);
-          var line = new THREE.Line( geometry, material );
-          Stage.scene.add(line);
 
-          var dotGeometry = new THREE.Geometry();
-          var dot = new THREE.Points( geometry, new THREE.PointsMaterial( { size: 8, sizeAttenuation: false ,color: 0x0000ff} ) );
-          Stage.scene.add( dot );
+          } else break;
 
-          for(var t=0;t<4;t++){
+
+        }
+        // Add end-Point:
+        points.push(endPath);
+
+        //Genarate splines:
+        let splinePath = null;
+        if(points.length>2) splinePath = AI.generateSplines(points,Math.round(totalLength/4));
+        else splinePath = points;
+
+        // display Result:
+        if(totalLength>0 && DebuggerMode){
+          var material = new THREE.LineBasicMaterial( { color: 0xff00ff } );
+          for(var u = 0;u<points.length-1;u++) {
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(points[u]);
+            geometry.vertices.push(points[u+1]);
+            var line = new THREE.Line( geometry, material );
+            Stage.scene.add(line);
+
             var dotGeometry = new THREE.Geometry();
-            dotGeometry.vertices.push(cornerPoints[t]);
-            Stage.scene.add(  new THREE.Points( dotGeometry, new THREE.PointsMaterial( { size: 8, sizeAttenuation: false } ) ) );
+            var dot = new THREE.Points( geometry, new THREE.PointsMaterial( { size: 8, sizeAttenuation: false ,color: 0x0000ff} ) );
+            Stage.scene.add( dot );
+
+            for(var t=0;t<4;t++){
+              var dotGeometry = new THREE.Geometry();
+              dotGeometry.vertices.push(bboxPoints[t]);
+              Stage.scene.add(  new THREE.Points( dotGeometry, new THREE.PointsMaterial( { size: 8, sizeAttenuation: false } ) ) );
+            }
+
           }
 
+          var material = new THREE.LineBasicMaterial( { color: 0x00ffff } );
+          for(var u = 0;u<splinePath.length-1;u++) {
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(splinePath[u]);
+            geometry.vertices.push(splinePath[u+1]);
+            var line = new THREE.Line( geometry, material );
+            Stage.scene.add(line);
+          }
         }
 
-        var material = new THREE.LineBasicMaterial( { color: 0x00ffff } );
-        for(var u = 0;u<splinePath.length-1;u++) {
-          var geometry = new THREE.Geometry();
-          geometry.vertices.push(splinePath[u]);
-          geometry.vertices.push(splinePath[u+1]);
-          var line = new THREE.Line( geometry, material );
-          Stage.scene.add(line);
-        }
+        return splinePath;
       }
 
-      return splinePath;
-    }
 
   static generateSplines(points,resolution){
       let points2D = [];
@@ -338,6 +349,7 @@ class AI {
 
       let dt = this.clock.getDelta();
       if ( this.mixer ) this.mixer.update(dt);
+      if(dt>0.2) dt = 0.2;
 
       // update folowing Path:
       if(this.followUpdateFunction){
@@ -409,6 +421,4 @@ class AI {
 
   }
 }
-
-
 }

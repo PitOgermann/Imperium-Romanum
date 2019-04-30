@@ -35,6 +35,7 @@ var Stage = {
 
 
   renderFunction: [],
+  renderUnitsFunction: [],
 
   init: function() {
 
@@ -231,6 +232,7 @@ function animate(){
 
     Stage.renderer.render( Stage.scene, Stage.camera );
 
-    for(var i in Stage.renderFunction)Stage.renderFunction[i]();
+    for(var i in Stage.renderFunction)Stage.renderFunction[i].func();
+    for(var i in Stage.renderUnitsFunction)Stage.renderUnitsFunction[i].fun();
   }
 }

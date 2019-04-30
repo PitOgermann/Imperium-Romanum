@@ -4,6 +4,7 @@
 
 var Player = {
   name: "Pit",
+  position: new THREE.Vector3(0,0,0),
 
   moveForward: false,
   moveBackward: false,
@@ -103,101 +104,8 @@ var Player = {
   },
 
   // define key interval
-  onKeyDown: function ( event , player) {
-
-    //console.log(event.keyCode);
-
-    switch ( event.keyCode ) {
-      case 38: // up
-      case 87: // w
-        player.moveForward = true;
-        break;
-
-      case 37: // left
-      case 65: // a
-        player.moveLeft = true;
-        break;
-
-      case 40: // down
-      case 83: // s
-        player.moveBackward = true;
-        break;
-
-      case 39: // right
-      case 68: // d
-        player.moveRight = true;
-        break;
-
-      case 32: // space
-        if ( player.canJump === true ) player.velocity.y += player.accelerationJump;
-        player.canJump = false;
-        //robot.goTo(this.root.controls.getObject().position,true);
-        robot.goTo(this.root.controls.getObject().position,false);
-        break;
-
-      case 16: // run
-        if(player.canJump)player.run=true;
-        break;
-
-      case 66:  // b open bild pattern:
-        buildingHUD.toggle();
-        break;
-
-      case 70: // interaction
-        this.interact();
-        break;
-      case 81: //q
-        if(this.setBuilding)this.setBuilding.model.rotateY(0.05);
-        break;
-      case 69: //e
-        if(this.setBuilding)this.setBuilding.model.rotateY(-0.05);
-      break;
-
-      case 80: //p: print position:
-        if(DebuggerMode)console.log(this.root.controls.getObject().position);
-      break;
-
-      case 187: // +: toggle console:
-        Stage.console.toggle();
-      break;
-
-    }
-
-  },
-  onKeyUp: function ( event ,player) {
-
-    switch ( event.keyCode ) {
-
-      case 38: // up
-      case 87: // w
-        player.moveForward = false;
-        break;
-
-      case 37: // left
-      case 65: // a
-        player.moveLeft = false;
-        break;
-
-      case 40: // down
-      case 83: // s
-        player.moveBackward = false;
-        break;
-
-      case 39: // right
-      case 68: // d
-        player.moveRight = false;
-        break;
-
-      case 32: // space
-        player.canJump = false;
-        break;
-
-      case 16: // run
-        player.run=false;
-      break;
-    }
-
-  },
+  onKeyDown: function ( event , player) { if(Schortcuts_onKeyDown[event.key])Schortcuts_onKeyDown[event.key]();},
+  onKeyUp: function ( event ,player) { if(Schortcuts_onKeyUp[event.key])Schortcuts_onKeyUp[event.key]();},
 
   // define animation function:
   animate: function(doSimulation){
@@ -312,6 +220,8 @@ var Player = {
       }
 
       this.root.controls.getObject().position.y = groundPosition+11; // No Jumping!
+      this.position = this.root.controls.getObject().position;
+
 
 
 

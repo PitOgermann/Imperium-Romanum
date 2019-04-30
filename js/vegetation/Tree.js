@@ -1,5 +1,7 @@
-class Tree{
+class Tree extends Resource {
   constructor(json) {
+    super(1);
+
     // load Model:
     this.lod = ModelLibary[json.modelName].clone();
     this.modelName = json.modelName;
@@ -14,6 +16,8 @@ class Tree{
     this.lod.scale.set(scaleSeed,scaleSeed,scaleSeed);
     if(this.lod.getObjectByName( "Collision_side" ))Stage.objects_side.push(this.lod.getObjectByName( "Collision_side" ));
     Stage.scene.add(this.lod);
+
+    this.takePhoto(this.lod);
   }
 
   getJSON(){

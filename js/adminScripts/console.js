@@ -1,55 +1,49 @@
 
 // Add comands:
 var AdminTasks = {};
-AdminTasks["addTree"] = function() { Tree.writeNewObject(); };
-AdminTasks["addBush"] = function() { Bush.writeNewObject(); };
-AdminTasks["downloadTrees"] = function() {
+AdminTasks["addTree"] = {function: function() { Tree.writeNewObject(); }, name: "addTree"};
+AdminTasks["addBush"] = {function: function() { Bush.writeNewObject(); }, name: "addBush"};
+AdminTasks["downloadTrees"] = {function: function() {
   let exportJSON = {"trees": []};
   for(var i in trees) {
     exportJSON.trees.push(trees[i].getJSON());
   }
   saveJSON(exportJSON, "trees.json");
-};
+}, name: "addBush"};
 
-AdminTasks["downloadBushes"] = function() {
+AdminTasks["downloadBushes"] = {function: function() {
   let exportJSON = {"bushes": []};
   for(var i in bushes) {
     exportJSON.bushes.push(bushes[i].getJSON());
   }
   saveJSON(exportJSON, "bushes.json");
-};
+}, name: "downloadBushes"};
 
 
 
 
 class AdminConsole{
   constructor(){
-    this.div = document.getElementById("console");
-    this.isActive = false;
-    this.close();
-  }
-
-  toggle(){
-    if(this.isActive) this.close();
-    else this.open();
+    this.lastTask = ""
   }
 
   open(){
-    this.div.style.display = "";
-    this.isActive = true;
-    Stage.controls.unlock();
-  }
 
-  close(){
-    this.div.style.display = 'none';
-    this.isActive = false;
-    if(Stage)Stage.controls.lock();
-    let input = document.getElementsByName('fname')[0].value;
-    if(input){
-      AdminTasks[input]();
+    let text = "Console: \n";
+    console.log(AdminTasks["addBush"]);
+    for(var i in AdminTasks) {
+      text = text.concat("- ",AdminTasks[i].name,"\n")
+    }
+    let output = prompt(text, this.lastTask);
+    if(output) {
+      this.lastTask = output;
+      AdminTasks[output].function();
+      Stage.controls.lock();
     }
   }
 }
+
+
 
 
 

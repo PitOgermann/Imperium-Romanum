@@ -29,10 +29,7 @@ class GameHUD{
     this.onLoadTimer = setInterval(this.init.bind(this), 1000);
     this.clickListenerBind = null;
 
-    this.photo = document.createElement('div');
-    this.photoBooth = new PhotoBooth(this.photo,this.aiModel,[256, 256]);
-    this.updateID = Math.round(Math.random()*100000);
-    this.interactionMenue.appendChild(this.photo);
+    this.photoBooth = new PhotoBooth(this);
 
     // bind interaction Function:
     root.interactionFunction = this.openInteractionMenue.bind(this);
@@ -50,7 +47,7 @@ class GameHUD{
   update(){
     this.photoBooth.update();
     let distToPlayer = this.aiModel.position.manhattanDistanceTo(Player.root.controls.getObject().position);
-    if(distToPlayer>50)this.hide();
+    if(distToPlayer>40)this.hide();
   }
 
   orientation2Player(player){
@@ -67,7 +64,7 @@ class GameHUD{
 
     //remove PhotoBooth render to Object:
     window.removeEventListener("keypress", this.clickListenerBind, false);
-    Stage.renderFunction.splice(Stage.renderFunction.findIndex(obj => obj.id==this.updateID), 1);
+    Stage.renderFunction.splice(Stage.renderFunction.indexOf(this.update), 1);
   }
 
   show(){
@@ -79,7 +76,7 @@ class GameHUD{
     this.interactionMenue.style.visibility = 'visible';
 
     //bind PhotoBooth render to Object:
-    Stage.renderFunction.push({func:function() {this.update()}.bind(this),id:this.updateID});
+    Stage.renderFunction.push(function() {this.update()}.bind(this));
 
     // bind keypress:
     this.clickListenerBind = this.keyEvent.bind(this);
@@ -129,44 +126,36 @@ class GameHUD{
 
 
 class PhotoBooth {
-  constructor(dest,obj,size,direction) {
-    this.obj = obj;
-    this.direction = (direction)?direction:"front";
-
+  constructor(root) {
+    this.root = root;
     // create PhotoBooth:
     this.photoBooth = document.createElement('div');
     this.photoBooth.id = "photoBooth";
-    dest.appendChild(this.photoBooth);
+    root.interactionMenue.appendChild(this.photoBooth);
 
     //render Object: (dirty)
     this.camera_ = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerWidth, 1, 100 );
-    let pos = obj.position.clone();
-    this.camera_.position.set(pos.x,pos.y+10,pos.z+10);
+    let posAI = root.aiModel.position.clone();
+    this.camera_.position.set(posAI.x,posAI.y+10,posAI.z+10);
 
     // define Render
     this.renderer_ = new THREE.WebGLRenderer( { antialias: false } );
     this.renderer_.setPixelRatio( window.devicePixelRatio );
-    this.renderer_.setSize( size[0], size[1] );
+    this.renderer_.setSize( 256, 256 );
     this.renderer_.render( Stage.scene, this.camera_ );
 
     this.photoBooth.appendChild( this.renderer_.domElement );
 
-    switch(this.direction) {
-      case "front":
-        this.camera_.position.set(0,3,3);
-      break;
-      case "top":
-        this.camera_.position.set(15,15,15);
-      break;
-    }
-    console.log(this.camera_.position);
-    obj.add(this.camera_);
+
+    this.camera_.position.set(0,3,3);
+    this.root.aiModel.add(this.camera_);
+
   }
 
   update(){
-    let pos = this.obj.position.clone();
-    pos.y = 10;
-    this.camera_.lookAt(pos);
+    let posAI = this.root.aiModel.position.clone();
+    posAI.y = 10;
+    this.camera_.lookAt(posAI);
     this.renderer_.render( Stage.scene, this.camera_ );
   }
 }

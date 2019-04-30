@@ -44,10 +44,7 @@ class Building {
       Stage.scene.add(this.model);
     }
 
-    //Production: --> mechanic will be removed soon!
-
-
-
+    this.GUI = new GUI_building(this);
 
   }
 
@@ -65,6 +62,7 @@ class Building {
                 slot:this.information.source[i].workerslots[u],
                 resource:this.information.source[i],
                 dist:dist,
+                efficiency: 0.0,
                 slotPos: u
               }); //find all empty working-slots
             }
@@ -81,7 +79,7 @@ class Building {
   }
 
   reorderWorkers() {
-    let possibleResourceSlots = this.findClosestWorkingplaces(500);
+    let possibleResourceSlots = this.findClosestWorkingplaces(this.information.gatherdistance);
     console.log(possibleResourceSlots);
     for(var i in this.inmates) {
       // assign workers to free slots:
@@ -89,6 +87,8 @@ class Building {
         possibleResourceSlots[i].slot = this.inmates[i];
         this.inmates[i].workdest = possibleResourceSlots[i];
         this.inmates[i].isWorking = true;
+        console.log(this.information.requiredSkill);
+        this.inmates[i].workdest.efficiency = this.inmates[i].skills[this.information.requiredSkill]/this.inmates[i].workdest.dist;
         console.log("I have a new working place!");
       } else {
         // no free working slot for this worker!
@@ -112,6 +112,8 @@ class Building {
       this.reorderWorkers();
     }
     console.log("Interact with building:", this);
+    this.GUI.toggle();
+
 
   }
 
@@ -127,8 +129,8 @@ var Buildings = {}
 
 var buildings = [];
 function loadBuildings(){
-  Buildings.claypit = new BuildingTemplate("claypit",{type:"production",maxOccupant:5,source:clays}, ModelLibary["claypit"].clone(), ModelLibary["claypit"].clone(),1000);
-  Buildings.logger = new BuildingTemplate("logger",{type:"production",maxOccupant:4, source:trees}, ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
+  Buildings.claypit = new BuildingTemplate("Claypit",{type:"production",requiredSkill:"claystabbing",maxOccupant:5,source:clays, gatherdistance: 500}, ModelLibary["claypit"].clone(), ModelLibary["claypit"].clone(),1000);
+  Buildings.logger = new BuildingTemplate("Logger",  {type:"production",requiredSkill:"lumbering",maxOccupant:3, source:trees, gatherdistance: 300}, ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
 
   // load existing data from server
   $.getJSON("data/"+Stage.villageID+"/buildings/buildings.json", function(json) {
