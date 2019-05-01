@@ -102,14 +102,15 @@ class GUI_building {
       newWorkerDiv.style.cssText = "position: absolute;left:0px;top: 0px;";
       this.workerSlots[i].background.appendChild(newWorkerDiv); */
 
+
       this.newWorkerDiv = document.createElement("div");
       this.newWorkerDiv.style.cssText = "position: absolute;left:0px;top: 0px;width:100px; height: 100px;background-repeat: no-repeat; background-size:cover;, text-align: center;";
       this.newWorkerDiv.style.backgroundImage =   'url('+inmadeChar.image+')';
       this.workerSlots[i].background.appendChild(this.newWorkerDiv);
 
-      this.newWorkerDiv.onclick = function(){this.obj.inmates[i].removeFromWork(); this.reload();}.bind(this);// add remove function
-      this.newWorkerDiv.onmouseover = function(){this.style.opacity = "0.5";}.bind(this.newWorkerDiv); // add highlight function
-      this.newWorkerDiv.onmouseout = function(){this.style.opacity = "1.0";}.bind(this.newWorkerDiv); // remove highlight function
+      this.newWorkerDiv.onclick = function(){this.obj.inmates[i].removeFromWork(); this.reload();}.bind(this);// add remove function // this.newWorkerDiv.innerHTML = "<img id='noSelection' src='src/icons/fired.png' height='100' width='100'>";
+      this.newWorkerDiv.onmouseover = function(){this.newWorkerDiv.appendChild(this.obj.inmates[i].informationDIV);}.bind(this); // add highlight function
+      this.newWorkerDiv.onmouseout = function(){ while (this.newWorkerDiv.firstChild) { this.newWorkerDiv.removeChild(this.newWorkerDiv.firstChild);}}.bind(this); // remove highlight function
 
       // load resources:
       let newResourceDiv = document.createElement("div");

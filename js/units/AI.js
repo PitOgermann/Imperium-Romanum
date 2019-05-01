@@ -4,6 +4,7 @@ class AI {
   constructor(folder,name,pos) {
     //load Model:
     this.home = null;
+    this.name = name;
 
     this.isVisible = true;
     this.model;
@@ -69,6 +70,7 @@ class AI {
     }.bind(this), undefined, function( e ) {
       console.error( e );
     } );
+
 
   }
 

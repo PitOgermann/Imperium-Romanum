@@ -34,4 +34,8 @@ p.GUI_H1{
   background-color: rgba(0,0,0,0);
 }
 
-td:first-child { font-weight: bold }
+.GUI_t1 td:first-child { font-weight: bold }
+
+#noSelection {
+  pointer-events: none;
+}
