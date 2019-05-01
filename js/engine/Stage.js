@@ -146,6 +146,14 @@ var Stage = {
 
   },
 
+  generateID : function(length){
+   let result           = '';
+   let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   let charactersLength = characters.length;
+   for ( let i = 0; i < length; i++ )  result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   return result;
+ },
+
   lotHorizont : new THREE.Vector3( 0, 1, 0 ),
   getGroundPosition: function(pos,newPos,normal) {
     //groundcaster for Player:
@@ -233,6 +241,6 @@ function animate(){
     Stage.renderer.render( Stage.scene, Stage.camera );
 
     for(var i in Stage.renderFunction)Stage.renderFunction[i].func();
-    for(var i in Stage.renderUnitsFunction)Stage.renderUnitsFunction[i].fun();
+    for(var i in Stage.renderUnitsFunction)Stage.renderUnitsFunction[i]();
   }
 }

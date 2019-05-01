@@ -1,6 +1,6 @@
 class Resource  {
   constructor(maxWorkers) {
-
+    
     this.image = null;
     this.workerslots = [];
     for(var i =0;i<maxWorkers;i++) this.workerslots.push("free");

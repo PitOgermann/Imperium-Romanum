@@ -21,7 +21,11 @@ class BuildingTemplate{
 
 
 class Building {
-  constructor(template,position,rotation,placeFunction) {
+  constructor(id,template,position,rotation,placeFunction) {
+    this.id =id;
+
+    //console.log(Stage.generateID(16));
+
     this.name = template.name;
     this.information = template.information;
     this.model_place = template.model_place.clone();
@@ -121,6 +125,11 @@ class Building {
 
   }
 
+  static findBuilding(id){
+    return buildings.find(function(element) { return element.id == id; });
+  }
+
+
 }
 
 
@@ -129,14 +138,15 @@ var Buildings = {}
 
 var buildings = [];
 function loadBuildings(){
-  Buildings.claypit = new BuildingTemplate("Claypit",{type:"production",requiredSkill:"claystabbing",maxOccupant:5,source:clays, gatherdistance: 500}, ModelLibary["claypit"].clone(), ModelLibary["claypit"].clone(),1000);
+
+  Buildings.claypit = new BuildingTemplate("Claypit",{type:"production",requiredSkill:"claystabbing",maxOccupant:5, source:clays, gatherdistance: 500}, ModelLibary["claypit"].clone(), ModelLibary["claypit"].clone(),1000);
   Buildings.logger = new BuildingTemplate("Logger",  {type:"production",requiredSkill:"lumbering",maxOccupant:3, source:trees, gatherdistance: 300}, ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
 
   // load existing data from server
   $.getJSON("data/"+Stage.villageID+"/buildings/buildings.json", function(json) {
     for(var i in json.buildings){
       var position = new THREE.Vector3(json.buildings[i].position[0],json.buildings[i].position[1],json.buildings[i].position[2]);
-      buildings.push(new Building(Buildings[json.buildings[i].name],position,json.buildings[i].rotation));
+      buildings.push(new Building(json.buildings[i].id,Buildings[json.buildings[i].name],position,json.buildings[i].rotation));
     }
   });
 }

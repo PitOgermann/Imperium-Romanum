@@ -3,6 +3,7 @@
 
   background-color: rgba(0,0,0,0);
   background-image: url('../html/HUD/images/productionBuildingHUD.png');
+  opacity: 0.9;
 
   background-repeat: no-repeat;
   background-size: 100% 100%;

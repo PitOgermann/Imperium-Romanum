@@ -4,12 +4,14 @@
     {
       "name":"claypit",
       "position":[50,0,50],
-      "rotation":0
+      "rotation":0,
+      "id":"1SF8cnl8Zkoy9CRn"
     },
     {
       "name":"logger",
       "position":[-50,0,0],
-      "rotation":-1.9
+      "rotation":-1.9,
+      "id":"wxidGTIdVipB0v91"
     }
 
   ]

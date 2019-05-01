@@ -1,7 +1,7 @@
 var loader = new THREE.GLTFLoader();
 
 class AI {
-  constructor(folder,name,pos) {
+  constructor(folder,name,pos, initJSON) {
     //load Model:
     this.home = null;
     this.name = name;
@@ -64,8 +64,10 @@ class AI {
       this.speachBouble.addAction(4,"Go home!",function(){this.resetPrevTask();this.goIntoBuilding(this.home);}.bind(this));
       this.speachBouble.addAction(5,"I have a job for you.",function(){this.resetPrevTask();this.followToNewWork();}.bind(this));
 
-
-
+      // init from JSON if json and funciton is available:
+      if(initJSON){
+        if(this.setObjectFromJSON)this.setObjectFromJSON(initJSON);
+      }
 
     }.bind(this), undefined, function( e ) {
       console.error( e );

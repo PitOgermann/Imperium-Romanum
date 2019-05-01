@@ -1,1 +1,71 @@
-{"home":null,"isVisible":true,"clock":{"autoStart":true,"startTime":0,"oldTime":0,"elapsedTime":0,"running":false},"maxSpeed":20.683308492309003,"maxIdleSpeed":10,"walkingPath":[],"followUpdateFunctionTimer":0,"heightUpdateTimer":0,"idlePoint":null,"idleTimer":0,"goingHome":false,"isWorking":false,"xp":0,"skills":{"construction":1,"lumbering":1,"claystabbing":1,"forging":1},"workplace":null,"workdest":null,"isAtWork":false}
+{
+  "labourer":[
+
+    {
+      "modelPath":"src/AI/models/RobotExpressive.glb",
+      "name":"Akhenaten",
+      "position": [0,0,0],
+
+      "skills": {
+        "construction": 2.0,
+        "lumbering":    15.0,
+        "claystabbing": 74.0,
+        "forging":      8.0
+      },
+
+      "workplace": "1SF8cnl8Zkoy9CRn",
+      "isAtWork" : true
+    },
+
+    {
+      "modelPath":"src/AI/models/RobotExpressive.glb",
+      "name":"Neith",
+      "position": [0,0,-40],
+
+      "skills": {
+        "construction": 1.0,
+        "lumbering":    3.0,
+        "claystabbing": 28.0,
+        "forging":      33.0
+      },
+
+      "workplace": "1SF8cnl8Zkoy9CRn",
+      "isAtWork" : true
+    },
+
+    {
+      "modelPath":"src/AI/models/RobotExpressive.glb",
+      "name":"Rekhetre",
+      "position": [0,0,-60],
+
+      "skills": {
+        "construction": 15.0,
+        "lumbering":    63.0,
+        "claystabbing": 14.0,
+        "forging":      3.0
+      },
+
+      "workplace": "wxidGTIdVipB0v91",
+      "isAtWork" : true
+    },
+
+    {
+      "modelPath":"src/AI/models/RobotExpressive.glb",
+      "name":"Scota",
+      "position": [0,0,-80],
+
+      "skills": {
+        "construction": 83.0,
+        "lumbering":    24.0,
+        "claystabbing": 41.0,
+        "forging":      7.0
+      },
+
+      "workplace": null,
+      "isAtWork" : false
+    }
+
+
+
+  ]
+}

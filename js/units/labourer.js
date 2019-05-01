@@ -1,14 +1,12 @@
 class Labourer extends AI {
-  constructor(folder,name,position) {
+  constructor(folder,name,position,initJSON) {
 
-    super(folder,name,position);
-
-    this.xp = 0;
+    super(folder,name,position,initJSON);
 
     this.skills = {
       construction: 1.0,
-      lumbering:    Math.random()*100.0,
-      claystabbing: Math.random()*100.0,
+      lumbering:    1.0,
+      claystabbing: 1.0,
       forging:      1.0
     };
 
@@ -16,11 +14,13 @@ class Labourer extends AI {
     this.workdest = null;
     this.isAtWork = false;
 
+  }
+
+  getInfobox(){
     this.informationDIV = document.createElement("div");
     this.informationDIV.style.cssText = "background-color: rgba(150, 150, 150, 0.8); padding: 5px; pointer-events: none; position:absolute;width:90px; height: 90px;";
     this.informationDIV.innerHTML = "<b>"+this.name+"</b>";
 
-    // add information: TABLE
     let skillTable = document.createElement("TABLE");
     skillTable.id = "infobox";
     skillTable.style.cssText = "font-size: 11px;font-weight: normal;";
@@ -34,11 +34,18 @@ class Labourer extends AI {
     comand.innerHTML = "click to fire";
     this.informationDIV.appendChild(comand);
 
-
+    return this.informationDIV;
   }
 
-  parsObjectFromJSON(obj) {
-    for (var prop in obj) this[prop] = obj[prop];
+  setObjectFromJSON(obj) {
+    this.skills = obj.skills;
+    // set workplace:
+    if(obj.workplace) {
+      this.setNewWorkingPlace(Building.findBuilding(obj.workplace));
+      this.isAtWork = obj.isAtWork;
+      if(this.workplace) this.workplace.reorderWorkers();
+      else console.error("Did not find building! Error in database.");
+    }
   }
 
   setNewWorkingPlace(newWorkingPlace) {
@@ -98,13 +105,22 @@ class Labourer extends AI {
 
 
 var labourers = [];
-function initAI() {
-  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Hans",new THREE.Vector3(0,0,0)) );
-  labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Thomas",new THREE.Vector3(0,0,-20)) );
-  labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Michael",new THREE.Vector3(0,0,-40)) );
-  labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Elise",new THREE.Vector3(0,0,-60)) );
-  labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Ariel",new THREE.Vector3(0,0,-80)) );
 
+function initAI() {
+  //
+  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Thomas",new THREE.Vector3(0,0,-20)) );
+  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Michael",new THREE.Vector3(0,0,-40)) );
+  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Elise",new THREE.Vector3(0,0,-60)) );
+  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Ariel",new THREE.Vector3(0,0,-80)) );
+
+  // load existing data from server
+  $.getJSON("data/"+Stage.villageID+"/Units/units.json", function(json) {
+    for(var i in json.labourer){
+      var position = new THREE.Vector3(json.labourer[i].position[0],json.labourer[i].position[1],json.labourer[i].position[2]);
+      labourers.push(new Labourer(json.labourer[i].modelPath,json.labourer[i].name,position, json.labourer[i]) );
+    }
+
+  });
 
 
 }

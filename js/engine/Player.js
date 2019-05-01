@@ -88,11 +88,11 @@ var Player = {
   interact: function() {
     // get interactionObjects:
     this.interaction = detectCollision(this.root,this.interactionModel,true);
-    console.log(this.interaction);
     if(this.interaction){
       if(this.interaction.collidingActor){ //interactable
-        console.log(this.interaction.collidingActor.interactionObject);
-        if(this.interaction.collidingActor.interactionObject.interactionFunction)this.interaction.collidingActor.interactionObject.interactionFunction();
+        if(this.interaction.collidingActor.interactionObject){
+          if(this.interaction.collidingActor.interactionObject.interactionFunction)this.interaction.collidingActor.interactionObject.interactionFunction();
+        }
       }
     }
   },

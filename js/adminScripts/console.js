@@ -19,6 +19,10 @@ AdminTasks["downloadBushes"] = {function: function() {
   saveJSON(exportJSON, "bushes.json");
 }, name: "downloadBushes"};
 
+AdminTasks["downloadUnits"] = {function: function() {
+  console.log(labourers);
+}, name: "downloadUnits"};
+
 
 
 
@@ -30,7 +34,6 @@ class AdminConsole{
   open(){
 
     let text = "Console: \n";
-    console.log(AdminTasks["addBush"]);
     for(var i in AdminTasks) {
       text = text.concat("- ",AdminTasks[i].name,"\n")
     }
