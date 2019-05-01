@@ -104,8 +104,8 @@ var Player = {
   },
 
   // define key interval
-  onKeyDown: function ( event , player) { if(Schortcuts_onKeyDown[event.key])Schortcuts_onKeyDown[event.key]();},
-  onKeyUp: function ( event ,player) { if(Schortcuts_onKeyUp[event.key])Schortcuts_onKeyUp[event.key]();},
+  onKeyDown: function ( event , player) { console.log(event);if(Shortcuts_onKeyDown[event.key])Shortcuts_onKeyDown[event.key]();},
+  onKeyUp: function ( event ,player) { if(Shortcuts_onKeyUp[event.key])Shortcuts_onKeyUp[event.key]();},
 
   // define animation function:
   animate: function(doSimulation){

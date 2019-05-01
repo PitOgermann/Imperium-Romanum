@@ -1,10 +1,10 @@
-var Schortcuts_onKeyDown = {};
-var Schortcuts_onKeyUp = {};
+var Shortcuts_onKeyDown = {};
+var Shortcuts_onKeyUp = {};
 
 class Shortcut {
   constructor(dir,key, func) {
-    if(dir == "DOWN")Schortcuts_onKeyDown[key] = this.callFunction.bind(this);
-    else Schortcuts_onKeyUp[key] = this.callFunction.bind(this);
+    if(dir == "DOWN")Shortcuts_onKeyDown[key] = this.callFunction.bind(this);
+    else Shortcuts_onKeyUp[key] = this.callFunction.bind(this);
     this.func = func;
     this.key = key;
   }
