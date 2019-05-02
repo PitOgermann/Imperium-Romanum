@@ -12,7 +12,7 @@ class BuildingTemplate{
 
     this.workingPoint = null;
 
-    productionBuildings.push(new BuildingSite(this));
+    productionBuildings.push(new BuildingSiteGUI(this));
   }
 
   static getTemplateFromName(name){

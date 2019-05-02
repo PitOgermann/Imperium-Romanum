@@ -75,7 +75,7 @@ var productionGUI = new HUDControll(productionMenue,true);
 ConstructionGUI.add(productionGUI);
 
 
-class BuildingSite {
+class BuildingSiteGUI {
   constructor(buildingTemplate) {
     this.template = buildingTemplate;
     //create infoDiv
@@ -103,6 +103,8 @@ class BuildingSite {
 
   placeBuildingSite() {
     console.log("iPlace a ",this.template);
+    Player.setBuilding = new BuildingSite(this.template);
+    ConstructionGUI.hide();
   }
 
 }

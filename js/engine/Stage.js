@@ -124,6 +124,8 @@ var Stage = {
     window.addEventListener( 'resize', this.onWindowResize, false );
 
     // Check if a new cache is available on page load.
+
+    /*
     window.addEventListener('load', function(e) {
 
       window.applicationCache.addEventListener('updateready', function(e) {
@@ -140,11 +142,13 @@ var Stage = {
       }, false);
 
     }, false);
+    */
 
 
 
 
   },
+
 
   generateID : function(length){
    let result           = '';

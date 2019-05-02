@@ -78,10 +78,10 @@ var Player = {
     //this.weapons.push( new HandWeapon(this.root.controls.getObject().children[0],model,10,5,1.0));
 
     // add key-event listener
-    document.addEventListener( 'keydown', function(event) {this.onKeyDown(event);}.bind(this), false );
-    document.addEventListener( 'keyup', function(event) {this.onKeyUp(event);}.bind(this), false );
+    window.addEventListener( 'keydown', function(event) {this.onKeyDown(event);}.bind(this), false );
+    window.addEventListener( 'keyup', function(event) {this.onKeyUp(event);}.bind(this), false );
 
-    document.addEventListener( 'mousedown', this.mouseClick.bind(this), false );
+    window.addEventListener( 'mousedown', this.mouseClick.bind(this), false );
 
   },
 
@@ -222,8 +222,7 @@ var Player = {
       this.root.controls.getObject().position.y = groundPosition+11; // No Jumping!
       this.position = this.root.controls.getObject().position;
 
-
-
+      if(this.setBuilding)this.setBuilding.update();
 
 
     }
