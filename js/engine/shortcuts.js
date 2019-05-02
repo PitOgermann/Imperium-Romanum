@@ -16,7 +16,6 @@ class Shortcut {
 
 
 // define shortcuts:
-
 new Shortcut("DOWN","d", function() {Player.moveRight = true;});
 new Shortcut("DOWN","s", function() {Player.moveBackward = true;});
 new Shortcut("DOWN","a", function() {Player.moveLeft = true;});
