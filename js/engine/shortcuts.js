@@ -23,7 +23,7 @@ new Shortcut("DOWN","a", function() {Player.moveLeft = true;});
 new Shortcut("DOWN","w", function() {Player.moveForward = true;});
 new Shortcut("DOWN","Shift", function() {if(Player.canJump)Player.run=true;});
 
-new Shortcut("DOWN","b", function() {buildingHUD.toggle();});
+new Shortcut("DOWN","b", function() {ConstructionGUI.toggle();});
 new Shortcut("DOWN","f", function() {Player.interact();});
 new Shortcut("DOWN","q", function() {if(Player.setBuilding)Player.setBuilding.model.rotateY(0.05);});
 new Shortcut("DOWN","e", function() {if(Player.setBuilding)Player.setBuilding.model.rotateY(-0.05);});

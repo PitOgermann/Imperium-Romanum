@@ -58,8 +58,9 @@ class Labourer extends AI {
       // place new worker:
       newWorkingPlace.inmates.push(this);
       this.workplace = newWorkingPlace;
-
       this.stopAction();
+
+      this.setAnswer("I am working at a "+this.workplace.name+".");
     }
   }
 
@@ -85,7 +86,7 @@ class Labourer extends AI {
 
   removeFromWork() {
     if(this.workplace && this.workdest) {
-      console.log("remove existing working");
+      this.setAnswer("I'm unemployed, sir. Please give me something to work on.")
       //remove external binds:
 
       let workerID = this.workplace.inmates.indexOf(this);

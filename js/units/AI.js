@@ -63,7 +63,9 @@ class AI {
       this.speachBouble.addAction(3,"Patrol this place!",function(){this.resetPrevTask();this.idleAroundPoint(Player.root.controls.getObject().position,100);}.bind(this));
       this.speachBouble.addAction(4,"Go home!",function(){this.resetPrevTask();this.goIntoBuilding(this.home);}.bind(this));
       this.speachBouble.addAction(5,"I have a job for you.",function(){this.resetPrevTask();this.followToNewWork();}.bind(this));
-      
+
+      this.setAnswer();
+
 
       // init from JSON if json and funciton is available:
       if(initJSON){
@@ -75,6 +77,11 @@ class AI {
     } );
 
 
+  }
+
+  setAnswer(inp){
+    if(inp)this.speachBouble.answer.innerHTML= inp;
+    else this.speachBouble.answer.innerHTML= "Hello "+Player.name+", what can I do for you?";
   }
 
   resetPrevTask() {
@@ -232,6 +239,7 @@ class AI {
 
   idleAroundPoint(point,maxDist){
     this.stopAction();
+    this.setAnswer("I'll guard this place, sir.");
     this.maxDist = maxDist;
     this.idlePoint = point.clone();
     if(DebuggerMode)console.log("Idle around ", this.idlePoint);
@@ -250,12 +258,13 @@ class AI {
   goIntoBuilding(building){
     if(DebuggerMode)console.log("Go in building:");
     if(!building){
-      if(DebuggerMode)console.info("I do not have a Home. I go to the first Building.");
-      this.home = debugBuilding[0];
+      this.setAnswer("The building doesn't exist, sir. ");
+    } else  {
+      this.setAnswer("I'm on my way to the "+building.name+", sir.");
+      this.goTo(this.home.model.position);
+      this.goingHome = true;
     }
 
-    this.goTo(this.home.model.position);
-    this.goingHome = true;
   }
 
   followToNewWork() {
@@ -264,7 +273,10 @@ class AI {
   }
 
   setFollowPlayer(player){
+    this.setAnswer("I'm following you, sir.")
+
     this.followPlayer = player;
+
 
     // add first waypoint and remove old Waypoints:
     this.walkingPath = [];
@@ -283,6 +295,8 @@ class AI {
   }
 
   stopAction(){
+    this.setAnswer("I'll be waiting here, sir.");
+
     this.followPlayer = null;
     this.walkingPath = [];
     this.followUpdateFunction = null;

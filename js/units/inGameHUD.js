@@ -45,9 +45,6 @@ class GameHUD{
   }
 
   init(){
-    for(var i in this.onLoadFunctions)this.onLoadFunctions[i]();
-    this.isLoaded = true;
-    clearInterval(this.onLoadTimer)
   }
 
   update(){
@@ -98,7 +95,6 @@ class GameHUD{
     if(actionNum>=0 && actionNum <= 9){
       var doAction = this.actionArray[actionNum];
       if(doAction)doAction();
-      this.hide();
     }
   }
 

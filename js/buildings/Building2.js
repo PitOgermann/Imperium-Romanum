@@ -11,6 +11,8 @@ class BuildingTemplate{
     this.hp = hp;
 
     this.workingPoint = null;
+
+    productionBuildings.push(new BuildingSite(this));
   }
 
   static getTemplateFromName(name){
@@ -36,9 +38,6 @@ class Building {
     this.productionSrc = [];
     this.productivity = 0;
 
-    //HUDS:
-    this.constructionHUD = new HUDSystem('buildingProcessHUD',false);
-
     if(!placeFunction){
       // add collision
       if(this.model.getObjectByName( "Collision_side" ))Stage.objects_side.push(this.model.getObjectByName( "Collision_side" ));
@@ -48,6 +47,8 @@ class Building {
       Stage.scene.add(this.model);
     }
 
+    //HUDS:
+    //this.constructionHUD = new HUDSystem('buildingProcessHUD',false);
     this.GUI = new GUI_building(this);
 
   }
@@ -141,6 +142,11 @@ function loadBuildings(){
 
   Buildings.claypit = new BuildingTemplate("Claypit",{type:"production",requiredSkill:"claystabbing",maxOccupant:5, source:clays, gatherdistance: 500}, ModelLibary["claypit"].clone(), ModelLibary["claypit"].clone(),1000);
   Buildings.logger = new BuildingTemplate("Logger",  {type:"production",requiredSkill:"lumbering",maxOccupant:3, source:trees, gatherdistance: 300}, ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
+  Buildings.logger2 = new BuildingTemplate("Claypit",  {type:"production",requiredSkill:"lumbering",maxOccupant:3, source:trees, gatherdistance: 300}, ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
+  Buildings.logger3 = new BuildingTemplate("Claypit",  {type:"production",requiredSkill:"lumbering",maxOccupant:3, source:trees, gatherdistance: 300}, ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
+  Buildings.logger4 = new BuildingTemplate("Claypit",  {type:"production",requiredSkill:"lumbering",maxOccupant:3, source:trees, gatherdistance: 300}, ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
+  Buildings.logger5 = new BuildingTemplate("Claypit",  {type:"production",requiredSkill:"lumbering",maxOccupant:3, source:trees, gatherdistance: 300}, ModelLibary["logger"].clone(), ModelLibary["logger"].clone(),1000);
+
 
   // load existing data from server
   $.getJSON("data/"+Stage.villageID+"/buildings/buildings.json", function(json) {
