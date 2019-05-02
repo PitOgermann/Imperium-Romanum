@@ -63,6 +63,7 @@ class AI {
       this.speachBouble.addAction(3,"Patrol this place!",function(){this.resetPrevTask();this.idleAroundPoint(Player.root.controls.getObject().position,100);}.bind(this));
       this.speachBouble.addAction(4,"Go home!",function(){this.resetPrevTask();this.goIntoBuilding(this.home);}.bind(this));
       this.speachBouble.addAction(5,"I have a job for you.",function(){this.resetPrevTask();this.followToNewWork();}.bind(this));
+      
 
       // init from JSON if json and funciton is available:
       if(initJSON){

@@ -78,8 +78,8 @@ var Player = {
     //this.weapons.push( new HandWeapon(this.root.controls.getObject().children[0],model,10,5,1.0));
 
     // add key-event listener
-    document.addEventListener( 'keydown', function(event) {Stage.player.onKeyDown(event, Stage.player);}, false );
-    document.addEventListener( 'keyup', function(event) {Stage.player.onKeyUp(event, Stage.player);}, false );
+    document.addEventListener( 'keydown', function(event) {this.onKeyDown(event);}.bind(this), false );
+    document.addEventListener( 'keyup', function(event) {this.onKeyUp(event);}.bind(this), false );
 
     document.addEventListener( 'mousedown', this.mouseClick.bind(this), false );
 
@@ -104,8 +104,8 @@ var Player = {
   },
 
   // define key interval
-  onKeyDown: function ( event , player) { console.log(event);if(Shortcuts_onKeyDown[event.key])Shortcuts_onKeyDown[event.key]();},
-  onKeyUp: function ( event ,player) { if(Shortcuts_onKeyUp[event.key])Shortcuts_onKeyUp[event.key]();},
+  onKeyDown: function ( event) { if(Shortcuts_onKeyDown[event.key])Shortcuts_onKeyDown[event.key]();},
+  onKeyUp: function ( event) {    if(Shortcuts_onKeyUp[event.key])Shortcuts_onKeyUp[event.key]();},
 
   // define animation function:
   animate: function(doSimulation){

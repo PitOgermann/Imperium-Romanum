@@ -16,7 +16,7 @@ class Labourer extends AI {
 
   }
 
-  getInfobox(){
+  getInfobox(size){
     this.informationDIV = document.createElement("div");
     this.informationDIV.style.cssText = "background-color: rgba(150, 150, 150, 0.8); padding: 5px; pointer-events: none; position:absolute;width:90px; height: 90px;";
     this.informationDIV.innerHTML = "<b>"+this.name+"</b>";
@@ -32,7 +32,7 @@ class Labourer extends AI {
     let comand = document.createElement("p");
     comand.style.cssText = "background-color: rgba(50, 50, 50, 0.8); color: rgb(200, 200, 200);text-align: center;z-index: 100;";
     comand.innerHTML = "click to fire";
-    this.informationDIV.appendChild(comand);
+    if(size!="big")this.informationDIV.appendChild(comand);
 
     return this.informationDIV;
   }
@@ -107,11 +107,6 @@ class Labourer extends AI {
 var labourers = [];
 
 function initAI() {
-  //
-  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Thomas",new THREE.Vector3(0,0,-20)) );
-  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Michael",new THREE.Vector3(0,0,-40)) );
-  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Elise",new THREE.Vector3(0,0,-60)) );
-  //labourers.push(new Labourer('src/AI/models/RobotExpressive.glb',"Ariel",new THREE.Vector3(0,0,-80)) );
 
   // load existing data from server
   $.getJSON("data/"+Stage.villageID+"/Units/units.json", function(json) {

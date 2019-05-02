@@ -1,41 +1,38 @@
+var textureLoader = new THREE.TextureLoader();
+var speachBoubleTexture = textureLoader.load("html/inGameHUD/SpeachBouble.png");
+var speachBoubleMat = new THREE.MeshBasicMaterial( { map:speachBoubleTexture, transparent : true} );
+speachBoubleMat.side = THREE.DoubleSide;
+
 class GameHUD{
   constructor(root,bindObject){
     this.root = root;
     this.aiModel = bindObject;
+    this.plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20, 10, 1 ) , speachBoubleMat );
+    this.plane.position.y = 10;
+    this.docId = Math.floor(Math.random() * 100);
 
     this.isActive = false;
+
     this.actionArray = new Array(10);
+    //bindObject.add( this.plane );
 
-    // init main div
-    this.div = document.createElement('div');
-    this.div.style.cssText = "position:absolute; width:100%; height:300px; left:0px; bottom:0px; background-color: rgba(100, 100, 100, 0.8);";
-    document.body.appendChild(this.div);
+    // create Speach Interactoin:
+    this.interactionMenue = document.createElement('div');
+    this.interactionMenue.innerHTML='<object type="text/html" id="doc_'+this.docId +'" style="width: 70%; height: 100%;" data="html/inGameHUD/SpeachBouble.html" ></object>';
 
-    // init answer:
-    this.answer = document.createElement('p');
-    this.answer.innerHTML="Hello Pit, what can I do for you?";
-    this.answer.style.cssText = "position:relative; left:1em; top:0px; font-size: x-large;font-weight: bold;";
-    this.div.appendChild(this.answer);
+    this.interactionMenue.id = "speachBouble";
+    document.body.appendChild(this.interactionMenue);
 
-    // init question:
-    this.questionBox = document.createElement('div');
-    this.questionBox.innerHTML="";
-    this.questionBox.style.cssText = "position:relative; left:2em; top:0px; width:35%;";
-    this.div.appendChild(this.questionBox);
-
-    // init information:
-    this.infoBox = document.createElement('div');
-    this.infoBox.style.cssText = "position:absolute; right:300px; top:22px; height:256px;width:100px;background-color: rgba(200, 100, 100, 0.8);";
-    this.div.appendChild(this.infoBox);
-
-
-    // init PhotoBooth:
+    // init Actions:
     this.isLoaded = false;
+    this.onLoadFunctions = []
+    this.onLoadTimer = setInterval(this.init.bind(this), 1000);
+    this.clickListenerBind = null;
+
     this.photo = document.createElement('div');
-    this.photo.style.cssText = "position:absolute; right:278px; bottom:278px;";
     this.photoBooth = new PhotoBooth(this.photo,this.aiModel,[256, 256]);
     this.updateID = Math.round(Math.random()*100000);
-    this.div.appendChild(this.photo);
+    this.interactionMenue.appendChild(this.photo);
 
     // bind interaction Function:
     root.interactionFunction = this.openInteractionMenue.bind(this);
@@ -56,8 +53,16 @@ class GameHUD{
     if(distToPlayer>50)this.hide();
   }
 
+  orientation2Player(player){
+    let playerPos = player.root.controls.getObject().position.clone();
+    playerPos.y =10;
+    this.plane.lookAt( playerPos );
+
+  }
+
   hide(){
-    this.div.style.visibility = 'hidden';
+    //this.plane.visible = false;
+    this.interactionMenue.style.visibility = 'hidden';
     this.isActive = false;
 
     //remove PhotoBooth render to Object:
@@ -67,12 +72,11 @@ class GameHUD{
 
   show(){
     this.isActive = true;
+    this.setHTMLVar("player_name",Player.name);
+
+    //this.plane.visible = true;
     this.root.fadeToAction("Wave",1);
-    this.div.style.visibility = 'visible';
-
-
-    while (this.infoBox.firstChild) { this.infoBox.firstChild.remove();}
-    this.infoBox.appendChild(this.root.getInfobox("big"));
+    this.interactionMenue.style.visibility = 'visible';
 
     //bind PhotoBooth render to Object:
     Stage.renderFunction.push({func:function() {this.update()}.bind(this),id:this.updateID});
@@ -84,13 +88,17 @@ class GameHUD{
   }
 
   toggle(){
-    if(this.div.style.visibility == 'visible') this.hide();
+    if(this.interactionMenue.style.visibility == 'visible') this.hide();
     else this.show();
 
   }
 
   openInteractionMenue(){
     this.toggle();
+  }
+
+  setHTMLVar(id,variable){
+    document.querySelector("#doc_"+this.docId).contentDocument.getElementById(id).innerHTML=variable;
   }
 
   keyEvent(e){
@@ -103,13 +111,18 @@ class GameHUD{
   }
 
   addAction(num,lable,func){
-    let newElement = document.createElement('div');
-    newElement.style.cssText = "background-color: rgba(80, 80, 80, 0.8); padding: 5px;font-size: large";
-    newElement.innerHTML = "["+num+"] "+lable;
-    this.questionBox.appendChild(newElement);
-
-    // include functions:
-    this.actionArray[num]=func;
+    this.onLoadFunctions.push(
+      function(){
+        // create 2d Graphic:
+        let answerBox = document.querySelector("#doc_"+this.docId).contentDocument.getElementById("answerBox"); // load AnswerBox
+        let newElement = document.createElement("p");
+        newElement.className = "answer";
+        newElement.innerHTML = "["+num+"]"+lable;
+        answerBox.appendChild(newElement);
+        // include functions:
+        this.actionArray[num]=func;
+      }.bind(this)
+    )
   }
 
 }
