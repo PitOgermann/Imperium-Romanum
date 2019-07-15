@@ -4,6 +4,7 @@
     {
       "position":[-100,0,-100],
       "dimension":[200,20,100],
+      "modelName": "clayfield",
       "seed":1001,
       "clayRichness":8900
     },
@@ -11,6 +12,7 @@
     {
       "position":[153,0,20],
       "dimension":[100,20,100],
+      "modelName": "clayfield",
       "seed":1001,
       "clayRichness":5000
     }

@@ -12,6 +12,22 @@ function loadLODfromFile(name,file,shadowsEnabled){
       lodModel.addLevel(gltf.scene.getObjectByName( "2D" ), 400 );
       lodModel.addLevel(new THREE.Group(), 500 );
 
+      // add all Items:
+      for (var i = 1; i < 100; i++) {
+        var newItem = gltf.scene.getObjectByName( "Item"+i );
+        var newPoint = gltf.scene.getObjectByName( "P"+i );
+        if (newItem == undefined) {
+          break;
+        } else {
+          // hide Items:
+          newItem.visible=false;
+
+          lodModel.getObjectByName( "HighRes" ).add(newItem.clone());
+          lodModel.scale.set(.1,.1,.1); // debugger! EERROR!!!
+          if(newPoint!=undefined) lodModel.getObjectByName( "HighRes" ).add(newPoint);
+        }
+      }
+
       if(shadowsEnabled){
         lodModel.traverse(function(child){child.castShadow = true;});
       }

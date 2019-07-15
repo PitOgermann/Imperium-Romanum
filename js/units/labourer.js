@@ -70,8 +70,13 @@ class Labourer extends AI {
 
       if(this.idleTimer <= 0) { // wait untill idle timer is 0
         this.idleTimer = Math.random()*100+100;
+
+        // find Working point:
         let workPosition = this.workplace.model.position.clone();
-        let resourcePosition = this.workdest.resource.lod.position.clone(); // change from resource position to local object position!
+        let workplaceIndex = this.workplace.inmates.findIndex(x => x === this);
+        let resourcePosition = this.workdest.resource.workingPoint[workplaceIndex];
+        if(resourcePosition == undefined) resourcePosition = this.workdest.resource.lod.position.clone();
+
         if(this.isAtWork) {
           this.goTo(resourcePosition ,true); // go to resource
           this.isAtWork = false;

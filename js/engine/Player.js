@@ -99,7 +99,7 @@ var Player = {
 
   mouseClick: function(event){
     if(this.setBuilding && Stage.controls.isLocked){ //place Building:
-      this.setBuilding.place(this);
+      this.setBuilding.place(event);
     } else for(var i in this.weapons)this.weapons[i].fire(); // else fire weapons!
   },
 

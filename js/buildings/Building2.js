@@ -63,13 +63,16 @@ class Building {
           let dist = this.model.position.distanceTo(this.information.source[i].lod.position);
           if (dist<radius){
             for(var u in this.information.source[i].workerslots) {
-              if(this.information.source[i].workerslots[u] == "free") workingSlotsInRange.push({
-                slot:this.information.source[i].workerslots[u],
-                resource:this.information.source[i],
-                dist:dist,
-                efficiency: 0.0,
-                slotPos: u
-              }); //find all empty working-slots
+              if(this.information.source[i].workerslots[u] == "free") {
+                workingSlotsInRange.push({
+                  slot:this.information.source[i].workerslots[u],
+                  resource:this.information.source[i],
+                  dist:dist,
+                  efficiency: 0.0,
+                  slotPos: u
+                }); //find all empty working-slots
+                this.information.source[i].activeWorkers=0;
+              }
             }
 
             //this.productionSrc.push(this.information.source[i]);
@@ -91,7 +94,10 @@ class Building {
       if(possibleResourceSlots[i]) {
         possibleResourceSlots[i].slot = this.inmates[i];
         this.inmates[i].workdest = possibleResourceSlots[i];
+        this.inmates[i].workdest.resource.activeWorkers++;
+        this.inmates[i].workdest.resource.update();
         this.inmates[i].isWorking = true;
+
         console.log(this.information.requiredSkill);
         this.inmates[i].workdest.efficiency = this.inmates[i].skills[this.information.requiredSkill]/this.inmates[i].workdest.dist;
         console.log("I have a new working place!");
@@ -116,7 +122,6 @@ class Building {
       // update building stats like productivity ...
       this.reorderWorkers();
     }
-    console.log("Interact with building:", this);
     this.GUI.toggle();
 
 

@@ -151,6 +151,65 @@ function detectCollision2(root,model,reqObject){
     };
 }
 
+function detectCollisionCubes(object1, world){
+  let isColliding = false;
+  for(var i in world.objects_side){
+    object1.geometry.computeBoundingBox(); // improove performence!
+    world.objects_side[i].geometry.computeBoundingBox();
+    object1.updateMatrixWorld();
+    world.objects_side[i].updateMatrixWorld();
+
+    var box1 = object1.geometry.boundingBox.clone();
+    box1.applyMatrix4(object1.matrixWorld);
+
+    var box2 = world.objects_side[i].geometry.boundingBox.clone();
+    box2.applyMatrix4(world.objects_side[i].matrixWorld);
+
+    if(box1.intersectsBox(box2)) {
+      isColliding = true;
+      break;
+    }
+  }
+  return isColliding;
+}
+
+function getGroundPlane(object1){
+  let bbox =  new THREE.Box3().setFromObject(object1);
+  var bboxPoints = [
+    new THREE.Vector3(bbox.min.x,10,bbox.min.z),
+    new THREE.Vector3(bbox.max.x,10,bbox.min.z),
+    new THREE.Vector3(bbox.min.x,10,bbox.max.z),
+    new THREE.Vector3(bbox.max.x,10,bbox.max.z)
+  ];
+
+  // get height of popints:
+  var heights = [
+    getHeightAt(bboxPoints[0]).height,
+    getHeightAt(bboxPoints[1]).height,
+    getHeightAt(bboxPoints[2]).height,
+    getHeightAt(bboxPoints[3]).height
+  ];
+  let flattness = Math.abs(heights[0])+Math.abs(heights[1])+Math.abs(heights[2])+Math.abs(heights[3]);
+
+  // add heights:
+  for(var i in bboxPoints)bboxPoints[i].y = heights[i];
+
+  let side1 = new THREE.Vector3();
+  side1.subVectors (bboxPoints[1], bboxPoints[0]);
+  let side2 = new THREE.Vector3();
+  side2.subVectors (bboxPoints[1], bboxPoints[3]);
+  let planeNormal = new THREE.Vector3();
+  planeNormal.crossVectors (side1, side2);
+  planeNormal.normalize();
+
+  console.log("pounts:",bboxPoints);
+  console.log("normal:",planeNormal);
+
+  var arrowHelper = new THREE.ArrowHelper( planeNormal, bboxPoints[1], 10, 0xffff00 );
+  Stage.scene.add( arrowHelper );
+
+  return {flattness:flattness,normal:planeNormal};
+}
 
 
 //prevent tunneling with scaling the objects mesh and then do a downsampling

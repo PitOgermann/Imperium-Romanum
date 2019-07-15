@@ -1,0 +1,5 @@
+class StructureItem  {
+  constructor(rootObject) {
+
+  }
+}
